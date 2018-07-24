@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
+
+# Copyright (C) 2018 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+if [ $# != 1 ]; then
+   echo >&2 "$0: usage: $0 BUGNUMBER"
+   exit 1
+fi
+
+if ! which notmuch >/dev/null 2>&1; then
+    echo >&2 "$0: error: this script requires notmuch to be installed"
+    exit 1
+fi
+
+if ! which bts >/dev/null 2>&1; then
+    echo >&2 "$0: error: this script requires the devscripts package"
+    exit 1
+fi
+
+bug="$1"
+dest="$(notmuch config get database.path)"
+# ^ this is guaranteed to be a maildir, despite the name
+
+bts --mbox --mailreader 'true %s' show "$bug"
+# ^ see #904182 (try using this script ;))
+
+temp="$(mktemp -d)"
+mkdir $temp/new $temp/cur $temp/tmp
+
+# note that mb2md won't work; it thinks Debian BTS mboxes contain just
+# a single message
+mbox2maildir "${XDG_CACHE_HOME:-$HOME/.cache}"/devscripts/bts/"$bug".mbox \
+             "$temp"
+
+for f in $temp/*/*; do
+    message_id="$(grep -E -i -m 1 -e '^Message-ID:' $f \
+                       | cut -d\  -f2 \
+                       | sed -e 's/<//' -e 's/>//')"
+    match="$(notmuch search --limit=1 id:$message_id | wc -l)"
+    if [ "$match" = "0" ]; then
+        mdmv "$f" "$DEST"
+    fi
+done
+
+rm -rf "$temp"
+
+notmuch new

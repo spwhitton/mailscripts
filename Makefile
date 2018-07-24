@@ -1,4 +1,4 @@
-MANPAGES=mdmv.1 mbox2maildir.1
+MANPAGES=mdmv.1 mbox2maildir.1 notmuch-slurp-debbug.1
 
 all: $(MANPAGES)
 

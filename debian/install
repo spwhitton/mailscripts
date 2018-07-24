@@ -1,2 +1,3 @@
 mdmv /usr/bin
 mbox2maildir /usr/bin
+notmuch-slurp-debbug /usr/bin

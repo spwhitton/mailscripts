@@ -1,0 +1,28 @@
+=head1 NAME
+
+notmuch-slurp-debbug - add messages from a Debian bug to notmuch
+
+=head1 SYNOPSIS
+
+notmuch-slurp-debbug BUGNUMBER
+
+=head1 DESCRIPTION
+
+B<notmuch-slurp-debbug> adds to your notmuch database any messages
+from a given Debian bug that it does not already contain.
+
+The script adds the messages to your maildir, and then calls B<notmuch
+new>.
+
+=head1 OPTIONS
+
+None.
+
+=head1 SEE ALSO
+
+bts(1), notmuch(1)
+
+=head1 AUTHOR
+
+B<notmuch-slurp-debbug> was written by Sean Whitton
+<spwhitton@spwhitton.name>.
