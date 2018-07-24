@@ -3,13 +3,19 @@ Section: mail
 Priority: optional
 Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 Standards-Version: 4.1.5.0
-Build-Depends: debhelper (>= 10), perl
+Build-Depends:
+ debhelper (>= 10),
+ perl,
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
 
 Package: mailscripts
-Depends: ${misc:Depends}, python3
-Recommends: notmuch, devscripts
+Depends:
+ python3,
+ ${misc:Depends},
+Recommends:
+ devscripts,
+ notmuch,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail
