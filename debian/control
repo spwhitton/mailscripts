@@ -10,6 +10,22 @@ Build-Depends:
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
 
+Package: elpa-mailscripts
+Architecture: all
+Depends:
+ emacsen-common (>= 2.0.8),
+ mailscripts,
+ ${elpa:Depends},
+ ${misc:Depends},
+Recommends:
+ emacs (>= 46.0),
+Enhances:
+ emacs,
+ emacs25,
+Description: Emacs functions for accessing tools in the mailscripts package
+ This package adds to Emacs functions to access tools in the
+ mailscripts package from Emacs.
+
 Package: mailscripts
 Depends:
  libconfig-tiny-perl,
@@ -31,13 +47,3 @@ Description: collection of scripts for manipulating e-mail on Debian
  mbox2maildir -- convert an mbox to a maildir using Python's libraries
  .
  notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
-
-Package: elpa-mailscripts
-Architecture: all
-Depends: ${elpa:Depends}, ${misc:Depends},
- emacsen-common (>= 2.0.8), mailscripts
-Recommends: emacs (>= 46.0)
-Enhances: emacs, emacs25
-Description: Emacs functions for accessing tools in the mailscripts package
- This package adds to Emacs functions to access tools in the
- mailscripts package from Emacs.
