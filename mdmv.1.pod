@@ -1,0 +1,31 @@
+=head1 NAME
+
+mdmv - safely move messages between maildirs
+
+=head1 SYNOPSYS
+
+ mdmv MSG [MSG..] DEST
+
+=head1 DESCRIPTION
+
+B<mdmv> moves one or more messages, from one or more maildirs, to a
+single destination maildir.  It does this in a way that should not
+confuse maildir synchronisation tools.
+
+B<mdmv> tries to be sure not to overwrite any existing files, but it
+does not try as hard to "deliver" the mail to the destination maildir
+as a real MDA would, giving up rather earlier.  Thus, B<mdmv> is
+intended to be used by scripts running on the same host upon which the
+maildirs are actually stored.
+
+=head1 OPTIONS
+
+None.
+
+=head1 SEE ALSO
+
+maildir(5)
+
+=head1 AUTHOR
+
+B<mdmv> was written by Sean Whitton <spwhitton@spwhitton.name>.
