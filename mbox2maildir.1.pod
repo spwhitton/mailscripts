@@ -8,8 +8,8 @@ mbox2maildir - convert an mbox to a maildir using Python's libraries
 
 =head1 DESCRIPTION
 
-B<mbox2maildir> is a very simple wrapper around Python's mailbox
-library that converts an mbox to a maildir.  The maildir may already
+B<mbox2maildir> converts an mbox to a maildir.  It is a very simple
+wrapper around Python's mailbox library.  The maildir may already
 exist, in which case the messages in the mbox are added to the
 maildir.
 
