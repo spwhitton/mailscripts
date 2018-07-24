@@ -38,9 +38,10 @@ configuration key is supported:
 
 =item B<maildir>
 
-A maildir indexed by notmuch into which B<notmuch-slurp-debbug> will
-insert new messages.  Defaults to the "inbox" subdirectory of the
-B<database.path> key in your notmuch configuration.
+The full path to a maildir indexed by notmuch into which
+B<notmuch-slurp-debbug> will insert new messages.  Defaults to the
+"inbox" subdirectory of the B<database.path> key in your notmuch
+configuration.
 
 =back
 
