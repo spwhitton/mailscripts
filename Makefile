@@ -1,4 +1,4 @@
-MANPAGES=mdmv.1
+MANPAGES=mdmv.1 mbox2maildir.1
 
 all: $(MANPAGES)
 

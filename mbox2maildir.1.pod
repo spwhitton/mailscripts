@@ -1,0 +1,35 @@
+=head1 NAME
+
+mbox2maildir - convert an mbox to a maildir using Python's libraries
+
+=head1 SYNOPSYS
+
+ mbox2maildir MBOX MAILDIR
+
+=head1 DESCRIPTION
+
+B<mbox2maildir> is a very simple wrapper around Python's mailbox
+library that converts an mbox to a maildir.  The maildir may already
+exist, in which case the messages in the mbox are added to the
+maildir.
+
+B<mbox2maildir> is an alternative to the venerable B<mb2md>, which
+fails to process some mboxes that are out there.
+
+=head1 OPTIONS
+
+None.
+
+=head1 BUGS
+
+Hopefully different bugs to those of B<mb2md>.
+
+=head1 SEE ALSO
+
+mb2md(1), mbox(5), maildir(5)
+
+=head1 AUTHOR
+
+B<mbox2maildir> was written by Sean Whitton
+<spwhitton@spwhitton.name>.  The suggestion of using the Python
+mailbox library for this purpose is due to Daniel Kahn Gillmor.

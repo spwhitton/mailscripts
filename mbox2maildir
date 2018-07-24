@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+
+# mbox2maildir -- convert an mbox to a maildir using Python's libraries
+
+# Copyright (C) 2018 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Credits:
+
+# Daniel Kahn Gillmor pointed me to Python's mailbox library and made
+# the suggestion in Debian bug #863570 that it could be used for the
+# purpose of converting a mbox to a maildir.
+
+import sys
+import mailbox
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+us = os.path.basename(sys.argv[0])
+
+if len(sys.argv) != 3:
+    eprint(us + ": usage: " + us + " MBOX MAILDIR")
+    sys.exit(1)
+
+source_path = sys.argv[1]
+dest_path = sys.argv[2]
+
+source = mailbox.mbox(source_path)
+dest = mailbox.Maildir(dest_path)
+
+for message in source:
+    dest.add(message)
