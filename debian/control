@@ -17,6 +17,7 @@ Depends:
  libmime-tools-perl,
  python3,
  ${misc:Depends},
+ ${perl:Depends},
 Recommends:
  devscripts,
  notmuch,
