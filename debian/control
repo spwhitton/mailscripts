@@ -12,3 +12,7 @@ Depends: ${misc:Depends}, python3
 Recommends: notmuch
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
+ This package provides a collection of scripts for manipulating e-mail
+ stored on Debian systems.
+ .
+ mdmv -- safely move messages between maildirs
