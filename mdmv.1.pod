@@ -2,9 +2,9 @@
 
 mdmv - safely move messages between maildirs
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
- mdmv MSG [MSG..] DEST
+mdmv MSG [MSG..] DEST
 
 =head1 DESCRIPTION
 

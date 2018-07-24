@@ -2,9 +2,9 @@
 
 mbox2maildir - convert an mbox to a maildir using Python's libraries
 
-=head1 SYNOPSYS
+=head1 SYNOPSIS
 
- mbox2maildir MBOX MAILDIR
+mbox2maildir MBOX MAILDIR
 
 =head1 DESCRIPTION
 
