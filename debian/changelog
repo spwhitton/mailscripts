@@ -1,7 +1,5 @@
-mailscripts (0.1) UNRELEASED; urgency=medium
+mailscripts (0.1-1) experimental; urgency=medium
 
   * Initial release.
 
-  TODO make it non-native before uploading; native is for easier testing.
-
- -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 24 Jul 2018 11:30:11 +0800
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 24 Jul 2018 17:33:34 +0800
