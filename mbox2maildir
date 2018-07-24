@@ -19,9 +19,9 @@
 
 # Credits:
 
-# Daniel Kahn Gillmor pointed me to Python's mailbox library and made
-# the suggestion in Debian bug #863570 that it could be used for the
-# purpose of converting a mbox to a maildir.
+# Daniel Kahn Gillmor made the suggestion in Debian bug #863570 that
+# Python's mailbox library could be used for the purpose of converting
+# a mbox to a maildir.
 
 import os
 import sys
