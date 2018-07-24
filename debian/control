@@ -25,3 +25,7 @@ Description: collection of scripts for manipulating e-mail on Debian
  stored on Debian systems.
  .
  mdmv -- safely move messages between maildirs
+ .
+ mbox2maildir -- convert an mbox to a maildir using Python's libraries
+ .
+ notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
