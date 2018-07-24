@@ -1,0 +1,77 @@
+#!/usr/bin/python
+
+# mdmv -- safely move messages between maildirs
+
+# Copyright (C) 2017-2018 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import print_function
+
+import os
+import sys
+import time
+import shutil
+import socket
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+us = os.path.basename(sys.argv[0])
+
+if len(sys.argv) < 3:
+    eprint(us + ": usage: " + us + " MSG [MSG..] DEST")
+    sys.exit(1)
+
+dest = sys.argv[-1]
+
+for msg in sys.argv[1:-1]:
+    if not os.path.isfile(msg):
+        eprint(us + ": " + msg + " does not exist")
+        sys.exit(1)
+
+for d in [os.path.join(dest, "cur"), os.path.join(dest, "new"), os.path.join(dest, "tmp")]:
+    if not os.path.isdir(d):
+        eprint(us + ": " + dest + " doesn't look like a Maildir")
+        sys.exit(1)
+
+counter = 0
+
+for msg in sys.argv[1:-1]:
+    # annex/ subdir is readonly; avoid errors by skipping over
+    if ".fmail/annex" in msg:
+        print("skipping", msg)
+        continue
+
+    msg_name = os.path.basename(msg)
+    parts = msg_name.split(':')
+    if len(parts) == 2:
+        flags = parts[1]
+    else:
+        flags = None
+    name_prefix = "%d.%d_%d.%s" % (int(time.time()), os.getpid(),
+                                   counter, socket.gethostname())
+
+    if flags:
+        msg_dest = os.path.join(os.path.join(dest, 'cur'), name_prefix + ':' + flags)
+    else:
+        msg_dest = os.path.join(os.path.join(dest, 'cur'), name_prefix)
+
+    if os.path.exists(msg_dest):
+        eprint(us + ": somehow, dest " + msg_dest + " already exists")
+        sys.exit(1)
+    else:
+        shutil.move(msg, msg_dest)
+
+    counter = counter + 1
