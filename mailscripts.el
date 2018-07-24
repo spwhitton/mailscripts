@@ -22,6 +22,7 @@
 
 (require 'notmuch)
 
+;;;###autoload
 (defun notmuch-slurp-debbug (bug &optional no-open)
   "Slurp Debian bug with bug number BUG and open the thread in notmuch.
 
@@ -31,6 +32,7 @@ If NO-OPEN, don't open the thread."
   (unless no-open
     (notmuch-show (concat "Bug#" bug))))
 
+;;;###autoload
 (defun notmuch-slurp-this-debbug ()
   "When viewing a Debian bug in notmuch, download any missing messages."
   (interactive)
