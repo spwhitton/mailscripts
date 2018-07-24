@@ -47,11 +47,6 @@ for d in [os.path.join(dest, "cur"), os.path.join(dest, "new"), os.path.join(des
 counter = 0
 
 for msg in sys.argv[1:-1]:
-    # annex/ subdir is readonly; avoid errors by skipping over
-    if ".fmail/annex" in msg:
-        print("skipping", msg)
-        continue
-
     msg_name = os.path.basename(msg)
     parts = msg_name.split(':')
     if len(parts) == 2:
