@@ -23,6 +23,7 @@
 # the suggestion in Debian bug #863570 that it could be used for the
 # purpose of converting a mbox to a maildir.
 
+import os
 import sys
 import mailbox
 
