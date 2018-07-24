@@ -22,7 +22,7 @@ None.
 
 =head1 BUGS
 
-Hopefully different bugs to those of B<mb2md>.
+Hopefully different to those of B<mb2md>.
 
 =head1 SEE ALSO
 
