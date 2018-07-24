@@ -8,7 +8,7 @@ Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
 
 Package: mailscripts
-Depends: ${misc:Depends}, python
+Depends: ${misc:Depends}, python3
 Recommends: notmuch
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
