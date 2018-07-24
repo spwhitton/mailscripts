@@ -48,7 +48,7 @@ my $mailscripts_conf_dir = defined $ENV{'XDG_CONFIG_HOME'}
 
 my $notmuch_slurp_debbug_conf = "$mailscripts_conf_dir/notmuch-slurp-debbug";
 if (-f $notmuch_slurp_debbug_conf) {
-    $Config = Config::Tiny::read($notmuch_slurp_debbug_conf);
+    $Config = Config::Tiny->read($notmuch_slurp_debbug_conf);
     $maildir = $Config->{_}->{maildir};
 } else {
     # default to where a lot of people have their inbox
