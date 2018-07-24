@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/perl
 
 # notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
 
@@ -17,48 +17,82 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-set -e
+use strict;
+use warnings;
 
-if [ $# != 1 ]; then
-   echo >&2 "$0: usage: $0 BUGNUMBER"
-   exit 1
-fi
+use Config::Tiny;
+use File::Spec::Functions 'catfile';
+use File::Which;
+use File::Temp;
+use Getopt::Long;
+use MIME::Head;
 
-if ! which notmuch >/dev/null 2>&1; then
-    echo >&2 "$0: error: this script requires notmuch to be installed"
-    exit 1
-fi
+my $Config = Config::Tiny->new;
 
-if ! which bts >/dev/null 2>&1; then
-    echo >&2 "$0: error: this script requires the devscripts package"
-    exit 1
-fi
+my $bts_server = undef;
+GetOptions('bts-server=s' => \$bts_server);
+die "notmuch-slurp-debbug: usage: notmuch-slurp-debbug [--bts-server=SERVER] BUG"
+  if (scalar @ARGV != 1);
 
-bug="$1"
-dest="$(notmuch config get database.path)"
-# ^ this is guaranteed to be a maildir, despite the name
+die "notmuch-slurp-debbug: this script requires notmuch to be installed"
+  unless defined which "notmuch";
+die "notmuch-slurp-debbug: this script requires the 'devscripts' apt package"
+  unless defined which "bts";
 
-bts --mbox --mailreader 'true %s' show "$bug"
-# ^ see #904182 (try using this script ;))
+my $maildir;
+my $bug = pop @ARGV;
 
-temp="$(mktemp -d)"
-mkdir $temp/new $temp/cur $temp/tmp
+my $mailscripts_conf_dir = defined $ENV{'XDG_CONFIG_HOME'}
+  ? catfile $ENV{'XDG_CONFIG_HOME'}, "/mailscripts"
+  : catfile $ENV{'HOME'}, "/.config/mailscripts";
+
+my $notmuch_slurp_debbug_conf = "$mailscripts_conf_dir/notmuch-slurp-debbug";
+if (-f $notmuch_slurp_debbug_conf) {
+    $Config = Config::Tiny::read($notmuch_slurp_debbug_conf);
+    $maildir = $Config->{_}->{maildir};
+} else {
+    # default to where a lot of people have their inbox
+    my $database_path = `notmuch config get database.path`;
+    chomp $database_path;
+    $maildir = catfile $database_path, "inbox";
+}
+
+die "notmuch-slurp-debbug: $maildir does not look to be a maildir"
+  unless (-d catfile($maildir, "cur")
+          && -d catfile($maildir, "new")
+          && -d catfile($maildir, "tmp"));
+
+my $bts_server_arg = defined $bts_server
+  ? "--bts-server $bts_server"
+  : "";
+
+# see #904182 (try using this script ;))
+system("bts $bts_server_arg --mbox --mailreader 'true %s' show $bug") == 0
+  or die "notmuch-slurp-debbug: bts failed";
+
+my $dir = File::Temp->newdir();
+mkdir catfile($dir, "cur");
+mkdir catfile($dir, "new");
+mkdir catfile($dir, "tmp");
+
+my $devscripts_cache = defined $ENV{'XDG_CACHE_HOME'}
+  ? catfile $ENV{'XDG_CACHE_HOME'}, "devscripts", "bts"
+  : catfile $ENV{'HOME'}, ".cache", "devscripts", "bts";
+
+my $mbox = catfile $devscripts_cache, "$bug.mbox";
 
 # note that mb2md won't work; it thinks Debian BTS mboxes contain just
 # a single message
-mbox2maildir "${XDG_CACHE_HOME:-$HOME/.cache}"/devscripts/bts/"$bug".mbox \
-             "$temp"
+system("mbox2maildir $mbox $dir") == 0
+  or die "notmuch-slurp-debbug: mbox2maildir failed";
 
-for f in $temp/*/*; do
-    message_id="$(grep -E -i -m 1 -e '^Message-ID:' $f \
-                       | cut -d\  -f2 \
-                       | sed -e 's/<//' -e 's/>//')"
-    match="$(notmuch search --limit=1 id:$message_id | wc -l)"
-    if [ "$match" = "0" ]; then
-        mdmv "$f" "$DEST"
-    fi
-done
+foreach my $message (glob "$dir/*/*") {
+    my $message_head = MIME::Head->from_file($message);
+    my $mid = $message_head->get('Message-ID');
+    $mid =~ s/(<|>)//g;
+    my $match = `notmuch search id:$mid`;
+    my $match_lines = $match =~ tr/\n//;
+    system "mdmv $message $maildir" if ($match_lines == 0);
+}
 
-rm -rf "$temp"
-
-notmuch new
+system "notmuch new";

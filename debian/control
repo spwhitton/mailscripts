@@ -11,6 +11,9 @@ Vcs-Browser: https://git.spwhitton.name/mailscripts
 
 Package: mailscripts
 Depends:
+ libconfig-tiny-perl,
+ libfile-which-perl,
+ libmime-tools-perl,
  python3,
  ${misc:Depends},
 Recommends:

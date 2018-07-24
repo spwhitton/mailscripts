@@ -4,19 +4,45 @@ notmuch-slurp-debbug - add messages from a Debian bug to notmuch
 
 =head1 SYNOPSIS
 
-notmuch-slurp-debbug BUGNUMBER
+B<notmuch-slurp-debbug> [B<--bts-server=>I<SERVER>] I<BUGNUMBER>
 
 =head1 DESCRIPTION
 
 B<notmuch-slurp-debbug> adds to your notmuch database any messages
-from a given Debian bug that it does not already contain.
+from a given Debian bug that the database does not already contain.
 
 The script adds the messages to your maildir, and then calls B<notmuch
 new>.
 
 =head1 OPTIONS
 
-None.
+=over 4
+
+=item B<--bts-server=>I<SERVER>
+
+Passed straight through to B<bts>; see bts(1).
+
+=back
+
+=head1 CONFIGURATION
+
+B<notmuch-slurp-debbug> tries to read configuration from the file
+B<$XDG_CONFIG_HOME/mailscripts/notmuch-slurp-debbug>, or if
+XDG_CONFIG_HOME is not set, it falls back to trying to read
+B<~/.config/mailscripts/notmuch-slurp-debbug>.
+
+The format is I<key = value>, one per line.  The following
+configuration key is supported:
+
+=over 4
+
+=item B<maildir>
+
+A maildir indexed by notmuch into which B<notmuch-slurp-debbug> will
+insert new messages.  Defaults to the "inbox" subdirectory of the
+B<database.path> key in your notmuch configuration.
+
+=back
 
 =head1 SEE ALSO
 
