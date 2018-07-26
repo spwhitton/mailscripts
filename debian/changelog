@@ -1,9 +1,9 @@
-mailscripts (0.2-1) UNRELEASED; urgency=medium
+mailscripts (0.2-1) experimental; urgency=medium
 
   * Add notmuch-extract-patch.
   * Add `notmuch-extract-thread-patches' to mailscripts.el.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 26 Jul 2018 16:02:29 +0800
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 26 Jul 2018 17:40:20 +0800
 
 mailscripts (0.1-1) experimental; urgency=medium
 
