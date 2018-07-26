@@ -1,3 +1,4 @@
 mbox2maildir /usr/bin
 mdmv /usr/bin
 notmuch-slurp-debbug /usr/bin
+notmuch-extract-patch/notmuch-extract-patch /usr/bin
