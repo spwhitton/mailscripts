@@ -47,3 +47,5 @@ Description: collection of scripts for manipulating e-mail on Debian
  mbox2maildir -- convert an mbox to a maildir using Python's libraries
  .
  notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
+ .
+ notmuch-extract-patch -- extract a git patch series from notmuch
