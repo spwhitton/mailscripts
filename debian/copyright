@@ -1,6 +1,7 @@
 mailscripts
 Collection of scripts for manipulating e-mail on Debian
 
+Copyright (C)2017 Aurelien Aptel
 Copyright (C)2017-2018 Sean Whitton
 
 These programs are free software: you can redistribute it and/or
@@ -15,6 +16,10 @@ General Public License for more details.
 
 A copy of the GNU General Public License v3 can be found in
 /usr/share/common-licenses/GPL-3.
+
+
+The contents of the notmuch-extract-patch/ directory was imported from
+https://github.com/aaptel/notmuch-extract-patch/ using git-subtree(1)
 
 
 Contributions are accepted upstram under the same terms; please sign
