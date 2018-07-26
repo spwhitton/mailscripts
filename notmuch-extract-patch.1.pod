@@ -1,0 +1,37 @@
+=head1 NAME
+
+notmuch-extract-patch - extract a git patch series from notmuch
+
+=head1 SYNOPSIS
+
+B<notmuch-extract-patch> I<QUERY>
+
+=head1 DESCRIPTION
+
+B<notmuch-extract-patch> extracts a series of git patches from your
+notmuch database.  It is designed to extract patches that were
+originally sent using git-send-email(1).  It skips cover letters and
+replies/reviews.
+
+=head1 OPTIONS
+
+None.
+
+=head1 EXAMPLE
+
+=over 4
+
+    % git checkout -b test-feature
+    % notmuch-extract-patch thread:000000000000265f | git am
+
+=back
+
+=head1 SEE ALSO
+
+notmuch(1), git-send-email(1)
+
+=head1 AUTHOR
+
+B<notmuch-extract-patch> was written by Aurelien Aptel.  This manpage
+was written by Sean Whitton <spwhitton@spwhitton.name> for the Debian
+system, but may be used by others.
