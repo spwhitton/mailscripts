@@ -43,7 +43,11 @@ If NO-OPEN, don't open the thread."
 
 ;;;###autoload
 (defun notmuch-extract-thread-patches (repo branch)
-  "Extract patch series in current thread to new branch BRANCH in repo REPO."
+  "Extract patch series in current thread to new branch BRANCH in repo REPO.
+
+See notmuch-extract-patch(1) manpage for limitations: in
+particular, this Emacs Lisp function supports passing only entire
+threads to the notmuch-extract-patch(1) command."
   (interactive "Dgit repo: \nsnew branch name: ")
   (let ((thread-id notmuch-show-thread-id)
         (default-directory (expand-file-name repo)))

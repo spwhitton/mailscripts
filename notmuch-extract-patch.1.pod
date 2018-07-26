@@ -26,6 +26,19 @@ None.
 
 =back
 
+=head1 LIMITATIONS
+
+B<notmuch-extract-patch> assumes one patch series per query.  So if
+there is more than one patch series in a thread, you will need to
+construct a notmuch query that includes only the patches you want to
+extract, which somewhat defeats the purpose of this script.
+
+This should not happen often because best practices when sharing
+patches with git-send-email(1) include starting a new thread when
+posting a revised series.  The I<--in-reply-to> option to
+B<notmuch-extract-patch> is used mainly for posting a patch series in
+reply to a bug report.
+
 =head1 SEE ALSO
 
 notmuch(1), git-send-email(1)
