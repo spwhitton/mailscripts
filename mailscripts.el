@@ -41,6 +41,20 @@ If NO-OPEN, don't open the thread."
       (notmuch-slurp-debbug (match-string 1 subject) t))
     (notmuch-refresh-this-buffer)))
 
+;;;###autoload
+(defun notmuch-extract-thread-patches (repo branch)
+  "Extract patch series in current thread to new branch BRANCH in repo REPO."
+  (interactive "Dgit repo: \nsnew branch name: ")
+  (let ((thread-id notmuch-show-thread-id)
+        (default-directory (expand-file-name repo)))
+    (call-process-shell-command
+     (format "git checkout -b %s"
+             (shell-quote-argument branch)))
+    (shell-command
+     (format "notmuch-extract-patch %s | git am"
+             (shell-quote-argument thread-id))
+     "*notmuch-apply-thread-series*")))
+
 (provide 'mailscripts)
 
 ;;; mailscripts.el ends here
