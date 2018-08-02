@@ -1,3 +1,9 @@
+mailscripts (0.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 02 Aug 2018 09:58:07 +0800
+
 mailscripts (0.2-1) experimental; urgency=medium
 
   * Add notmuch-extract-patch.
