@@ -1,3 +1,9 @@
+mailscripts (0.2-2~bpo9+1) stretch-backports; urgency=medium
+
+  * Rebuild for stretch-backports.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 09 Aug 2018 09:08:50 +0100
+
 mailscripts (0.2-2) unstable; urgency=medium
 
   * Upload to unstable.
