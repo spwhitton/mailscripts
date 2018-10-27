@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.3
+;; Version: 0.4
 ;; Package-Requires: (notmuch)
 
 ;; Copyright (C) 2018 Sean Whitton

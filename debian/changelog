@@ -1,3 +1,10 @@
+mailscripts (0.4-1) UNRELEASED; urgency=medium
+
+  * Do not import messages without a Message-Id header (Closes: #909835).
+    Thanks to David Bremner for the report.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 27 Oct 2018 10:52:46 -0700
+
 mailscripts (0.3-1) unstable; urgency=medium
 
   * Add "Package-Requires: (notmuch)" (Closes: #909376).
