@@ -89,6 +89,9 @@ system("mbox2maildir $mbox $dir") == 0
 foreach my $message (glob "$dir/*/*") {
     my $message_head = MIME::Head->from_file($message);
     my $mid = $message_head->get('Message-ID');
+    # if this message does not have a message-id, do not import it;
+    # that is asking for trouble
+    next unless defined $mid;
     $mid =~ s/(<|>)//g;
     my $match = `notmuch search id:$mid`;
     my $match_lines = $match =~ tr/\n//;
