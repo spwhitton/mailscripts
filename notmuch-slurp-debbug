@@ -64,10 +64,12 @@ die "notmuch-slurp-debbug: $maildir does not look to be a maildir"
 
 my $bts_server_arg = defined $bts_server
   ? "--bts-server $bts_server"
-  : "";
+  : undef;
 
 # see #904182 (try using this script ;))
-system("bts $bts_server_arg --mbox --mailreader 'true %s' show $bug") == 0
+system(grep defined, "bts", $bts_server_arg,
+       qw(--mbox --mailreader), "true %s",
+       "show", $bug) == 0
   or die "notmuch-slurp-debbug: bts failed";
 
 my $dir = File::Temp->newdir();
@@ -83,7 +85,7 @@ my $mbox = catfile $devscripts_cache, "$bug.mbox";
 
 # note that mb2md won't work; it thinks Debian BTS mboxes contain just
 # a single message
-system("mbox2maildir $mbox $dir") == 0
+system("mbox2maildir", $mbox, $dir) == 0
   or die "notmuch-slurp-debbug: mbox2maildir failed";
 
 foreach my $message (glob "$dir/*/*") {
@@ -95,7 +97,7 @@ foreach my $message (glob "$dir/*/*") {
     $mid =~ s/(<|>)//g;
     my $match = `notmuch search id:$mid`;
     my $match_lines = $match =~ tr/\n//;
-    system "mdmv $message $maildir" if ($match_lines == 0);
+    system("mdmv", $message, $maildir) if ($match_lines == 0);
 }
 
-system "notmuch new";
+system(qw(notmuch new));
