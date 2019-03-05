@@ -1,7 +1,7 @@
-mailscripts (0.5-1) UNRELEASED; urgency=medium
+mailscripts (0.5-1) UNRELEASED; urgency=high
 
   * notmuch-slurp-debbug: Avoid invoking entirely superfluous shells when
-    calling other tools.
+    calling other tools.  This is a security risk.
     Thanks to Paul Wise for reporting that the code was doing that.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 04 Mar 2019 19:40:38 -0700
