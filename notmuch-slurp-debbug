@@ -2,7 +2,7 @@
 
 # notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
 
-# Copyright (C) 2018 Sean Whitton
+# Copyright (C) 2018-2019 Sean Whitton
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
