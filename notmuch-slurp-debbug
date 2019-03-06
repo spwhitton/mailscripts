@@ -63,15 +63,14 @@ die "notmuch-slurp-debbug: $maildir does not look to be a maildir"
           && -d catfile($maildir, "new")
           && -d catfile($maildir, "tmp"));
 
-my $bts_server_arg = defined $bts_server
-  ? "--bts-server $bts_server"
+my @bts_server_args = defined $bts_server
+  ? ("--bts-server", $bts_server)
   : undef;
 
 # see #904182 for why we have to do it like this
-systemx(grep defined, "bts", $bts_server_arg,
-       qw(--mbox --mailreader), "true %s",
-       "show", $bug) == 0
-  or die "notmuch-slurp-debbug: bts failed";
+my @bts_args = grep defined, @bts_server_args,
+  qw(--mbox --mailreader), "true %s", "show", $bug;
+systemx("bts", @bts_args);
 
 my $dir = File::Temp->newdir();
 mkdir catfile($dir, "cur");
@@ -86,8 +85,7 @@ my $mbox = catfile $devscripts_cache, "$bug.mbox";
 
 # note that mb2md won't work; it thinks Debian BTS mboxes contain just
 # a single message
-systemx("mbox2maildir", $mbox, $dir) == 0
-  or die "notmuch-slurp-debbug: mbox2maildir failed";
+systemx("mbox2maildir", $mbox, $dir);
 
 foreach my $message (glob "$dir/*/*") {
     my $message_head = MIME::Head->from_file($message);
