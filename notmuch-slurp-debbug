@@ -67,7 +67,7 @@ my $bts_server_arg = defined $bts_server
   ? "--bts-server $bts_server"
   : undef;
 
-# see #904182 (try using this script ;))
+# see #904182 for why we have to do it like this
 systemx(grep defined, "bts", $bts_server_arg,
        qw(--mbox --mailreader), "true %s",
        "show", $bug) == 0
