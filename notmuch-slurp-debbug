@@ -21,7 +21,7 @@ use strict;
 use warnings;
 
 use Config::Tiny;
-use File::Spec::Functions 'catfile';
+use File::Spec::Functions qw(catfile);
 use File::Which;
 use File::Temp;
 use Getopt::Long;
