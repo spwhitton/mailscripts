@@ -1,9 +1,9 @@
-mailscripts (0.7-1) UNRELEASED; urgency=high
+mailscripts (0.7-1) unstable; urgency=high
 
   * notmuch-slurp-debbug: Fix the --bts-server argument.
     The 0.6 release broke use of this argument.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 06 Mar 2019 11:32:39 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 06 Mar 2019 11:37:42 -0700
 
 mailscripts (0.6-1) unstable; urgency=high
 
