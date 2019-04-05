@@ -1,3 +1,9 @@
+mailscripts (0.7-1~bpo9+1) stretch-backports; urgency=high
+
+  * Rebuild for stretch-backports.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 05 Apr 2019 08:58:35 -0700
+
 mailscripts (0.7-1) unstable; urgency=high
 
   * notmuch-slurp-debbug: Fix the --bts-server argument.
