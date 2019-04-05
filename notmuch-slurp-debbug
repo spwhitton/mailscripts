@@ -2,7 +2,7 @@
 
 # notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
 
-# Copyright (C) 2018 Sean Whitton
+# Copyright (C) 2018-2019 Sean Whitton
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,10 +21,11 @@ use strict;
 use warnings;
 
 use Config::Tiny;
-use File::Spec::Functions 'catfile';
+use File::Spec::Functions qw(catfile);
 use File::Which;
 use File::Temp;
 use Getopt::Long;
+use IPC::System::Simple qw(systemx capturex);
 use MIME::Head;
 
 my $Config = Config::Tiny->new;
@@ -62,13 +63,14 @@ die "notmuch-slurp-debbug: $maildir does not look to be a maildir"
           && -d catfile($maildir, "new")
           && -d catfile($maildir, "tmp"));
 
-my $bts_server_arg = defined $bts_server
-  ? "--bts-server $bts_server"
-  : "";
+my @bts_server_args = defined $bts_server
+  ? ("--bts-server", $bts_server)
+  : undef;
 
-# see #904182 (try using this script ;))
-system("bts $bts_server_arg --mbox --mailreader 'true %s' show $bug") == 0
-  or die "notmuch-slurp-debbug: bts failed";
+# see #904182 for why we have to do it like this
+my @bts_args = grep defined, @bts_server_args,
+  qw(--mbox --mailreader), "true %s", "show", $bug;
+systemx("bts", @bts_args);
 
 my $dir = File::Temp->newdir();
 mkdir catfile($dir, "cur");
@@ -83,8 +85,7 @@ my $mbox = catfile $devscripts_cache, "$bug.mbox";
 
 # note that mb2md won't work; it thinks Debian BTS mboxes contain just
 # a single message
-system("mbox2maildir $mbox $dir") == 0
-  or die "notmuch-slurp-debbug: mbox2maildir failed";
+systemx("mbox2maildir", $mbox, $dir);
 
 foreach my $message (glob "$dir/*/*") {
     my $message_head = MIME::Head->from_file($message);
@@ -93,9 +94,9 @@ foreach my $message (glob "$dir/*/*") {
     # that is asking for trouble
     next unless defined $mid;
     $mid =~ s/(<|>)//g;
-    my $match = `notmuch search id:$mid`;
+    my $match = capturex(qw(notmuch search), "id:$mid");
     my $match_lines = $match =~ tr/\n//;
-    system "mdmv $message $maildir" if ($match_lines == 0);
+    systemx("mdmv", $message, $maildir) if ($match_lines == 0);
 }
 
-system "notmuch new";
+systemx(qw(notmuch new));
