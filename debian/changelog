@@ -1,4 +1,4 @@
-mailscripts (0.8-1) UNRELEASED; urgency=medium
+mailscripts (0.8-1) experimental; urgency=medium
 
   * New scripts: maildir-import-patch(1), notmuch-import-patch(1)
     - Add git to Recommends.
@@ -6,7 +6,7 @@ mailscripts (0.8-1) UNRELEASED; urgency=medium
     to flush after copying messages.
     Per the docs for Python's mailbox module.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 03 May 2019 21:08:09 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 03 May 2019 21:51:53 -0700
 
 mailscripts (0.7-1) unstable; urgency=high
 
