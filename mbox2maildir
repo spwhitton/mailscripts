@@ -42,5 +42,7 @@ dest_path = sys.argv[2]
 source = mailbox.mbox(source_path)
 dest = mailbox.Maildir(dest_path)
 
+dest.lock()
 for message in source:
     dest.add(message)
+dest.close()
