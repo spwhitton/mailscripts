@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+
+# notmuch-import-patch -- import a git patch series into notmuch
+
+# Copyright (C) 2019 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+use strict;
+use warnings;
+
+use Config::Tiny;
+use File::Spec::Functions qw(catfile);
+use File::Which;
+use IPC::System::Simple qw(systemx);
+
+my $Config = Config::Tiny->new;
+
+die "notmuch-import-patch: this script requires git to be installed"
+  unless defined which "git";
+die "notmuch-import-patch: this script requires notmuch to be installed"
+  unless defined which "notmuch";
+
+my $maildir;
+
+my $mailscripts_conf_dir = defined $ENV{'XDG_CONFIG_HOME'}
+  ? catfile $ENV{'XDG_CONFIG_HOME'}, "/mailscripts"
+  : catfile $ENV{'HOME'}, "/.config/mailscripts";
+
+my $notmuch_import_patch_conf = "$mailscripts_conf_dir/notmuch-import-patch";
+if (-f $notmuch_import_patch_conf) {
+    $Config = Config::Tiny->read($notmuch_import_patch_conf);
+    $maildir = $Config->{_}->{maildir};
+} else {
+    # user probably doesn't want our generated patches, which are not
+    # real e-mails, to go into their inbox
+    my $database_path = `notmuch config get database.path`;
+    chomp $database_path;
+    $maildir = catfile $database_path, "patches";
+}
+
+die "notmuch-import-patch: $maildir does not look to be a maildir"
+  unless (-d catfile($maildir, "cur")
+          && -d catfile($maildir, "new")
+          && -d catfile($maildir, "tmp"));
+
+systemx("maildir-import-patch", $maildir, @ARGV);
+
+systemx(qw(notmuch new));

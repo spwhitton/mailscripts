@@ -1,5 +1,7 @@
 mailscripts (0.8-1) UNRELEASED; urgency=medium
 
+  * New scripts: maildir-import-patch(1), notmuch-import-patch(1)
+    - Add git to Recommends.
   * mbox2maildir: acquire a lock before touching the Maildir, and be sure
     to flush after copying messages.
     Per the docs for Python's mailbox module.

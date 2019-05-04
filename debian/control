@@ -37,6 +37,7 @@ Depends:
  ${perl:Depends},
 Recommends:
  devscripts,
+ git,
  notmuch,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
@@ -50,3 +51,7 @@ Description: collection of scripts for manipulating e-mail on Debian
  notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
  .
  notmuch-extract-patch -- extract a git patch series from notmuch
+ .
+ maildir-import-patch -- import a git patch series into a maildir
+ .
+ notmuch-import-patch -- import a git patch series into notmuch

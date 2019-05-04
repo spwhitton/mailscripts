@@ -1,0 +1,50 @@
+=head1 NAME
+
+notmuch-import-patch - import a git patch series into notmuch
+
+=head1 SYNOPSIS
+
+B<notmuch-import-patch> [I<git-format-patch(1) args>]
+
+=head1 DESCRIPTION
+
+B<notmuch-import-patch> is a wrapper around maildir-import-patch(1)
+for users of notmuch.  It generates a patch series using
+git-format-patch(1), and then imports the series into your notmuch
+database as an e-mail thread, one message per patch.
+
+=head1 EXAMPLE
+
+See "EXAMPLE" in maildir-import-patch(1), replacing the call to
+B<maildir-import-patch> with a call to B<notmuch-import-patch>.
+
+=head1 CONFIGURATION
+
+B<notmuch-import-patch> tries to read configuration from the file
+B<$XDG_CONFIG_HOME/mailscripts/notmuch-import-patch>, or if
+XDG_CONFIG_HOME is not set, it falls back to trying to read
+B<~/.config/mailscripts/notmuch-import-patch>.
+
+The format is I<key = value>, one per line.  The following
+configuration key is supported:
+
+=over 4
+
+=item B<maildir>
+
+The full path to a maildir indexed by notmuch into which
+B<notmuch-import-patch> will insert patches.  Defaults to the
+"patches" subdirectory of the B<database.path> key in your notmuch
+configuration.
+
+=back
+
+=head1 SEE ALSO
+
+notmuch(1), maildir-import-patch(1), git-format-patch(1),
+git-send-email(1)
+
+=head1 AUTHOR
+
+B<notmuch-import-patch> was written by Sean Whitton
+<spwhitton@spwhitton.name>.
