@@ -1,3 +1,10 @@
+mailscripts (0.9-1) UNRELEASED; urgency=medium
+
+  * Fix docstring for notmuch-extract-thread-patches not to say that the
+    target branch must not yet exist.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 17 May 2019 10:12:12 -0700
+
 mailscripts (0.8-1) experimental; urgency=medium
 
   * New scripts: maildir-import-patch(1), notmuch-import-patch(1)

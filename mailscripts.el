@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.8
+;; Version: 0.9
 ;; Package-Requires: (notmuch)
 
 ;; Copyright (C) 2018 Sean Whitton
@@ -44,7 +44,9 @@ If NO-OPEN, don't open the thread."
 
 ;;;###autoload
 (defun notmuch-extract-thread-patches (repo branch)
-  "Extract patch series in current thread to new branch BRANCH in repo REPO.
+  "Extract patch series in current thread to branch BRANCH in repo REPO.
+
+The target branch may or may not already exist.
 
 See notmuch-extract-patch(1) manpage for limitations: in
 particular, this Emacs Lisp function supports passing only entire
