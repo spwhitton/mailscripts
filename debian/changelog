@@ -1,9 +1,9 @@
-mailscripts (0.9-1) UNRELEASED; urgency=medium
+mailscripts (0.9-1) unstable; urgency=medium
 
   * Fix docstring for notmuch-extract-thread-patches not to say that the
     target branch must not yet exist.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 17 May 2019 10:12:12 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 14 Jul 2019 15:58:46 +0100
 
 mailscripts (0.8-1) experimental; urgency=medium
 
