@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+
+'''Extract all OpenPGP certificates from an e-mail message
+
+This is a simple script that is designed to take an e-mail
+(rfc822/message) on standard input, and produces a series of
+ASCII-armored OpenPGP certificates on standard output.
+
+It currently tries to find OpenPGP certificates based on MIME types of
+attachments (application/pgp-keys), and by pulling out anything that
+looks like an Autocrypt: or Autocrypt-Gossip: header (see
+https://autocrypt.org).
+
+'''
+
+import email
+import sys
+import base64
+import binascii
+import codecs
+from typing import Optional, Generator
+
+# parse email from stdin
+message = email.message_from_binary_file(sys.stdin.buffer)
+
+def openpgp_ascii_armor_checksum(data: bytes) -> bytearray:
+    '''OpenPGP ASCII-armor checksum
+
+(see https://tools.ietf.org/html/rfc4880#section-6.1)'''
+
+    init = 0xB704CE
+    poly = 0x1864CFB
+    crc = init
+    for b in data:
+        crc ^= b << 16
+        for i in range(8):
+            crc <<= 1
+            if crc & 0x1000000:
+                crc ^= poly
+    val = crc & 0xFFFFFF
+    out = bytearray(3)
+    out[0] = (val >> 16) & 0xFF
+    out[1] = (val >> 8) & 0xFF
+    out[2] = val & 0xFF
+    return out
+
+def enarmor_certificate(data: bytes) -> str:
+    '''OpenPGP ASCII-armor
+
+(see https://tools.ietf.org/html/rfc4880#section-6.2)'''
+
+    cksum = openpgp_ascii_armor_checksum(data)
+    key = codecs.decode(base64.b64encode(data), 'ascii')
+    linelen = 64
+    key = '\n'.join([key[i:i+linelen] for i in range(0, len(key), linelen)])
+    return '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' +\
+        key + \
+        '\n=' + codecs.decode(base64.b64encode(cksum), 'ascii') +\
+        '\n-----END PGP PUBLIC KEY BLOCK-----\n'
+
+def get_autocrypt_keys(m: email.message.Message) -> Generator[str, None, None]:
+    '''Extract all Autocrypt headers from message
+
+Note that we ignore the addr= property.
+'''
+    hdrs = m.get_all('Autocrypt')
+    if hdrs is None: # the email.get_all() api is kindn of sad.
+        hdrs = []
+    ghdrs = m.get_all('Autocrypt-Gossip')
+    if ghdrs is None: # the email.get_all() api is kindn of sad.
+        ghdrs = []
+    for ac in hdrs + ghdrs:
+        # parse the base64 part
+        try:
+            keydata = str(ac).split('keydata=')[1].strip()
+            keydata = keydata.replace(' ', '').replace('\t', '')
+            keydatabin = base64.b64decode(keydata)
+            yield enarmor_certificate(keydatabin)
+        except (binascii.Error, IndexError) as e:
+            print("failure to parse Autocrypt header: %s" % e,
+                  file=sys.stderr)
+
+def extract_attached_keys(m: email.message.Message) -> Generator[str, None, None]:
+    for part in m.walk():
+        if part.get_content_type() == 'application/pgp-keys':
+            p = part.get_payload(decode=True)
+            if not isinstance(p, bytes):
+                raise TypeError('Expected part payload to be bytes')
+            if p.startswith(b'-----BEGIN PGP PUBLIC KEY BLOCK-----\n'):
+                yield codecs.decode(p, 'ascii')
+            else: # this is probably binary-encoded, let's pretend that it is!
+                yield enarmor_certificate(p)
+
+# FIXME: should we try to decrypt encrypted messages as well?
+
+for a in get_autocrypt_keys(message):
+    print(a, end='')
+for a in extract_attached_keys(message):
+    print(a, end='')
