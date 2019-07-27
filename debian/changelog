@@ -1,3 +1,9 @@
+mailscripts (0.10-1) UNRELEASED; urgency=medium
+
+  * Add CONTRIBUTING.rst.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 27 Jul 2019 13:35:17 +0100
+
 mailscripts (0.9-1) unstable; urgency=medium
 
   * Fix docstring for notmuch-extract-thread-patches not to say that the
