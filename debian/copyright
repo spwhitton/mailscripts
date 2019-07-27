@@ -22,8 +22,9 @@ The contents of the notmuch-extract-patch/ directory was imported from
 https://github.com/aaptel/notmuch-extract-patch/ using git-subtree(1)
 
 
-Contributions are accepted upstram under the same terms; please sign
-off your patches (by writing an approprite Signed-Off-By tag in your
+Contributions are accepted upstream under the same terms (or another
+DFSG-compatible license for completely new scripts); please sign off
+your patches (by writing an approprite Signed-Off-By tag in your
 commit message or patch submission) to indicate your attestation that
 the Developer Certificate of Origin (version 1.1) applies.
 

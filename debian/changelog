@@ -1,6 +1,7 @@
 mailscripts (0.10-1) UNRELEASED; urgency=medium
 
   * Add CONTRIBUTING.rst.
+  * d/copyright: completely new scripts may use any DFSG-compatible license.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 27 Jul 2019 13:35:17 +0100
 
