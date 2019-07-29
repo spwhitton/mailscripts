@@ -4,7 +4,7 @@ email-extract-openpgp-certs - extract OpenPGP certificates from an e-mail
 
 =head1 SYNOPSIS
 
-B<email-extract-openpgp-certs> < B<message.eml> | B<gpg> B<--import>
+B<email-extract-openpgp-certs> <B<message.eml> | B<gpg> B<--import>
 
 =head1 DESCRIPTION
 
@@ -24,8 +24,8 @@ None.
 
 =over 4
 
-    $ notmuch show --format-raw id:b7e48905-842f@example.net > test.eml
-    $ email-extract-openpgp-certs < test.eml | gpg --import
+    $ notmuch show --format-raw id:b7e48905-842f@example.net >test.eml
+    $ email-extract-openpgp-certs <test.eml | gpg --import
 
 =back
 
