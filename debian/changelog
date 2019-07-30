@@ -1,6 +1,6 @@
 mailscripts (0.10-1) UNRELEASED; urgency=medium
 
-  * New script: email-extract-openpgp-certs(1).
+  * New script: email-extract-openpgp-certs(1) (Closes: #932993).
     Thanks to Daniel Kahn Gillmor for the patch.
   * Add CONTRIBUTING.rst.
   * d/copyright: completely new scripts may use any DFSG-compatible license.
