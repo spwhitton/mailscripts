@@ -1,11 +1,11 @@
-mailscripts (0.10-1) UNRELEASED; urgency=medium
+mailscripts (0.10-1) unstable; urgency=medium
 
   * New script: email-extract-openpgp-certs(1) (Closes: #932993).
     Thanks to Daniel Kahn Gillmor for the patch.
   * Add CONTRIBUTING.rst.
   * d/copyright: completely new scripts may use any DFSG-compatible license.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 27 Jul 2019 13:35:17 +0100
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 30 Jul 2019 13:25:36 +0100
 
 mailscripts (0.9-1) unstable; urgency=medium
 
