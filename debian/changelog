@@ -1,3 +1,9 @@
+mailscripts (0.10-1~bpo10+1) buster-backports; urgency=medium
+
+  * Rebuild for buster-backports.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 06 Sep 2019 07:03:59 -0700
+
 mailscripts (0.10-1) unstable; urgency=medium
 
   * New script: email-extract-openpgp-certs(1) (Closes: #932993).
