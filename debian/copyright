@@ -3,6 +3,7 @@ Collection of scripts for manipulating e-mail on Debian
 
 Copyright (C)2017 Aurelien Aptel
 Copyright (C)2017-2019 Sean Whitton
+Copyright (C)2019 Daniel Kahn Gillmor
 
 These programs are free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -22,8 +23,9 @@ The contents of the notmuch-extract-patch/ directory was imported from
 https://github.com/aaptel/notmuch-extract-patch/ using git-subtree(1)
 
 
-Contributions are accepted upstram under the same terms; please sign
-off your patches (by writing an approprite Signed-Off-By tag in your
+Contributions are accepted upstream under the same terms (or another
+DFSG-compatible license for completely new scripts); please sign off
+your patches (by writing an approprite Signed-Off-By tag in your
 commit message or patch submission) to indicate your attestation that
 the Developer Certificate of Origin (version 1.1) applies.
 
