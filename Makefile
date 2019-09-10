@@ -11,5 +11,6 @@ clean:
 
 %.1: %.1.pod
 	pod2man --section=1 --date="Debian Project" --center="User Commands" \
+		--utf8 \
 		--name=$(subst .1,,$@) \
 		$^ $@
