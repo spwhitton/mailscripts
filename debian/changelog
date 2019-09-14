@@ -1,3 +1,13 @@
+mailscripts (0.11-1) UNRELEASED; urgency=medium
+
+  * New script: email-prime-mime-structure (Closes: #939993).
+    Imported from the notmuch project, which never shipped it in releases.
+    Thanks to Daniel Kahn Gillmor for the patches.
+  * Generate nroff output in UTF-8.
+    Thanks to Daniel Kahn Gillmor for the patch.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 14 Sep 2019 12:14:49 -0700
+
 mailscripts (0.10-1) unstable; urgency=medium
 
   * New script: email-extract-openpgp-certs(1) (Closes: #932993).
