@@ -1,6 +1,6 @@
 mailscripts (0.11-1) UNRELEASED; urgency=medium
 
-  * New script: email-prime-mime-structure (Closes: #939993).
+  * New script: email-print-mime-structure (Closes: #939993).
     Imported from the notmuch project, which never shipped it in releases.
     Thanks to Daniel Kahn Gillmor for the patches.
   * Generate nroff output in UTF-8.
