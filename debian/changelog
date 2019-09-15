@@ -1,4 +1,4 @@
-mailscripts (0.11-1) UNRELEASED; urgency=medium
+mailscripts (0.11-1) unstable; urgency=medium
 
   * New script: email-print-mime-structure (Closes: #939993).
     Imported from the notmuch project, which never shipped it in releases.
@@ -8,7 +8,7 @@ mailscripts (0.11-1) UNRELEASED; urgency=medium
   * Use 'https' instead of 'http' in various places (Closes: #939994).
     Thanks to Daniel Kahn Gillmor for the patch.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 14 Sep 2019 12:14:49 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 15 Sep 2019 08:13:41 -0700
 
 mailscripts (0.10-1) unstable; urgency=medium
 
