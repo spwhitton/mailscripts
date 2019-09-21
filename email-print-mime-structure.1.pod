@@ -1,0 +1,62 @@
+=encoding utf8
+
+=head1 NAME
+
+email-print-mime-structure - display a tree-like view of the MIME structure of an e-mail
+
+=head1 SYNOPSIS
+
+B<email-print-mime-structure> <B<message.eml>
+
+=head1 DESCRIPTION
+
+B<email-print-mime-structure> reads a MIME message from stdin and
+produces a treelike representation to stdout.
+
+If the user wants the parts numbered, they can feed the output through
+something like "cat -n".
+
+
+=head1 OPTIONS
+
+None.
+
+=head1 EXAMPLE
+
+=over 4
+
+    $ email-print-mime-structure <test.eml
+    └┬╴multipart/signed 6546 bytes
+     ├─╴text/plain inline 895 bytes
+     └─╴application/pgp-signature inline [signature.asc] 836 bytes
+
+=back
+
+=head1 LIMITATIONS
+
+B<email-print-mime-structure> currently does not try to decrypt
+encrypted e-mails, so it cannot display the MIME structure that is
+inside the message's cryptographic envelope.
+
+B<email-print-mime-structure>'s output is not stable, and is not
+intended to be interpreted by machines, so please do not depend on it
+in scripts!
+
+B<email-print-mime-structure> displays some data from within the
+e-mail, but does not sanitize it before display.  Some particularly
+cleverly-malformed MIME parameters might be able to induce apparent
+formatting changes or emit arbitrary characters to stdout.
+
+B<email-print-mime-structure> expects to be run in a UTF-8-friendly
+environment.
+
+=head1 SEE ALSO
+
+https://tools.ietf.org/html/rfc2045, https://tools.ietf.org/html/rfc2049
+
+=head1 AUTHOR
+
+B<email-print-mime-structure> and this manpage were written by Daniel
+Kahn Gillmor and Jameson Graef Rollins, with suggestions and feedback
+from many others in the community that develops the notmuch mail user
+agent.  It originated in the notmuch source tree.

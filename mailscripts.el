@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.9
+;; Version: 0.11
 ;; Package-Requires: (notmuch)
 
 ;; Copyright (C) 2018 Sean Whitton
@@ -17,7 +17,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Code:
 

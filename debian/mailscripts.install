@@ -5,3 +5,4 @@ maildir-import-patch /usr/bin
 notmuch-import-patch /usr/bin
 notmuch-extract-patch/notmuch-extract-patch /usr/bin
 email-extract-openpgp-certs /usr/bin
+email-print-mime-structure /usr/bin

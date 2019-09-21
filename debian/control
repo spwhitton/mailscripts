@@ -55,3 +55,7 @@ Description: collection of scripts for manipulating e-mail on Debian
  maildir-import-patch -- import a git patch series into a maildir
  .
  notmuch-import-patch -- import a git patch series into notmuch
+ .
+ email-print-mime-structure -- tree view of a message's MIME structure
+ .
+ email-extract-openpgp-certs -- extract OpenPGP certificates from a message
