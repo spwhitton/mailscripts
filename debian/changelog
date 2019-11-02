@@ -7,6 +7,7 @@ mailscripts (0.12-1) UNRELEASED; urgency=medium
     Thanks to Daniel Kahn Gillmor for the patch series.
   * mailscripts.el: add mailscripts-extract-patches-branch-prefix defcustom.
   * mailscripts.el: add notmuch-extract-thread-patches-projectile command.
+  * mailscripts.el: add notmuch-extract-message-patches{,-projectile} commands.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 01 Nov 2019 20:38:07 -0700
 
