@@ -1,3 +1,10 @@
+mailscripts (0.12-1) UNRELEASED; urgency=medium
+
+  * email-print-mime-structure: make typesafe.
+    Thanks to Daniel Kahn Gillmor for the patch.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 01 Nov 2019 20:38:07 -0700
+
 mailscripts (0.11-1) unstable; urgency=medium
 
   * New script: email-print-mime-structure (Closes: #939993).
