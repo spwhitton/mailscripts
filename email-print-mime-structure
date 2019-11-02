@@ -61,6 +61,7 @@ class MimePrinter(object):
             payload:Union[List[Message], str, bytes, None] = z.get_payload()
             if not isinstance(payload, (str,bytes)):
                 raise TypeError(f'expected payload to be either str or bytes, got {type(payload)}')
+            # FIXME: it looks like we are counting chars here, not bytes:
             nbytes = len(payload)
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
