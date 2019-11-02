@@ -63,7 +63,7 @@ class MimePrinter(object):
                 raise TypeError(f'expected payload to be either str or bytes, got {type(payload)}')
             nbytes = len(payload)
 
-        print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes} bytes')
+        print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
 
     def test(self, z:Message, prefix:str='') -> None:
         if (z.is_multipart()):
