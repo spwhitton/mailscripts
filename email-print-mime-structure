@@ -80,10 +80,14 @@ class MimePrinter(object):
         else:
             self.print_part(z, prefix+'─╴')
 
-msg:Union[Message, str, int, Any] = email.message_from_file(sys.stdin)
+def main() -> None:
+    msg:Union[Message, str, int, Any] = email.message_from_file(sys.stdin)
 
-if isinstance(msg, Message):
-    printer:MimePrinter = MimePrinter()
-    printer.test(msg, '└')
-else:
-    logging.error('Input was not an e-mail message')
+    if isinstance(msg, Message):
+        printer:MimePrinter = MimePrinter()
+        printer.test(msg, '└')
+    else:
+        logging.error('Input was not an e-mail message')
+
+if __name__ == '__main__':
+    main()
