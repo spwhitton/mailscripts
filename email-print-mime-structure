@@ -33,11 +33,15 @@ import sys
 import email
 import logging
 
+from argparse import ArgumentParser, Namespace
 from typing import Optional, Union, List, Tuple, Any
 from email.charset import Charset
 from email.message import Message
 
 class MimePrinter(object):
+    def __init__(self, args:Namespace):
+        self.args = args
+
     def print_part(self, z:Message, prefix:str) -> None:
         ofname:Optional[str] = z.get_filename()
         fname:str = '' if ofname is None else f' [{ofname}]'
@@ -81,10 +85,13 @@ class MimePrinter(object):
             self.print_part(z, prefix+'─╴')
 
 def main() -> None:
+    parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',
+                                           epilog="Example: email-print-mime-structure < message.eml")
+    args:Namespace = parser.parse_args()
     msg:Union[Message, str, int, Any] = email.message_from_file(sys.stdin)
 
     if isinstance(msg, Message):
-        printer:MimePrinter = MimePrinter()
+        printer:MimePrinter = MimePrinter(args)
         printer.test(msg, '└')
     else:
         logging.error('Input was not an e-mail message')

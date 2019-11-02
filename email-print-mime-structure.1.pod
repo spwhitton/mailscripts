@@ -19,7 +19,14 @@ something like "cat -n".
 
 =head1 OPTIONS
 
-None.
+=over 4
+
+=item B<--help>, B<-h>
+
+Show usage instructions.
+
+=back
+
 
 =head1 EXAMPLE
 
