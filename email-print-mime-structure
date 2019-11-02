@@ -119,7 +119,7 @@ class MimePrinter(object):
 
 def main() -> None:
     parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',
-                                           epilog="Example: email-print-mime-structure < message.eml")
+                                           epilog="Example: email-print-mime-structure <message.eml")
     parser.add_argument('--pgpkey', metavar='KEYFILE', action='append',
                         help='OpenPGP Transferable Secret Key for decrypting')
     args:Namespace = parser.parse_args()
