@@ -4,7 +4,7 @@
 ;; Version: 0.12
 ;; Package-Requires: (notmuch)
 
-;; Copyright (C) 2018 Sean Whitton
+;; Copyright (C) 2018, 2019 Sean Whitton
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,6 +22,16 @@
 ;;; Code:
 
 (require 'notmuch)
+
+(defgroup mailscripts nil
+  "Customisation of functions in the mailscripts package.")
+
+(defcustom mailscripts-extract-patches-branch-prefix nil
+  "Prefix for git branches created by functions which extract patch series.
+
+E.g. `mailed/'."
+  :type 'string
+  :group 'mailscripts)
 
 ;;;###autoload
 (defun notmuch-slurp-debbug (bug &optional no-open)
@@ -54,13 +64,19 @@ threads to the notmuch-extract-patch(1) command."
   (interactive "Dgit repo: \nsnew branch name: ")
   (let ((thread-id notmuch-show-thread-id)
         (default-directory (expand-file-name repo)))
-    (call-process-shell-command
-     (format "git checkout -b %s"
-             (shell-quote-argument branch)))
+    (mailscripts--check-out-branch branch)
     (shell-command
      (format "notmuch-extract-patch %s | git am"
              (shell-quote-argument thread-id))
      "*notmuch-apply-thread-series*")))
+
+(defun mailscripts--check-out-branch (branch)
+  (call-process-shell-command
+   (format "git checkout -b %s"
+           (shell-quote-argument
+            (if mailscripts-extract-patches-branch-prefix
+                (concat mailscripts-extract-patches-branch-prefix branch)
+              branch)))))
 
 (provide 'mailscripts)
 
