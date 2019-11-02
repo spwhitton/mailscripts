@@ -39,6 +39,7 @@ Recommends:
  devscripts,
  git,
  notmuch,
+ python3-pgpy,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail

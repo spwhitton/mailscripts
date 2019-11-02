@@ -21,6 +21,14 @@ something like "cat -n".
 
 =over 4
 
+=item B<--pgpkey=>I<KEYFILE>
+
+I<KEYFILE> should name an OpenPGP transferable secret key that is not
+password-protected.  If a PGP/MIME-encrypted message is found on
+standard input, this key will be tried for decryption.  May be used
+multiple times if you want to try decrypting with more than one secret
+key.
+
 =item B<--help>, B<-h>
 
 Show usage instructions.

@@ -38,6 +38,11 @@ from typing import Optional, Union, List, Tuple, Any
 from email.charset import Charset
 from email.message import Message
 
+try:
+    import pgpy #type: ignore
+except ImportError:
+    pgpy = None
+
 class MimePrinter(object):
     def __init__(self, args:Namespace):
         self.args = args
@@ -66,6 +71,33 @@ class MimePrinter(object):
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
 
+        if self.args.pgpkey and \
+           (parent is not None) and \
+           (parent.get_content_type().lower() == 'multipart/encrypted') and \
+           (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
+           (num == 2):
+            if pgpy is None:
+                logging.warning(f'Python module pgpy is not available, not decrypting (try "apt install python3-pgpy")')
+            else:
+                cryptopayload:Optional[Message] = None
+                keyname:str
+                for keyname in self.args.pgpkey:
+                    try:
+                        key:pgpy.PGPKey
+                        key, _ = pgpy.PGPKey.from_file(keyname)
+                        msg:pgpy.PGPMessage = pgpy.PGPMessage.from_blob(z.get_payload())
+                        msg = key.decrypt(msg)
+                        cryptopayload = email.message_from_bytes(msg.message)
+                        break
+                    except:
+                        pass
+                if cryptopayload is None:
+                    logging.warning(f'Unable to decrypt')
+                else:
+                    newprefix = prefix[:-3] + ' '
+                    print(f'{newprefix}↧ (decrypts to)')
+                    self.print_tree(cryptopayload, newprefix + '└', z, 0)
+
     def print_tree(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         if (z.is_multipart()):
             self.print_part(z, prefix+'┬╴', parent, num)
@@ -88,6 +120,8 @@ class MimePrinter(object):
 def main() -> None:
     parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',
                                            epilog="Example: email-print-mime-structure < message.eml")
+    parser.add_argument('--pgpkey', metavar='KEYFILE', action='append',
+                        help='OpenPGP Transferable Secret Key for decrypting')
     args:Namespace = parser.parse_args()
     msg:Union[Message, str, int, Any] = email.message_from_file(sys.stdin)
 
