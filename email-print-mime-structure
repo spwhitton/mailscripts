@@ -37,51 +37,53 @@ from typing import Optional, Union, List, Tuple, Any
 from email.charset import Charset
 from email.message import Message
 
-def print_part(z:Message, prefix:str) -> None:
-    ofname:Optional[str] = z.get_filename()
-    fname:str = '' if ofname is None else f' [{ofname}]'
-    ocharset:Union[Charset, str, None] = z.get_charset()
-    cset:str = '' if ocharset is None else f' ({ocharset})'
-    disp:Union[List[Tuple[str,str]], List[str], None] = z.get_params(None, header='Content-Disposition')
-    disposition:str = ''
-    if (disp is not None):
-        for d in disp:
-            if d[0] in [ 'attachment', 'inline' ]:
-                disposition = ' ' + d[0]
-    nbytes:int
-    if z.is_multipart():
-        # FIXME: it looks like we are counting chars here, not bytes:
-        nbytes = len(z.as_string())
-    else:
-        payload:Union[List[Message], str, bytes, None] = z.get_payload()
-        if not isinstance(payload, (str,bytes)):
-            raise TypeError(f'expected payload to be either str or bytes, got {type(payload)}')
-        nbytes = len(payload)
+class MimePrinter(object):
+    def print_part(self, z:Message, prefix:str) -> None:
+        ofname:Optional[str] = z.get_filename()
+        fname:str = '' if ofname is None else f' [{ofname}]'
+        ocharset:Union[Charset, str, None] = z.get_charset()
+        cset:str = '' if ocharset is None else f' ({ocharset})'
+        disp:Union[List[Tuple[str,str]], List[str], None] = z.get_params(None, header='Content-Disposition')
+        disposition:str = ''
+        if (disp is not None):
+            for d in disp:
+                if d[0] in [ 'attachment', 'inline' ]:
+                    disposition = ' ' + d[0]
+        nbytes:int
+        if z.is_multipart():
+            # FIXME: it looks like we are counting chars here, not bytes:
+            nbytes = len(z.as_string())
+        else:
+            payload:Union[List[Message], str, bytes, None] = z.get_payload()
+            if not isinstance(payload, (str,bytes)):
+                raise TypeError(f'expected payload to be either str or bytes, got {type(payload)}')
+            nbytes = len(payload)
 
-    print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes} bytes')
+        print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes} bytes')
 
-def test(z:Message, prefix:str='') -> None:
-    if (z.is_multipart()):
-        print_part(z, prefix+'┬╴')
-        if prefix.endswith('└'):
-            prefix = prefix.rpartition('└')[0] + ' '
-        if prefix.endswith('├'):
-            prefix = prefix.rpartition('├')[0] + '│'
-        parts:Union[List[Message], str, bytes, None] = z.get_payload()
-        if not isinstance(parts, list):
-            raise TypeError(f'parts was {type(parts)}, expected List[Message]')
-        i = 0
-        while (i < len(parts)-1):
-            test(parts[i], prefix + '├')
-            i += 1
-        test(parts[i], prefix + '└')
-        # FIXME: show epilogue?
-    else:
-        print_part(z, prefix+'─╴')
+    def test(self, z:Message, prefix:str='') -> None:
+        if (z.is_multipart()):
+            self.print_part(z, prefix+'┬╴')
+            if prefix.endswith('└'):
+                prefix = prefix.rpartition('└')[0] + ' '
+            if prefix.endswith('├'):
+                prefix = prefix.rpartition('├')[0] + '│'
+            parts:Union[List[Message], str, bytes, None] = z.get_payload()
+            if not isinstance(parts, list):
+                raise TypeError(f'parts was {type(parts)}, expected List[Message]')
+            i = 0
+            while (i < len(parts)-1):
+                self.test(parts[i], prefix + '├')
+                i += 1
+            self.test(parts[i], prefix + '└')
+            # FIXME: show epilogue?
+        else:
+            self.print_part(z, prefix+'─╴')
 
 msg:Union[Message, str, int, Any] = email.message_from_file(sys.stdin)
 
 if isinstance(msg, Message):
-    test(msg, '└')
+    printer:MimePrinter = MimePrinter()
+    printer.test(msg, '└')
 else:
     logging.error('Input was not an e-mail message')
