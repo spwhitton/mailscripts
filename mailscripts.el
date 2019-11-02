@@ -2,7 +2,7 @@
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
 ;; Version: 0.12
-;; Package-Requires: (notmuch)
+;; Package-Requires: (notmuch projectile)
 
 ;; Copyright (C) 2018, 2019 Sean Whitton
 
@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'notmuch)
+(require 'projectile)
 
 (defgroup mailscripts nil
   "Customisation of functions in the mailscripts package.")
@@ -70,6 +71,12 @@ threads to the notmuch-extract-patch(1) command."
              (shell-quote-argument thread-id))
      "*notmuch-apply-thread-series*")))
 
+;;;###autoload
+(defun notmuch-extract-thread-patches-projectile ()
+  "Like `notmuch-extract-thread-patches', but use projectile to choose the repo."
+  (interactive)
+  (mailscripts--projectile-repo-and-branch 'notmuch-extract-thread-patches))
+
 (defun mailscripts--check-out-branch (branch)
   (call-process-shell-command
    (format "git checkout -b %s"
@@ -77,6 +84,12 @@ threads to the notmuch-extract-patch(1) command."
             (if mailscripts-extract-patches-branch-prefix
                 (concat mailscripts-extract-patches-branch-prefix branch)
               branch)))))
+
+(defun mailscripts--projectile-repo-and-branch (f)
+  (let ((repo (projectile-completing-read
+               "Select projectile project: " projectile-known-projects))
+        (branch (completing-read "Branch name: " nil)))
+    (funcall f repo branch)))
 
 (provide 'mailscripts)
 
