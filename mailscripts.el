@@ -102,7 +102,8 @@ git-format-patch(1)."
         (let* ((disposition (mm-handle-disposition p))
                (filename (cdr (assq 'filename disposition))))
           (and filename
-               (string-match "^[0-9]+-.+\.\\(patch\\|diff\\|txt\\)$" filename)
+               (string-match
+                "^\\(v[0-9]+-\\)?[0-9]+-.+\.\\(patch\\|diff\\|txt\\)$" filename)
                (mm-pipe-part p "git am"))))
       mm-handle))))
 
