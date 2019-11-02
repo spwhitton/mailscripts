@@ -66,7 +66,7 @@ class MimePrinter(object):
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
 
-    def test(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
+    def print_tree(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         if (z.is_multipart()):
             self.print_part(z, prefix+'┬╴', parent, num)
             if prefix.endswith('└'):
@@ -78,9 +78,9 @@ class MimePrinter(object):
                 raise TypeError(f'parts was {type(parts)}, expected List[Message]')
             i = 0
             while (i < len(parts)-1):
-                self.test(parts[i], prefix + '├', z, i+1)
+                self.print_tree(parts[i], prefix + '├', z, i+1)
                 i += 1
-            self.test(parts[i], prefix + '└', z, i+1)
+            self.print_tree(parts[i], prefix + '└', z, i+1)
             # FIXME: show epilogue?
         else:
             self.print_part(z, prefix+'─╴', parent, num)
@@ -93,7 +93,7 @@ def main() -> None:
 
     if isinstance(msg, Message):
         printer:MimePrinter = MimePrinter(args)
-        printer.test(msg, '└', None, 0)
+        printer.print_tree(msg, '└', None, 0)
     else:
         logging.error('Input was not an e-mail message')
 
