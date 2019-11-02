@@ -49,9 +49,10 @@ Show usage instructions.
 
 =head1 LIMITATIONS
 
-B<email-print-mime-structure> currently does not try to decrypt
-encrypted e-mails, so it cannot display the MIME structure that is
-inside the message's cryptographic envelope.
+B<email-print-mime-structure> only decrypts encrypted e-mails using
+raw, non-password-protected OpenPGP secret keys (see B<--pgpkey>,
+above).  If it is unable to decrypt an encrypted part with the
+supplied keys, it will warn on stderr.
 
 B<email-print-mime-structure>'s output is not stable, and is not
 intended to be interpreted by machines, so please do not depend on it
