@@ -42,7 +42,7 @@ class MimePrinter(object):
     def __init__(self, args:Namespace):
         self.args = args
 
-    def print_part(self, z:Message, prefix:str) -> None:
+    def print_part(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         ofname:Optional[str] = z.get_filename()
         fname:str = '' if ofname is None else f' [{ofname}]'
         ocharset:Union[Charset, str, None] = z.get_charset()
@@ -65,9 +65,9 @@ class MimePrinter(object):
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
 
-    def test(self, z:Message, prefix:str='') -> None:
+    def test(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         if (z.is_multipart()):
-            self.print_part(z, prefix+'┬╴')
+            self.print_part(z, prefix+'┬╴', parent, num)
             if prefix.endswith('└'):
                 prefix = prefix.rpartition('└')[0] + ' '
             if prefix.endswith('├'):
@@ -77,12 +77,12 @@ class MimePrinter(object):
                 raise TypeError(f'parts was {type(parts)}, expected List[Message]')
             i = 0
             while (i < len(parts)-1):
-                self.test(parts[i], prefix + '├')
+                self.test(parts[i], prefix + '├', z, i+1)
                 i += 1
-            self.test(parts[i], prefix + '└')
+            self.test(parts[i], prefix + '└', z, i+1)
             # FIXME: show epilogue?
         else:
-            self.print_part(z, prefix+'─╴')
+            self.print_part(z, prefix+'─╴', parent, num)
 
 def main() -> None:
     parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',
@@ -92,7 +92,7 @@ def main() -> None:
 
     if isinstance(msg, Message):
         printer:MimePrinter = MimePrinter(args)
-        printer.test(msg, '└')
+        printer.test(msg, '└', None, 0)
     else:
         logging.error('Input was not an e-mail message')
 
