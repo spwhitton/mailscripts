@@ -78,7 +78,8 @@ threads to the notmuch-extract-patch(1) command."
 (defun notmuch-extract-thread-patches-projectile (&optional no-prefix)
   "Like `notmuch-extract-thread-patches', but use projectile to choose the repo."
   (interactive "P")
-  (mailscripts--projectile-repo-and-branch 'notmuch-extract-thread-patches))
+  (mailscripts--projectile-repo-and-branch
+   'notmuch-extract-thread-patches no-prefix))
 
 ;;;###autoload
 (defun notmuch-extract-message-patches (repo branch &optional no-prefix)
@@ -111,7 +112,8 @@ git-format-patch(1)."
 (defun notmuch-extract-message-patches-projectile (&optional no-prefix)
   "Like `notmuch-extract-message-patches', but use projectile to choose the repo."
   (interactive "P")
-  (mailscripts--projectile-repo-and-branch 'notmuch-extract-message-patches))
+  (mailscripts--projectile-repo-and-branch
+   'notmuch-extract-message-patches no-prefix))
 
 (defun mailscripts--check-out-branch (branch no-prefix)
   (call-process-shell-command
@@ -121,11 +123,11 @@ git-format-patch(1)."
                 (concat mailscripts-extract-patches-branch-prefix branch)
               branch)))))
 
-(defun mailscripts--projectile-repo-and-branch (f)
+(defun mailscripts--projectile-repo-and-branch (f &optional no-prefix)
   (let ((repo (projectile-completing-read
                "Select projectile project: " projectile-known-projects))
         (branch (completing-read "Branch name: " nil)))
-    (funcall f repo branch)))
+    (funcall f repo branch no-prefix)))
 
 (provide 'mailscripts)
 
