@@ -1,4 +1,4 @@
-mailscripts (0.12-1) UNRELEASED; urgency=medium
+mailscripts (0.12-1) unstable; urgency=medium
 
   * email-print-mime-structure: make typesafe.
     Thanks to Daniel Kahn Gillmor for the patch.
@@ -14,7 +14,7 @@ mailscripts (0.12-1) UNRELEASED; urgency=medium
     - if user does not enter a branch name, use current HEAD.
   * elpa-mailscripts now depends on elpa-projectile.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 01 Nov 2019 20:38:07 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 06 Nov 2019 20:54:56 -0700
 
 mailscripts (0.11-1) unstable; urgency=medium
 
