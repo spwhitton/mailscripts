@@ -30,7 +30,7 @@
 (defcustom mailscripts-extract-patches-branch-prefix nil
   "Prefix for git branches created by functions which extract patch series.
 
-E.g. `mailed/'."
+E.g. `email/'."
   :type 'string
   :group 'mailscripts)
 
