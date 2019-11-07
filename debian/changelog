@@ -5,10 +5,13 @@ mailscripts (0.12-1) UNRELEASED; urgency=medium
   * email-print-mime-structure: add capability to decrypt message parts
     (Closes: #943959).
     Thanks to Daniel Kahn Gillmor for the patch series.
-  * mailscripts.el: add mailscripts-extract-patches-branch-prefix defcustom.
-  * mailscripts.el: add notmuch-extract-thread-patches-projectile command.
-  * mailscripts.el: if user does not enter a branch name, use current HEAD.
-  * mailscripts.el: add notmuch-extract-message-patches{,-projectile} commands.
+
+  * mailscripts.el:
+    - new defcustom: mailscripts-extract-patches-branch-prefix
+    - new commands:
+      + notmuch-extract-thread-patches-projectile
+      + notmuch-extract-message-patches{,-projectile}
+    - if user does not enter a branch name, use current HEAD.
   * elpa-mailscripts now depends on elpa-projectile.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 01 Nov 2019 20:38:07 -0700
