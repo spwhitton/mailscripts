@@ -38,6 +38,8 @@ Depends:
 Recommends:
  devscripts,
  git,
+ gpg,
+ gpg-agent,
  notmuch,
  python3-pgpy,
 Architecture: all

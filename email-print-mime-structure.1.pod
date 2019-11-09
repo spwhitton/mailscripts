@@ -29,6 +29,25 @@ standard input, this key will be tried for decryption.  May be used
 multiple times if you want to try decrypting with more than one secret
 key.
 
+OpenPGP secret keys listed in B<--pgpkey=> are used ephemerally, and
+do not interact with any local GnuPG keyring.
+
+=item B<--use-gpg-agent=>I<true>|I<false>
+
+If I<true>, and B<email-print-mime-structure> encounters a
+PGP/MIME-encrypted part, it will try to decrypt the part using the
+secret keys found in the local installation of GnuPG. (default:
+I<false>)
+
+If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent=true> are
+supplied, I<KEYFILE> arguments will be tried before falling back to
+GnuPG.
+
+If B<email-print-mime-structure> has been asked to decrypt parts with
+either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent=true>, and it
+is unable to decrypt an encrypted part, it will emit a warning to
+stderr.
+
 =item B<--help>, B<-h>
 
 Show usage instructions.
@@ -48,11 +67,6 @@ Show usage instructions.
 =back
 
 =head1 LIMITATIONS
-
-B<email-print-mime-structure> only decrypts encrypted e-mails using
-raw, non-password-protected OpenPGP secret keys (see B<--pgpkey>,
-above).  If it is unable to decrypt an encrypted part with the
-supplied keys, it will warn on stderr.
 
 B<email-print-mime-structure>'s output is not stable, and is not
 intended to be interpreted by machines, so please do not depend on it
