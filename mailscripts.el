@@ -54,21 +54,26 @@ If NO-OPEN, don't open the thread."
     (notmuch-refresh-this-buffer)))
 
 ;;;###autoload
-(defun notmuch-extract-thread-patches (repo branch)
+(defun notmuch-extract-thread-patches (repo branch &optional reroll-count)
   "Extract patch series in current thread to branch BRANCH in repo REPO.
 
 The target branch may or may not already exist.
+
+With an optional prefix numeric argument REROLL-COUNT, try to
+extract the nth revision of a series.  See the --reroll-count
+option detailed in notmuch-extract-patch(1).
 
 See notmuch-extract-patch(1) manpage for limitations: in
 particular, this Emacs Lisp function supports passing only entire
 threads to the notmuch-extract-patch(1) command."
   (interactive
-   "Dgit repo: \nsbranch name (or leave blank to apply to current HEAD): ")
+   "Dgit repo: \nsbranch name (or leave blank to apply to current HEAD): \np")
   (let ((thread-id notmuch-show-thread-id)
         (default-directory (expand-file-name repo)))
     (mailscripts--check-out-branch branch)
     (shell-command
-     (format "notmuch-extract-patch %s | git am"
+     (format "notmuch-extract-patch -v%d %s | git am"
+             (if reroll-count reroll-count 1)
              (shell-quote-argument thread-id))
      "*notmuch-apply-thread-series*")))
 
@@ -76,7 +81,8 @@ threads to the notmuch-extract-patch(1) command."
 (defun notmuch-extract-thread-patches-projectile ()
   "Like `notmuch-extract-thread-patches', but use projectile to choose the repo."
   (interactive)
-  (mailscripts--projectile-repo-and-branch 'notmuch-extract-thread-patches))
+  (mailscripts--projectile-repo-and-branch
+   'notmuch-extract-thread-patches (prefix-numeric-value current-prefix-arg)))
 
 ;;;###autoload
 (defun notmuch-extract-message-patches (repo branch)
@@ -118,13 +124,13 @@ git-format-patch(1)."
                   (concat mailscripts-extract-patches-branch-prefix branch)
                 branch))))))
 
-(defun mailscripts--projectile-repo-and-branch (f)
+(defun mailscripts--projectile-repo-and-branch (f &rest args)
   (let ((repo (projectile-completing-read
                "Select projectile project: " projectile-known-projects))
         (branch (completing-read
                  "Branch name (or leave blank to apply to current HEAD): "
                  nil)))
-    (funcall f repo branch)))
+    (apply f repo branch args)))
 
 (provide 'mailscripts)
 

@@ -1,6 +1,8 @@
 mailscripts (0.13-1) UNRELEASED; urgency=medium
 
   * notmuch-extract-patch: add -v/--reroll-count option (Closes: #944418).
+  * mailscripts.el: prefix arg to pass -v/--reroll-count to
+    notmuch-extract-patch.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 09 Nov 2019 15:01:23 -0700
 
