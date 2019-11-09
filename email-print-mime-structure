@@ -81,26 +81,30 @@ class MimePrinter(object):
             if not isinstance(ciphertext, str):
                 logging.warning('encrypted part was not a leaf mime part somehow')
                 return
-            if pgpy is None:
-                logging.warning(f'Python module pgpy is not available, not decrypting (try "apt install python3-pgpy")')
-            else:
-                keyname:str
-                for keyname in self.args.pgpkey:
-                    try:
-                        key:pgpy.PGPKey
-                        key, _ = pgpy.PGPKey.from_file(keyname)
-                        msg:pgpy.PGPMessage = pgpy.PGPMessage.from_blob(ciphertext)
-                        msg = key.decrypt(msg)
-                        cryptopayload = email.message_from_bytes(msg.message)
-                        break
-                    except:
-                        pass
-                if cryptopayload is None:
-                    logging.warning(f'Unable to decrypt')
-                else:
-                    newprefix = prefix[:-3] + ' '
-                    print(f'{newprefix}↧ (decrypts to)')
-                    self.print_tree(cryptopayload, newprefix + '└', z, 0)
+            cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
+            if cryptopayload is None:
+                logging.warning(f'Unable to decrypt')
+                return
+            newprefix = prefix[:-3] + ' '
+            print(f'{newprefix}↧ (decrypts to)')
+            self.print_tree(cryptopayload, newprefix + '└', z, 0)
+
+    def pgpy_decrypt(self, keys:List[str], ciphertext:str) -> Optional[Message]:
+        if pgpy is None:
+            logging.warning(f'Python module pgpy is not available, not decrypting (try "apt install python3-pgpy")')
+            return None
+        keyname:str
+        ret:Optional[Message] = None
+        for keyname in keys:
+            try:
+                key:pgpy.PGPKey
+                key, _ = pgpy.PGPKey.from_file(keyname)
+                msg:pgpy.PGPMessage = pgpy.PGPMessage.from_blob(ciphertext)
+                msg = key.decrypt(msg)
+                return email.message_from_bytes(msg.message)
+            except:
+                pass
+        return None
 
     def print_tree(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         if (z.is_multipart()):
