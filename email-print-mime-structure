@@ -76,16 +76,20 @@ class MimePrinter(object):
            (parent.get_content_type().lower() == 'multipart/encrypted') and \
            (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
            (num == 2):
+            cryptopayload:Optional[Message] = None
+            ciphertext:Union[List[Message],str,bytes,None] = z.get_payload()
+            if not isinstance(ciphertext, str):
+                logging.warning('encrypted part was not a leaf mime part somehow')
+                return
             if pgpy is None:
                 logging.warning(f'Python module pgpy is not available, not decrypting (try "apt install python3-pgpy")')
             else:
-                cryptopayload:Optional[Message] = None
                 keyname:str
                 for keyname in self.args.pgpkey:
                     try:
                         key:pgpy.PGPKey
                         key, _ = pgpy.PGPKey.from_file(keyname)
-                        msg:pgpy.PGPMessage = pgpy.PGPMessage.from_blob(z.get_payload())
+                        msg:pgpy.PGPMessage = pgpy.PGPMessage.from_blob(ciphertext)
                         msg = key.decrypt(msg)
                         cryptopayload = email.message_from_bytes(msg.message)
                         break
