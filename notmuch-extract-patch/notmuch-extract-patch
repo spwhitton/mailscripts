@@ -22,6 +22,7 @@ import sys
 import tempfile
 import subprocess
 import re
+import getopt
 
 def get_body(message):
     body = None
@@ -48,8 +49,27 @@ def is_git_patch(msg):
     # return ("git-send-email" in msg['x-mailer'] and match)
     return match
 
+def has_reroll_count(msg, v):
+    subject_prefix = get_subject_prefix(msg['subject'])
+    if subject_prefix is not None:
+        return "v"+str(v) in subject_prefix \
+            or (v == 1 and not any(entry[0] == 'v' for entry in subject_prefix))
+
+def get_subject_prefix(s):
+    match = re.search(r'''^\[(.*PATCH.*)\]''', s)
+    if match:
+        return match.group(1).split()
+
 def main():
-    query = sys.argv[1:]
+    try:
+        opts, query = getopt.getopt(sys.argv[1:], "v:", ["reroll-count="])
+    except getopt.GetoptError as err:
+        sys.stderr.write(str(err)+"\n")
+        sys.exit(2)
+    reroll_count = 1
+    for o, a in opts:
+        if o in ("-v", "--reroll-count"):
+            reroll_count = int(a)
     with tempfile.NamedTemporaryFile() as in_mb_file:
         out = subprocess.check_output(['notmuch', 'show', '--format=mbox']+query)
         in_mb_file.write(out)
@@ -59,7 +79,7 @@ def main():
         with tempfile.NamedTemporaryFile() as out_mb_file:
             out_mb = mailbox.mbox(out_mb_file.name)
             for m in in_mb:
-                if is_git_patch(m):
+                if is_git_patch(m) and has_reroll_count(m, reroll_count):
                     sys.stderr.write(m['subject']+"\n")
                     out_mb.add(m)
             out_mb.flush()

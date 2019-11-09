@@ -4,7 +4,7 @@ notmuch-extract-patch - extract a git patch series from notmuch
 
 =head1 SYNOPSIS
 
-B<notmuch-extract-patch> I<QUERY>
+B<notmuch-extract-patch> [B<-v>|B<--reroll-count=>I<N>] I<QUERY>
 
 =head1 DESCRIPTION
 
@@ -15,7 +15,23 @@ replies/reviews.
 
 =head1 OPTIONS
 
-None.
+=over 4
+
+=item B<-v>|B<--reroll-count=>I<N>
+
+Try to extract the I<N>th version of a patch series, where these
+patches are identified by subject prefixes like "[PATCH vI<N> 1/3]".
+
+If this option is not specified, default to extracting the first
+version of the patch series.
+
+Note that this option should not usually be needed, because best
+practices when sharing patches with git-send-email(1) include starting
+a new thread when posting a revised series.  The I<--in-reply-to>
+option to git-format-patch(1) is used mainly for posting a patch
+series in reply to a bug report.
+
+=back
 
 =head1 EXAMPLE
 
@@ -28,16 +44,11 @@ None.
 
 =head1 LIMITATIONS
 
-B<notmuch-extract-patch> assumes one patch series per query.  So if
-there is more than one patch series in a thread, you will need to
+B<notmuch-extract-patch> can select patches to extract based on the
+reroll count, but otherwise assumes that there is only one patch
+series in a thread.  If this assumption is violated, you would need to
 construct a notmuch query that includes only the patches you want to
 extract, which somewhat defeats the purpose of this script.
-
-This should not happen often because best practices when sharing
-patches with git-send-email(1) include starting a new thread when
-posting a revised series.  The I<--in-reply-to> option to
-B<notmuch-extract-patch> is used mainly for posting a patch series in
-reply to a bug report.
 
 =head1 SEE ALSO
 
