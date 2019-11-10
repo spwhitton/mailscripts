@@ -1,3 +1,10 @@
+mailscripts (0.14-1) UNRELEASED; urgency=medium
+
+  * email-print-mime-structure: add bash completion (Closes: #944434).
+    Thanks to Daniel Kahn Gillmor for the patch.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 10 Nov 2019 09:01:58 -0700
+
 mailscripts (0.13-1) unstable; urgency=medium
 
   * notmuch-extract-patch: add -v/--reroll-count option (Closes: #944418).
