@@ -5,6 +5,7 @@ mailscripts (0.13-1) UNRELEASED; urgency=medium
     notmuch-extract-patch.
   * email-print-mime-structure: add --use-gpg-agent option (Closes: #944340).
     Thanks to Daniel Kahn Gillmor for the patch series.
+    - Suggest gpg & gpg-agent.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 09 Nov 2019 15:01:23 -0700
 

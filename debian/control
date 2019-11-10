@@ -38,10 +38,11 @@ Depends:
 Recommends:
  devscripts,
  git,
- gpg,
- gpg-agent,
  notmuch,
  python3-pgpy,
+Suggests:
+ gpg,
+ gpg-agent,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail
