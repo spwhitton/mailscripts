@@ -19,5 +19,5 @@ clean:
 
 completions/bash/%:
 	mkdir -p completions/bash
-	register-python-argcomplete3 $(notdir $@) > $@.tmp
+	register-python-argcomplete3 $(notdir $@) >$@.tmp
 	mv $@.tmp $@
