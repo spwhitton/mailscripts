@@ -32,19 +32,18 @@ key.
 OpenPGP secret keys listed in B<--pgpkey=> are used ephemerally, and
 do not interact with any local GnuPG keyring.
 
-=item B<--use-gpg-agent=>I<true>|I<false>
+=item B<--use-gpg-agent>
 
-If I<true>, and B<email-print-mime-structure> encounters a
-PGP/MIME-encrypted part, it will try to decrypt the part using the
-secret keys found in the local installation of GnuPG. (default:
-I<false>)
+If this flag is present, and B<email-print-mime-structure> encounters
+a PGP/MIME-encrypted part, it will try to decrypt the part using the
+secret keys found in the local installation of GnuPG.
 
-If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent=true> are
+If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent> are
 supplied, I<KEYFILE> arguments will be tried before falling back to
 GnuPG.
 
 If B<email-print-mime-structure> has been asked to decrypt parts with
-either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent=true>, and it
+either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent>, and it
 is unable to decrypt an encrypted part, it will emit a warning to
 stderr.
 

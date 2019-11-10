@@ -155,9 +155,9 @@ def main() -> None:
                                            epilog="Example: email-print-mime-structure <message.eml")
     parser.add_argument('--pgpkey', metavar='KEYFILE', action='append',
                         help='OpenPGP Transferable Secret Key for decrypting')
-    parser.add_argument('--use-gpg-agent', metavar='true|false', type=bool,
-                        default=False,
+    parser.add_argument('--use-gpg-agent', action='store_true',
                         help='Ask local GnuPG installation for decryption')
+    parser.set_defaults(use_gpg_agent=False)
 
     if argcomplete:
         argcomplete.autocomplete(parser)
