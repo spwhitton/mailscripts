@@ -2,6 +2,9 @@ mailscripts (0.14-1) UNRELEASED; urgency=medium
 
   * email-print-mime-structure: add bash completion (Closes: #944434).
     Thanks to Daniel Kahn Gillmor for the patch.
+  * Declare compliance with Debian Policy 4.4.1.
+    Thanks to Daniel Kahn Gillmor for taking the time to verify that no
+    changes are required.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 10 Nov 2019 09:01:58 -0700
 
