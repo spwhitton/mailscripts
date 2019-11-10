@@ -1,4 +1,4 @@
-mailscripts (0.13-1) UNRELEASED; urgency=medium
+mailscripts (0.13-1) unstable; urgency=medium
 
   * notmuch-extract-patch: add -v/--reroll-count option (Closes: #944418).
   * mailscripts.el: prefix arg to pass -v/--reroll-count to
@@ -7,7 +7,7 @@ mailscripts (0.13-1) UNRELEASED; urgency=medium
     Thanks to Daniel Kahn Gillmor for the patch series.
     - Suggest gpg & gpg-agent.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 09 Nov 2019 15:01:23 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 10 Nov 2019 01:12:04 -0700
 
 mailscripts (0.12-1) unstable; urgency=medium
 
