@@ -4,9 +4,11 @@ Priority: optional
 Maintainer: Sean Whitton <spwhitton@spwhitton.name>
 Standards-Version: 4.1.5
 Build-Depends:
+ bash-completion,
  debhelper (>= 10),
  dh-elpa,
  perl,
+ python3-argcomplete,
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
 
@@ -39,6 +41,7 @@ Recommends:
  devscripts,
  git,
  notmuch,
+ python3-argcomplete,
  python3-pgpy,
 Suggests:
  gpg,
