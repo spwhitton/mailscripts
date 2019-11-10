@@ -3,6 +3,8 @@ mailscripts (0.13-1) UNRELEASED; urgency=medium
   * notmuch-extract-patch: add -v/--reroll-count option (Closes: #944418).
   * mailscripts.el: prefix arg to pass -v/--reroll-count to
     notmuch-extract-patch.
+  * email-print-mime-structure: add --use-gpg-agent option (Closes: #944340).
+    Thanks to Daniel Kahn Gillmor for the patch series.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 09 Nov 2019 15:01:23 -0700
 
