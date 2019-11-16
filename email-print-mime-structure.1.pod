@@ -47,6 +47,11 @@ either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent>, and it
 is unable to decrypt an encrypted part, it will emit a warning to
 stderr.
 
+=item B<--no-use-gpg-agent>
+
+Don't try to decrypt PGP/MIME-encrypted parts using secret keys found
+in the local installation of GnuPG.  This is the default.
+
 =item B<--help>, B<-h>
 
 Show usage instructions.

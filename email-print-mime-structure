@@ -157,6 +157,8 @@ def main() -> None:
                         help='OpenPGP Transferable Secret Key for decrypting')
     parser.add_argument('--use-gpg-agent', action='store_true',
                         help='Ask local GnuPG installation for decryption')
+    parser.add_argument('--no-use-gpg-agent', action='store_false',
+                        help='Don\'t ask local GnuPG installation for decryption')
     parser.set_defaults(use_gpg_agent=False)
 
     if argcomplete:
