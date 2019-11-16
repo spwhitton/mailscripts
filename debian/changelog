@@ -2,6 +2,12 @@ mailscripts (0.14-1) UNRELEASED; urgency=medium
 
   * email-print-mime-structure: add bash completion (Closes: #944434).
     Thanks to Daniel Kahn Gillmor for the patch.
+    - Build-depend on bash-completion, python3-argcomplete.
+    - Recommend python3-argcomplete.
+  * email-print-mime-structure: replace --use-gpg-agent=true with
+    --use-gpg-agent, and add --no-use-gpg-agent (Closes: #944475).
+    This is due to limitations in Python's argparse library.
+    Thanks to Daniel Kahn Gillmor for the report and a patch.
   * Declare compliance with Debian Policy 4.4.1.
     Thanks to Daniel Kahn Gillmor for taking the time to verify that no
     changes are required.
