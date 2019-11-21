@@ -1,3 +1,12 @@
+mailscripts (0.15-1) UNRELEASED; urgency=medium
+
+  * notmuch-extract-patch: do not require that '[PATCH nn/mm]' appear
+    right at the beginning of the Subject: field.
+    With mail forwarded by the Debian BTS, 'Bug#nnnnnn: ' is prepended to
+    the Subject: field.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 21 Nov 2019 14:23:15 -0700
+
 mailscripts (0.14-1) unstable; urgency=medium
 
   * email-print-mime-structure: add bash completion (Closes: #944434).

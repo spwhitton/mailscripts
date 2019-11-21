@@ -56,7 +56,7 @@ def has_reroll_count(msg, v):
             or (v == 1 and not any(entry[0] == 'v' for entry in subject_prefix))
 
 def get_subject_prefix(s):
-    match = re.search(r'''^\[(.*PATCH.*)\]''', s)
+    match = re.search(r'''\[(.*PATCH.*)\]''', s)
     if match:
         return match.group(1).split()
 
