@@ -1,4 +1,4 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@ --with elpa
+	dh $@ --with elpa --with bash-completion

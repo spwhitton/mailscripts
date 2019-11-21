@@ -1,3 +1,48 @@
+mailscripts (0.14-1) unstable; urgency=medium
+
+  * email-print-mime-structure: add bash completion (Closes: #944434).
+    Thanks to Daniel Kahn Gillmor for the patch.
+    - Build-depend on bash-completion, python3-argcomplete.
+    - Recommend python3-argcomplete.
+  * email-print-mime-structure: replace --use-gpg-agent=true with
+    --use-gpg-agent, and add --no-use-gpg-agent (Closes: #944475).
+    This is due to limitations in Python's argparse library.
+    Thanks to Daniel Kahn Gillmor for the report and a patch.
+  * Declare compliance with Debian Policy 4.4.1.
+    Thanks to Daniel Kahn Gillmor for taking the time to verify that no
+    changes are required.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 15 Nov 2019 18:19:04 -0700
+
+mailscripts (0.13-1) unstable; urgency=medium
+
+  * notmuch-extract-patch: add -v/--reroll-count option (Closes: #944418).
+  * mailscripts.el: prefix arg to pass -v/--reroll-count to
+    notmuch-extract-patch.
+  * email-print-mime-structure: add --use-gpg-agent option (Closes: #944340).
+    Thanks to Daniel Kahn Gillmor for the patch series.
+    - Suggest gpg & gpg-agent.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 10 Nov 2019 01:12:04 -0700
+
+mailscripts (0.12-1) unstable; urgency=medium
+
+  * email-print-mime-structure: make typesafe.
+    Thanks to Daniel Kahn Gillmor for the patch.
+  * email-print-mime-structure: add capability to decrypt message parts
+    (Closes: #943959).
+    Thanks to Daniel Kahn Gillmor for the patch series.
+
+  * mailscripts.el:
+    - new defcustom: mailscripts-extract-patches-branch-prefix
+    - new commands:
+      + notmuch-extract-thread-patches-projectile
+      + notmuch-extract-message-patches{,-projectile}
+    - if user does not enter a branch name, use current HEAD.
+  * elpa-mailscripts now depends on elpa-projectile.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 06 Nov 2019 20:54:56 -0700
+
 mailscripts (0.11-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.
@@ -7,7 +52,7 @@ mailscripts (0.11-1~bpo10+1) buster-backports; urgency=medium
 mailscripts (0.11-1) unstable; urgency=medium
 
   * New script: email-print-mime-structure (Closes: #939993).
-    Imported from the notmuch project, which never shipped it in releases.
+    Imported from the notmuch project, which never installed it.
     Thanks to Daniel Kahn Gillmor for the patches.
   * Generate nroff output in UTF-8.
     Thanks to Daniel Kahn Gillmor for the patch.

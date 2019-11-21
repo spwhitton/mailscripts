@@ -38,7 +38,7 @@ message's cryptographic envelope.
 B<email-extract-openpgp-certs> does not attempt to validate the
 certificates it finds in any way.  It does not ensure that they are
 valid OpenPGP certificates, or even that they are of a sane size. It
-doeds not try to establish any relationship between the extracted
+does not try to establish any relationship between the extracted
 certificates and the messages in which they are sent.  For example, it
 does not check the Autocrypt addr= attribute against the message's From:
 header.

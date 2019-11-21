@@ -19,7 +19,45 @@ something like "cat -n".
 
 =head1 OPTIONS
 
-None.
+=over 4
+
+=item B<--pgpkey=>I<KEYFILE>
+
+I<KEYFILE> should name an OpenPGP transferable secret key that is not
+password-protected.  If a PGP/MIME-encrypted message is found on
+standard input, this key will be tried for decryption.  May be used
+multiple times if you want to try decrypting with more than one secret
+key.
+
+OpenPGP secret keys listed in B<--pgpkey=> are used ephemerally, and
+do not interact with any local GnuPG keyring.
+
+=item B<--use-gpg-agent>
+
+If this flag is present, and B<email-print-mime-structure> encounters
+a PGP/MIME-encrypted part, it will try to decrypt the part using the
+secret keys found in the local installation of GnuPG.
+
+If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent> are
+supplied, I<KEYFILE> arguments will be tried before falling back to
+GnuPG.
+
+If B<email-print-mime-structure> has been asked to decrypt parts with
+either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent>, and it
+is unable to decrypt an encrypted part, it will emit a warning to
+stderr.
+
+=item B<--no-use-gpg-agent>
+
+Don't try to decrypt PGP/MIME-encrypted parts using secret keys found
+in the local installation of GnuPG.  This is the default.
+
+=item B<--help>, B<-h>
+
+Show usage instructions.
+
+=back
+
 
 =head1 EXAMPLE
 
@@ -33,10 +71,6 @@ None.
 =back
 
 =head1 LIMITATIONS
-
-B<email-print-mime-structure> currently does not try to decrypt
-encrypted e-mails, so it cannot display the MIME structure that is
-inside the message's cryptographic envelope.
 
 B<email-print-mime-structure>'s output is not stable, and is not
 intended to be interpreted by machines, so please do not depend on it
@@ -52,7 +86,8 @@ environment.
 
 =head1 SEE ALSO
 
-https://tools.ietf.org/html/rfc2045, https://tools.ietf.org/html/rfc2049
+https://tools.ietf.org/html/rfc2045, https://tools.ietf.org/html/rfc2049,
+https://tools.ietf.org/html/rfc3156
 
 =head1 AUTHOR
 
