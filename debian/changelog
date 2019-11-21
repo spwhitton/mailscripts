@@ -4,6 +4,8 @@ mailscripts (0.15-1) UNRELEASED; urgency=medium
     right at the beginning of the Subject: field.
     With mail forwarded by the Debian BTS, 'Bug#nnnnnn: ' is prepended to
     the Subject: field.
+  * mailscripts.el: handle situation in which notmuch-show-thread-id
+    contains an arbitrary search query rather than the thread ID.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 21 Nov 2019 14:23:15 -0700
 
