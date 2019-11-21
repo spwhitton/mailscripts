@@ -1,9 +1,10 @@
 mailscripts (0.15-1) UNRELEASED; urgency=medium
 
-  * notmuch-extract-patch: do not require that '[PATCH nn/mm]' appear
-    right at the beginning of the Subject: field.
-    With mail forwarded by the Debian BTS, 'Bug#nnnnnn: ' is prepended to
-    the Subject: field.
+  * notmuch-extract-patch: when checking the reroll count, do not require
+    that '[PATCH nn/mm]' appear right at the beginning of the subject.
+  * notmuch-extract-patch: strip text in Subject: before '[PATCH nn/mm]'
+    to avoid it getting into the commit message.
+    E.g. the Debian BTS prepends 'Bug#nnnnnn: ' to the Subject: field.
   * mailscripts.el: handle situation in which notmuch-show-thread-id
     contains an arbitrary search query rather than the thread ID.
 
