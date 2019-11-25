@@ -5,7 +5,7 @@ set -e
 test_eml() {
     message="$1"
     shift
-    diff -u "$message.out" <(./email-print-mime-structure "$@" < "$message.eml")
+    diff -u "$message.out" <(./email-print-mime-structure "$@" <"$message.eml")
 }
 
 for eml in tests/email-print-mime-structure/*.eml; do
@@ -17,7 +17,7 @@ for eml in tests/email-print-mime-structure/*.eml; do
 
         testgpghome=$(mktemp -d)
         printf "Testing %s (GnuPG)\n" "${eml##*/}"
-        gpg --homedir="$testgpghome" --batch --quiet --import < "$pgpkey"
+        gpg --homedir="$testgpghome" --batch --quiet --import <"$pgpkey"
         GNUPGHOME="$testgpghome" test_eml "$base" --use-gpg-agent
         rm -rf "$testgpghome"
     else
