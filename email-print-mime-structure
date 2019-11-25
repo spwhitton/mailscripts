@@ -83,6 +83,7 @@ class MimePrinter(object):
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
         cryptopayload:Optional[Message] = None
         try_pgp_decrypt:bool = self.args.pgpkey or self.args.use_gpg_agent
+        try_cms_decrypt:bool = self.args.use_gpg_agent
 
         if try_pgp_decrypt and \
            (parent is not None) and \
@@ -90,6 +91,13 @@ class MimePrinter(object):
            (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
            (num == 2):
             cryptopayload = self.decrypt_part(z, EncType.PGPMIME)
+
+        if try_cms_decrypt and \
+           cryptopayload is None and \
+           z.get_content_type().lower() == 'application/pkcs7-mime' and \
+           str(z.get_param('smime-type')).lower() in ['authenveloped-data',
+                                                      'enveloped-data']:
+            cryptopayload = self.decrypt_part(z, EncType.SMIME)
 
         if cryptopayload is not None:
             newprefix = prefix[:-3] + ' '
@@ -107,6 +115,9 @@ class MimePrinter(object):
                 cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
             if cryptopayload is None and self.args.use_gpg_agent:
                 cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
+        elif flavor == EncType.SMIME:
+            if self.args.use_gpg_agent:
+                cryptopayload = self.pipe_decrypt(ciphertext, ['gpgsm', '--batch', '--decrypt'])
         if cryptopayload is None:
             logging.warning(f'Unable to decrypt')
         return cryptopayload

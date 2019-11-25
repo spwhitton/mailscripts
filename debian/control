@@ -10,6 +10,7 @@ Build-Depends:
  diffutils <!nocheck>,
  gpg <!nocheck>,
  gpg-agent <!nocheck>,
+ gpgsm <!nocheck>,
  mypy <!nocheck>,
  perl,
  python3 <!nocheck>,
@@ -52,6 +53,7 @@ Recommends:
 Suggests:
  gpg,
  gpg-agent,
+ gpgsm,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail

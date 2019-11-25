@@ -35,8 +35,8 @@ do not interact with any local GnuPG keyring.
 =item B<--use-gpg-agent>
 
 If this flag is present, and B<email-print-mime-structure> encounters
-a PGP/MIME-encrypted part, it will try to decrypt the part using the
-secret keys found in the local installation of GnuPG.
+a PGP/MIME- or S/MIME-encrypted part, it will try to decrypt the part
+using the secret keys found in the local installation of GnuPG.
 
 If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent> are
 supplied, I<KEYFILE> arguments will be tried before falling back to
@@ -49,8 +49,8 @@ stderr.
 
 =item B<--no-use-gpg-agent>
 
-Don't try to decrypt PGP/MIME-encrypted parts using secret keys found
-in the local installation of GnuPG.  This is the default.
+Don't try to decrypt PGP/MIME- or S/MIME-encrypted parts using secret
+keys found in the local installation of GnuPG.  This is the default.
 
 =item B<--help>, B<-h>
 
