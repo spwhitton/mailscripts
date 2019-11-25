@@ -103,6 +103,19 @@ class MimePrinter(object):
             newprefix = prefix[:-3] + ' '
             print(f'{newprefix}↧ (decrypts to)')
             self.print_tree(cryptopayload, newprefix + '└', z, 0)
+        else:
+            if z.get_content_type().lower() == 'application/pkcs7-mime' and \
+               str(z.get_param('smime-type')).lower() == 'signed-data':
+                bodypart:Union[List[Message],str,bytes,None] = z.get_payload(decode=True)
+                if isinstance(bodypart, bytes):
+                    unwrapped = self.pipe_transform(bodypart, ['certtool', '--p7-show-data', '--p7-info', '--inder'])
+                    if unwrapped:
+                        newprefix = prefix[:-3] + ' '
+                        print(f'{newprefix}⇩ (unwraps to)')
+                        self.print_tree(unwrapped, newprefix + '└', z, 0)
+                    else:
+                        logging.warning(f'Unable to unwrap one-part PKCS#7 signed message (maybe try "apt install gnutls-bin")')
+
 
     def decrypt_part(self, msg:Message, flavor:EncType) -> Optional[Message]:
         ciphertext:Union[List[Message],str,bytes,None] = msg.get_payload(decode=True)

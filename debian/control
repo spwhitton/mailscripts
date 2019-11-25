@@ -8,6 +8,7 @@ Build-Depends:
  debhelper (>= 10),
  dh-elpa,
  diffutils <!nocheck>,
+ gnutls-bin <!nocheck>,
  gpg <!nocheck>,
  gpg-agent <!nocheck>,
  gpgsm <!nocheck>,
@@ -52,6 +53,7 @@ Recommends:
  python3-argcomplete,
  python3-pgpy,
 Suggests:
+ gnutls-bin,
  gpg,
  gpg-agent,
  gpgsm,
