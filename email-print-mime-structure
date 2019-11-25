@@ -114,16 +114,16 @@ class MimePrinter(object):
             if self.args.pgpkey:
                 cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
             if cryptopayload is None and self.args.use_gpg_agent:
-                cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
+                cryptopayload = self.pipe_transform(ciphertext, ['gpg', '--batch', '--decrypt'])
         elif flavor == EncType.SMIME:
             if self.args.cmskey:
                 for keyname in self.args.cmskey:
                     cmd = ['openssl', 'smime', '-decrypt', '-inform', 'DER', '-inkey', keyname]
-                    cryptopayload = self.pipe_decrypt(ciphertext, cmd)
+                    cryptopayload = self.pipe_transform(ciphertext, cmd)
                     if cryptopayload:
                         return cryptopayload
             if self.args.use_gpg_agent:
-                cryptopayload = self.pipe_decrypt(ciphertext, ['gpgsm', '--batch', '--decrypt'])
+                cryptopayload = self.pipe_transform(ciphertext, ['gpgsm', '--batch', '--decrypt'])
         if cryptopayload is None:
             logging.warning(f'Unable to decrypt')
         return cryptopayload
@@ -145,7 +145,7 @@ class MimePrinter(object):
                 pass
         return None
 
-    def pipe_decrypt(self, ciphertext:bytes, cmd:List[str]) -> Optional[Message]:
+    def pipe_transform(self, ciphertext:bytes, cmd:List[str]) -> Optional[Message]:
         inp:int
         outp:int
         inp, outp = os.pipe()
