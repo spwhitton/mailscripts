@@ -8,6 +8,8 @@ Build-Depends:
  debhelper (>= 10),
  dh-elpa,
  diffutils <!nocheck>,
+ gpg <!nocheck>,
+ gpg-agent <!nocheck>,
  perl,
  python3 <!nocheck>,
  python3-argcomplete,
