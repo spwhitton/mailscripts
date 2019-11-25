@@ -94,7 +94,7 @@ class MimePrinter(object):
             if self.args.pgpkey:
                 cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
             if cryptopayload is None and self.args.use_gpg_agent:
-                cryptopayload = self.gpg_decrypt(ciphertext)
+                cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
             if cryptopayload is None:
                 logging.warning(f'Unable to decrypt')
                 return
@@ -121,13 +121,13 @@ class MimePrinter(object):
                 pass
         return None
 
-    def gpg_decrypt(self, ciphertext:bytes) -> Optional[Message]:
+    def pipe_decrypt(self, ciphertext:bytes, cmd:List[str]) -> Optional[Message]:
         inp:int
         outp:int
         inp, outp = os.pipe()
         with open(outp, 'wb') as outf:
             outf.write(ciphertext)
-        out:subprocess.CompletedProcess[bytes] = subprocess.run(['gpg', '--batch', '--decrypt'],
+        out:subprocess.CompletedProcess[bytes] = subprocess.run(cmd,
                                                                 stdin=inp,
                                                                 capture_output=True)
         if out.returncode == 0:
