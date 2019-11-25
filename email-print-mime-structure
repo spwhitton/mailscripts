@@ -32,6 +32,7 @@ something like "cat -n"
 '''
 import os
 import sys
+import enum
 import email
 import logging
 import subprocess
@@ -50,6 +51,8 @@ try:
     import argcomplete #type: ignore
 except ImportError:
     argcomplete = None
+
+EncType = enum.Enum('EncType', ['PGPMIME', 'SMIME'])
 
 class MimePrinter(object):
     def __init__(self, args:Namespace):
@@ -79,7 +82,6 @@ class MimePrinter(object):
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
         cryptopayload:Optional[Message] = None
-        ciphertext:Union[List[Message],str,bytes,None] = None
         try_pgp_decrypt:bool = self.args.pgpkey or self.args.use_gpg_agent
 
         if try_pgp_decrypt and \
@@ -87,22 +89,27 @@ class MimePrinter(object):
            (parent.get_content_type().lower() == 'multipart/encrypted') and \
            (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
            (num == 2):
-            ciphertext = z.get_payload(decode=True)
-            if not isinstance(ciphertext, bytes):
-                logging.warning('encrypted part was not a leaf mime part somehow')
-                return
-            if self.args.pgpkey:
-                cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
-            if cryptopayload is None and self.args.use_gpg_agent:
-                cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
-            if cryptopayload is None:
-                logging.warning(f'Unable to decrypt')
-                return
+            cryptopayload = self.decrypt_part(z, EncType.PGPMIME)
 
         if cryptopayload is not None:
             newprefix = prefix[:-3] + ' '
             print(f'{newprefix}↧ (decrypts to)')
             self.print_tree(cryptopayload, newprefix + '└', z, 0)
+
+    def decrypt_part(self, msg:Message, flavor:EncType) -> Optional[Message]:
+        ciphertext:Union[List[Message],str,bytes,None] = msg.get_payload(decode=True)
+        cryptopayload:Optional[Message] = None
+        if not isinstance(ciphertext, bytes):
+            logging.warning('encrypted part was not a leaf mime part somehow')
+            return None
+        if flavor == EncType.PGPMIME:
+            if self.args.pgpkey:
+                cryptopayload = self.pgpy_decrypt(self.args.pgpkey, ciphertext)
+            if cryptopayload is None and self.args.use_gpg_agent:
+                cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
+        if cryptopayload is None:
+            logging.warning(f'Unable to decrypt')
+        return cryptopayload
 
     def pgpy_decrypt(self, keys:List[str], ciphertext:bytes) -> Optional[Message]:
         if pgpy is None:
