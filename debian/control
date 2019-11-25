@@ -7,7 +7,9 @@ Build-Depends:
  bash-completion,
  debhelper (>= 10),
  dh-elpa,
+ diffutils <!nocheck>,
  perl,
+ python3 <!nocheck>,
  python3-argcomplete,
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts

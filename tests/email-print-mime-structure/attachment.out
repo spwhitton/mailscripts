@@ -1,0 +1,5 @@
+└┬╴multipart/mixed 594 bytes
+ ├┬╴multipart/alternative 234 bytes
+ │├─╴text/plain 26 bytes
+ │└─╴text/html 72 bytes
+ └─╴text/plain attachment [test.txt] 33 bytes

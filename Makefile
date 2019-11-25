@@ -7,6 +7,9 @@ COMPLETIONS=completions/bash/email-print-mime-structure
 
 all: $(MANPAGES) $(COMPLETIONS)
 
+check:
+	./tests/email-print-mime-structure.sh
+
 clean:
 	rm -f $(MANPAGES)
 	rm -rf completions
