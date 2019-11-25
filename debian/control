@@ -12,6 +12,7 @@ Build-Depends:
  gpg-agent <!nocheck>,
  gpgsm <!nocheck>,
  mypy <!nocheck>,
+ openssl <!nocheck>,
  perl,
  python3 <!nocheck>,
  python3-argcomplete,
@@ -54,6 +55,7 @@ Suggests:
  gpg,
  gpg-agent,
  gpgsm,
+ openssl,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail

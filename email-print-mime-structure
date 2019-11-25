@@ -83,7 +83,7 @@ class MimePrinter(object):
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
         cryptopayload:Optional[Message] = None
         try_pgp_decrypt:bool = self.args.pgpkey or self.args.use_gpg_agent
-        try_cms_decrypt:bool = self.args.use_gpg_agent
+        try_cms_decrypt:bool = self.args.cmskey or self.args.use_gpg_agent
 
         if try_pgp_decrypt and \
            (parent is not None) and \
@@ -116,6 +116,12 @@ class MimePrinter(object):
             if cryptopayload is None and self.args.use_gpg_agent:
                 cryptopayload = self.pipe_decrypt(ciphertext, ['gpg', '--batch', '--decrypt'])
         elif flavor == EncType.SMIME:
+            if self.args.cmskey:
+                for keyname in self.args.cmskey:
+                    cmd = ['openssl', 'smime', '-decrypt', '-inform', 'DER', '-inkey', keyname]
+                    cryptopayload = self.pipe_decrypt(ciphertext, cmd)
+                    if cryptopayload:
+                        return cryptopayload
             if self.args.use_gpg_agent:
                 cryptopayload = self.pipe_decrypt(ciphertext, ['gpgsm', '--batch', '--decrypt'])
         if cryptopayload is None:
@@ -175,7 +181,9 @@ def main() -> None:
     parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',
                                            epilog="Example: email-print-mime-structure <message.eml")
     parser.add_argument('--pgpkey', metavar='KEYFILE', action='append',
-                        help='OpenPGP Transferable Secret Key for decrypting')
+                        help='OpenPGP Transferable Secret Key for decrypting PGP/MIME')
+    parser.add_argument('--cmskey', metavar='KEYFILE', action='append',
+                        help='X.509 Private Key for decrypting S/MIME')
     parser.add_argument('--use-gpg-agent', action='store_true',
                         help='Ask local GnuPG installation for decryption')
     parser.add_argument('--no-use-gpg-agent', action='store_false',

@@ -22,6 +22,12 @@ for eml in tests/email-print-mime-structure/*.eml; do
         GNUPGHOME="$testgpghome" test_eml "$base" --use-gpg-agent
         rm -rf "$testgpghome"
     elif [ -e "$p12key" ]; then
+        printf "Testing %s (OpenSSL)\n" "${eml##*/}"
+        grep -v ^- < "$p12key" | base64 -d | \
+            openssl pkcs12 -nocerts -nodes -passin pass: -passout pass: -out "$base.pemkey"
+        test_eml "$base" --cmskey "$base.pemkey"
+        rm -f "$base.pemkey"
+
         testgpghome=$(mktemp -d)
         printf "Testing %s (GnuPG S/MIME)\n" "${eml##*/}"
         gpgsm --pinentry-mode=loopback --passphrase-fd 4 4<<<'' --homedir="$testgpghome" --batch --quiet --import <"$p12key"
