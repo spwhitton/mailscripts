@@ -1,3 +1,17 @@
+mailscripts (0.16-1) UNRELEASED; urgency=medium
+
+  * email-print-mime-structure: add a test suite (Closes: #945451).
+    Thanks to Daniel Kahn Gillmor for the patch series.
+    - Add <!nocheck> builddeps on
+      + diffutils
+      + python3
+      + python3-pgpy
+      + gpg
+      + gpg-agent
+      + mypy.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 25 Nov 2019 07:55:47 -0700
+
 mailscripts (0.15-1) unstable; urgency=medium
 
   * notmuch-extract-patch: when checking the reroll count, do not require
