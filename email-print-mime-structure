@@ -87,8 +87,8 @@ class MimePrinter(object):
            (parent.get_content_type().lower() == 'multipart/encrypted') and \
            (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
            (num == 2):
-            ciphertext = z.get_payload()
-            if not isinstance(ciphertext, str):
+            ciphertext = z.get_payload(decode=True)
+            if not isinstance(ciphertext, bytes):
                 logging.warning('encrypted part was not a leaf mime part somehow')
                 return
             if self.args.pgpkey:
@@ -104,7 +104,7 @@ class MimePrinter(object):
             print(f'{newprefix}↧ (decrypts to)')
             self.print_tree(cryptopayload, newprefix + '└', z, 0)
 
-    def pgpy_decrypt(self, keys:List[str], ciphertext:str) -> Optional[Message]:
+    def pgpy_decrypt(self, keys:List[str], ciphertext:bytes) -> Optional[Message]:
         if pgpy is None:
             logging.warning(f'Python module pgpy is not available, not decrypting (try "apt install python3-pgpy")')
             return None
@@ -121,11 +121,11 @@ class MimePrinter(object):
                 pass
         return None
 
-    def gpg_decrypt(self, ciphertext:str) -> Optional[Message]:
+    def gpg_decrypt(self, ciphertext:bytes) -> Optional[Message]:
         inp:int
         outp:int
         inp, outp = os.pipe()
-        with open(outp, 'w') as outf:
+        with open(outp, 'wb') as outf:
             outf.write(ciphertext)
         out:subprocess.CompletedProcess[bytes] = subprocess.run(['gpg', '--batch', '--decrypt'],
                                                                 stdin=inp,
