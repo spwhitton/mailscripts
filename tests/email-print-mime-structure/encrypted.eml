@@ -1,0 +1,37 @@
+Date: Sun, 24 Nov 2019 21:13:45 -0500
+Subject: test message
+Message-ID: <pgpmime-encrypted@mailscripts.example>
+From: Alice <alice@mailscripts.example>
+To: Bob <bob@mailscripts.example>
+Content-Type: multipart/encrypted; boundary="eeee";
+ protocol="application/pgp-encrypted"
+
+--eeee
+content-type: application/pgp-encrypted
+
+Version: 1
+
+--eeee
+content-type: application/octet-stream
+
+-----BEGIN PGP MESSAGE-----
+
+hQGMA3wvqk35PDeyAQv/YL3qVwxaAzTrk7/YysmH+HZs8A5DS7WarPpQ6Y33LZ/1
+KFmVujDxbAg4xBDyDJYGmvlKXnbA/rWCAWI+tc67EoSO35hAFK0h6hUhHCCdAy+g
+p9coNsZS+XF9xw8Bfd4Bfr+iaHojqVsBJJXGVg/ie3PWMwC4vvllLsk42Uibw5Oa
+AiEvvm/UTOL/4hEiH2G3Au68e6ulC8q/PNPp4vOD7xMUTg319f+ZkR9pLs2KZles
+o+gioquDvdZhroGmPem9pUsLyjQ83TwYtvaPGoA5uLCuIL1jkroIFPjp96/JqzDR
+RmsEQ3GzWVwxcWyjpw/6gU5SfPrfgaTLLvm6MgYIbAFYEG1cTMbkl3W2vR0VUecr
+uL9YDqmBHgS5XhkxE5tvs0vo8pyIXg96Td1tJIu1IOA87XXVD8Uo6ypTffggOIpO
+YWM0yRXXEOXTd+RwAbY4+Tpu4pE1dQbKF660iuFcoY3b9Bh8O4UG5eARI2gEiFb/
+UmmWp0GpUi4mbhq381rS0sBOAU6KB6t5lk8+IBjGQG8PDf8kovKZrL/zaSrfppqm
+d7ecohTZ41uYP+R6sYu6/LE3UfmTYWqavb0SLwzB55oXhEQBj/NeI/7kwPKrAvfC
+64hxR1Zkd5JfJO6Qwmp7+Z7PB6f1yvBuNhupZqAxP9Dp7F/+b5RaCdSaVIrNUarP
+xRbgaCvL/RDp3HQ1SQlEMNrkIdALXw6xSYvCYxCFnrJOAqeAUtdf3JLVS7jIyuWC
+SeWJwd17o7wkzp7uz6IdK+f+wcNTxPogvpM/rjBmAFE8PHZkgjZlZLJFMDFx4ZiI
+Ljn7AwKRH225pKV3ixwTTFlNCtjO6BgtaSEIRLXw6a95iAsdO140qGRCIRAYMxww
+=9ORE
+-----END PGP MESSAGE-----
+
+--eeee--
+
