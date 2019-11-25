@@ -10,6 +10,7 @@ Build-Depends:
  diffutils <!nocheck>,
  gpg <!nocheck>,
  gpg-agent <!nocheck>,
+ mypy <!nocheck>,
  perl,
  python3 <!nocheck>,
  python3-argcomplete,
