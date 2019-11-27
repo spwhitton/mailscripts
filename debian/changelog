@@ -1,3 +1,15 @@
+mailscripts (0.15-1) unstable; urgency=medium
+
+  * notmuch-extract-patch: when checking the reroll count, do not require
+    that '[PATCH nn/mm]' appear right at the beginning of the subject.
+  * notmuch-extract-patch: strip text in Subject: before '[PATCH nn/mm]'
+    to avoid it getting into the commit message.
+    E.g. the Debian BTS prepends 'Bug#nnnnnn: ' to the Subject: field.
+  * mailscripts.el: handle situation in which notmuch-show-thread-id
+    contains an arbitrary search query rather than the thread ID.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 21 Nov 2019 15:31:18 -0700
+
 mailscripts (0.14-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.

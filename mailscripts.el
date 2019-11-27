@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.13
+;; Version: 0.15
 ;; Package-Requires: (notmuch projectile)
 
 ;; Copyright (C) 2018, 2019 Sean Whitton
@@ -68,7 +68,17 @@ particular, this Emacs Lisp function supports passing only entire
 threads to the notmuch-extract-patch(1) command."
   (interactive
    "Dgit repo: \nsbranch name (or leave blank to apply to current HEAD): \np")
-  (let ((thread-id notmuch-show-thread-id)
+  (let ((thread-id
+         ;; If `notmuch-show' was called with a notmuch query rather
+         ;; than a thread ID, as `org-notmuch-follow-link' in
+         ;; org-notmuch.el does, then `notmuch-show-thread-id' might
+         ;; be an arbitrary notmuch query instead of a thread ID.  We
+         ;; need to wrap such a query in thread:{} before passing it
+         ;; to notmuch-extract-patch(1), or we might not get a whole
+         ;; thread extracted (e.g. if the query is just id:foo)
+         (if (string= (substring notmuch-show-thread-id 0 7) "thread:")
+             notmuch-show-thread-id
+           (concat "thread:{" notmuch-show-thread-id "}")))
         (default-directory (expand-file-name repo)))
     (mailscripts--check-out-branch branch)
     (shell-command

@@ -56,9 +56,18 @@ def has_reroll_count(msg, v):
             or (v == 1 and not any(entry[0] == 'v' for entry in subject_prefix))
 
 def get_subject_prefix(s):
-    match = re.search(r'''^\[(.*PATCH.*)\]''', s)
+    match = re.search(r'''\[(.*PATCH.*)\]''', s)
     if match:
         return match.group(1).split()
+
+# if Subject: contains [PATCH nn/mm] then any text before that should
+# be stripped, as it should not form part of the commit message.  (The
+# debbugs system prepends 'Bug#nnnnnn: ')
+def munge_subject(msg):
+    match = re.search(r'''\[(.*PATCH.*)\].*$''', msg['subject'])
+    if match:
+        del msg['subject']
+        msg['subject'] = match.group(0)
 
 def main():
     try:
@@ -81,6 +90,7 @@ def main():
             for m in in_mb:
                 if is_git_patch(m) and has_reroll_count(m, reroll_count):
                     sys.stderr.write(m['subject']+"\n")
+                    munge_subject(m)
                     out_mb.add(m)
             out_mb.flush()
             print(open(out_mb_file.name).read())
