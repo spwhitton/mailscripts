@@ -1,3 +1,9 @@
+mailscripts (0.15-1~bpo10+1) buster-backports; urgency=medium
+
+  * Rebuild for buster-backports.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 27 Nov 2019 09:05:27 -0700
+
 mailscripts (0.15-1) unstable; urgency=medium
 
   * notmuch-extract-patch: when checking the reroll count, do not require
