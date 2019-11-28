@@ -7,7 +7,6 @@ Build-Depends:
  bash-completion,
  debhelper (>= 10),
  dh-elpa,
- diffutils <!nocheck>,
  gnutls-bin <!nocheck>,
  gpg <!nocheck>,
  gpg-agent <!nocheck>,

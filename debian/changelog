@@ -3,7 +3,6 @@ mailscripts (0.16-1) UNRELEASED; urgency=medium
   email-print-mime-structure:
   * Add a test suite (Closes: #945451).
     - Add <!nocheck> builddeps on
-      + diffutils
       + python3
       + python3-pgpy
       + gpg
