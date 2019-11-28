@@ -10,6 +10,7 @@ mailscripts (0.16-1) UNRELEASED; urgency=medium
       + mypy.
   * Add capability to decrypt S/MIME-encrypted messages (Closes: #945195).
     - Add gpgsm, openssl to Build-Depends and Suggests.
+    - Add <!nocheck> build-dep on dirmngr.
   * Add capability to handle one-part PKCS#7 signature objects.
     - Add gnutls-bin to Build-Depends and Suggests.
   * Fully decode encrypted parts before passing to any decryption
