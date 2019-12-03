@@ -30,7 +30,7 @@ for eml in tests/email-print-mime-structure/*.eml; do
 
         testgpghome=$(mktemp -d)
         printf "Testing %s (GnuPG S/MIME)\n" "${eml##*/}"
-        gpgsm --pinentry-mode=loopback --passphrase-fd 4 4<<<'' --homedir="$testgpghome" --batch --quiet --import <"$p12key"
+        gpgsm --disable-dirmngr --pinentry-mode=loopback --passphrase-fd 4 4<<<'' --homedir="$testgpghome" --batch --quiet --import <"$p12key"
         GNUPGHOME="$testgpghome" test_eml "$base" --use-gpg-agent
         rm -rf "$testgpghome"
     else
