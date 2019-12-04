@@ -1,8 +1,9 @@
 mailscripts (0.16-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.
+  * Drop python3-pgpy build-dep and override_dh_auto_test to do nothing.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 04 Dec 2019 07:38:17 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 04 Dec 2019 07:43:21 -0700
 
 mailscripts (0.16-1) unstable; urgency=medium
 

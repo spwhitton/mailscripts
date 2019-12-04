@@ -2,3 +2,5 @@
 
 %:
 	dh $@ --with elpa --with bash-completion
+
+override_dh_auto_test:
