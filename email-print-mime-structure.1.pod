@@ -32,15 +32,26 @@ key.
 OpenPGP secret keys listed in B<--pgpkey=> are used ephemerally, and
 do not interact with any local GnuPG keyring.
 
+=item B<--cmskey=>I<KEYFILE>
+
+I<KEYFILE> should name a PEM- or DER-encoded X.509 private key that is
+not password-protected.  If an S/MIME-encrypted message that uses CMS
+is found on standard input, this key will be tried for decryption.
+May be used multiple times if you want to try decrypting with more
+than one such key.
+
+X.509 private keys listed in B<--cmskey=> are used ephemerally, and do
+not interact with any local GnuPG keyring.
+
 =item B<--use-gpg-agent>
 
 If this flag is present, and B<email-print-mime-structure> encounters
-a PGP/MIME-encrypted part, it will try to decrypt the part using the
-secret keys found in the local installation of GnuPG.
+a PGP/MIME- or S/MIME-encrypted part, it will try to decrypt the part
+using the secret keys found in the local installation of GnuPG.
 
-If both B<--pgpkey=>I<KEYFILE> and B<--use-gpg-agent> are
-supplied, I<KEYFILE> arguments will be tried before falling back to
-GnuPG.
+If B<--use-gpg-agent> is supplied along with either
+B<--pgpkey=>I<KEYFILE> or B<--cmskey=>I<KEYFILE> arguments, the
+I<KEYFILE> arguments will be tried before falling back to GnuPG.
 
 If B<email-print-mime-structure> has been asked to decrypt parts with
 either B<--pgpkey=>I<KEYFILE> or with B<--use-gpg-agent>, and it
@@ -49,8 +60,8 @@ stderr.
 
 =item B<--no-use-gpg-agent>
 
-Don't try to decrypt PGP/MIME-encrypted parts using secret keys found
-in the local installation of GnuPG.  This is the default.
+Don't try to decrypt PGP/MIME- or S/MIME-encrypted parts using secret
+keys found in the local installation of GnuPG.  This is the default.
 
 =item B<--help>, B<-h>
 

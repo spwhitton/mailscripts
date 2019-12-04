@@ -1,3 +1,27 @@
+mailscripts (0.16-1) unstable; urgency=medium
+
+  email-print-mime-structure:
+  * Add a test suite (Closes: #945451).
+    - Add <!nocheck> builddeps on
+      + python3
+      + python3-pgpy
+      + gpg
+      + gpg-agent
+      + mypy.
+  * Add capability to decrypt S/MIME-encrypted messages (Closes: #945195).
+    - Add gpgsm, openssl to Build-Depends and Suggests.
+    - Add <!nocheck> build-dep on dirmngr.
+  * Add capability to handle one-part PKCS#7 signature objects.
+    - Add gnutls-bin to Build-Depends and Suggests.
+  * Fully decode encrypted parts before passing to any decryption
+    mechanism.
+    See <https://bugs.debian.org/945195#100>.
+
+    Thanks to Daniel Kahn Gillmor for two patch series implementing these
+    improvements.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 28 Nov 2019 11:27:38 -0700
+
 mailscripts (0.15-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.

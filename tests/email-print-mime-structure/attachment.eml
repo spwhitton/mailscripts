@@ -1,0 +1,26 @@
+Date: Sun, 24 Nov 2019 21:13:45 -0500
+Subject: test message
+Message-ID: <attachment@mailscripts.example>
+From: Alice <alice@mailscripts.example>
+To: Bob <bob@mailscripts.example>
+Content-Type: multipart/mixed; boundary="xyz"
+
+--xyz
+Content-Type: multipart/alternative; boundary="abc123"
+
+--abc123
+Content-Type: text/plain
+
+This is a simple message
+
+--abc123
+Content-Type: text/html
+
+<html><head></head><body><p>This is a simple message</p></body></html>
+
+--abc123--
+--xyz
+Content-Type: text/plain
+Content-Disposition: attachment; filename="test.txt"
+
+This is a simple attachment file.

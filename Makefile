@@ -7,9 +7,13 @@ COMPLETIONS=completions/bash/email-print-mime-structure
 
 all: $(MANPAGES) $(COMPLETIONS)
 
+check:
+	./tests/email-print-mime-structure.sh
+	mypy --strict ./email-print-mime-structure
+
 clean:
 	rm -f $(MANPAGES)
-	rm -rf completions
+	rm -rf completions .mypy_cache
 
 %.1: %.1.pod
 	pod2man --section=1 --date="Debian Project" --center="User Commands" \
