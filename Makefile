@@ -1,15 +1,17 @@
 MANPAGES=mdmv.1 mbox2maildir.1 \
 	notmuch-slurp-debbug.1 notmuch-extract-patch.1 maildir-import-patch.1 \
+	imap-dl.1 \
 	email-extract-openpgp-certs.1 \
 	email-print-mime-structure.1 \
 	notmuch-import-patch.1
-COMPLETIONS=completions/bash/email-print-mime-structure
+COMPLETIONS=completions/bash/email-print-mime-structure completions/bash/imap-dl
 
 all: $(MANPAGES) $(COMPLETIONS)
 
 check:
 	./tests/email-print-mime-structure.sh
 	mypy --strict ./email-print-mime-structure
+	mypy --strict ./imap-dl
 
 clean:
 	rm -f $(MANPAGES)

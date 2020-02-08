@@ -1,5 +1,6 @@
 email-extract-openpgp-certs /usr/bin
 email-print-mime-structure /usr/bin
+imap-dl /usr/bin
 maildir-import-patch /usr/bin
 mbox2maildir /usr/bin
 mdmv /usr/bin

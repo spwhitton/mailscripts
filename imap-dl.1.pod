@@ -1,0 +1,88 @@
+=encoding utf8
+
+=head1 NAME
+
+imap-dl -- a simple replacement for a minimalist user of getmail
+
+=head1 SYNOPSIS
+
+B<imap-dl> [B<-v>|B<--verbose>] B<configfile>...
+
+=head1 DESCRIPTION
+
+If you use getmail to reach an IMAP server as though it were POP
+(retrieving from the server, storing it in a maildir and optionally
+deleting), you can point this script to the getmail config and it
+should do the same thing.
+
+It tries to ensure that the configuration file is of the expected
+type, and otherwise it will terminate with an error.  It should not
+lose e-mail messages.
+
+If there's any interest in supporting other similarly simple use cases
+for getmail, patches are welcome.
+
+=head1 OPTIONS
+
+B<-v> or B<--verbose> causes B<imap-dl> to print more details
+about what it is doing.
+
+In addition to parts of the standard B<getmail> configuration,
+B<imap-dl> supports the following keywords in the config file:
+
+B<options.on_size_mismatch> can be set to B<error>, B<none>, or
+B<warn>.  This governs what to do when the remote IMAP server claims a
+different size in the message summary list than the actual message
+retrieval (default: B<error>).
+
+=head1 EXAMPLE CONFIG
+
+If you've never used getmail, you can make the simplest possible
+config file like so:
+
+=over 4
+
+    [retriever]
+    server = mail.example.net
+    username = foo
+    password = sekr1t!
+
+    [destination]
+    path = /home/foo/Maildir
+
+    [options]
+    delete = True
+
+=back
+
+=head1 LIMITATIONS
+
+B<imap-dl> is currently deliberately minimal.  It is designed to be
+used by someone who treats their IMAP mailbox like a POP server.
+
+It works with IMAP-over-TLS only, and it just fetches all messages
+from the default IMAP folder.  It does not support all the various
+features of getmail.
+
+B<imap-dl> is deliberately implemented in a modern version of python3,
+and tries to use just the standard library.  It will not be backported
+to python2.
+
+B<imap-dl> uses imaplib, which means that it does synchronous calls to
+the imap server.  A more clever implementation would use asynchronous
+python to avoid latency/roundtrips.
+
+B<imap-dl> does not know how to wait and listen for new mail using
+IMAP IDLE.  This would be a nice additional feature.
+
+B<imap-dl> does not yet know how to deliver to an MDA (or to
+B<notmuch-insert>).  This would be a nice thing to be able to do.
+
+=head1 SEE ALSO
+
+https://tools.ietf.org/html/rfc3501, http://pyropus.ca/software/getmail/
+
+=head1 AUTHOR
+
+B<imap-dl> and this manpage were written by Daniel Kahn Gillmor,
+inspired by some functionality from the getmail project.

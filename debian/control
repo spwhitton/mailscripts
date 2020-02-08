@@ -77,3 +77,5 @@ Description: collection of scripts for manipulating e-mail on Debian
  email-print-mime-structure -- tree view of a message's MIME structure
  .
  email-extract-openpgp-certs -- extract OpenPGP certificates from a message
+ .
+ imap-dl -- download messages from an IMAP mailbox to a maildir

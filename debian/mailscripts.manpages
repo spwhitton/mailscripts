@@ -1,5 +1,6 @@
 email-extract-openpgp-certs.1
 email-print-mime-structure.1
+imap-dl.1
 maildir-import-patch.1
 mbox2maildir.1
 mdmv.1
