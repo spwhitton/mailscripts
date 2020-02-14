@@ -1,8 +1,11 @@
-mailscripts (0.16-2) UNRELEASED; urgency=medium
+mailscripts (0.17-1) UNRELEASED; urgency=medium
 
   * email-print-mime-structure: pass --disable-dirmngr to gpgsm and drop
     <!nocheck> build-dep on dirmngr (Closes: #946111).
     Thanks to Daniel Kahn Gillmor for a patch.
+  * New script: imap-dl (Closes: #940461).
+    Thanks to Daniel Kahn Gillmor and Jameson Rollins for the patch, and
+    others for testing out the new tool.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 04 Dec 2019 07:16:54 -0700
 
