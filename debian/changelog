@@ -1,4 +1,4 @@
-mailscripts (0.17-1) UNRELEASED; urgency=medium
+mailscripts (0.17-1) unstable; urgency=medium
 
   * email-print-mime-structure: pass --disable-dirmngr to gpgsm and drop
     <!nocheck> build-dep on dirmngr (Closes: #946111).
@@ -7,7 +7,7 @@ mailscripts (0.17-1) UNRELEASED; urgency=medium
     Thanks to Daniel Kahn Gillmor and Jameson Rollins for the patch, and
     others for testing out the new tool.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Wed, 04 Dec 2019 07:16:54 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 14 Feb 2020 10:37:02 -0700
 
 mailscripts (0.16-1) unstable; urgency=medium
 
