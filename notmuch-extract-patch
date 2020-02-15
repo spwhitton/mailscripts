@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+# notmuch-extract-patch -- extract a git patch series from notmuch
+#
+# Copyright (C) 2020 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+use 5.028;
+use strict;
+use warnings;
+
+use IO::Pipe;
+
+my (@ARGV_notmuch, @ARGV_extract, $no_more_extract);
+for (@ARGV) {
+    if (/\A--\z/) {
+        $no_more_extract = 1;
+    } elsif (/\A-/ and not $no_more_extract) {
+        push @ARGV_extract, $_;
+    } else {
+        push @ARGV_notmuch, $_;
+    }
+}
+
+$SIG{CHLD} = "IGNORE";
+my $pipe = IO::Pipe->new;
+
+my $notmuch_pid = fork;
+die "fork() failed: $!" unless defined $notmuch_pid;
+unless ($notmuch_pid) {
+    $pipe->writer;
+    open STDOUT, ">&=", $pipe->fileno
+      or die "couldn't reopen child's STDOUT: $!";
+    exec qw(notmuch show --format=mbox), @ARGV_notmuch;
+}
+$pipe->reader;
+open STDIN, "<&=", $pipe->fileno
+  or die "couldn't reopen parent's STDIN: $!";
+exec "mbox-extract-patch", @ARGV_extract;

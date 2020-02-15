@@ -61,7 +61,7 @@ The target branch may or may not already exist.
 
 With an optional prefix numeric argument REROLL-COUNT, try to
 extract the nth revision of a series.  See the --reroll-count
-option detailed in notmuch-extract-patch(1).
+option detailed in mbox-extract-patch(1).
 
 See notmuch-extract-patch(1) manpage for limitations: in
 particular, this Emacs Lisp function supports passing only entire

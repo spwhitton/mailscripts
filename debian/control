@@ -41,6 +41,8 @@ Depends:
  libconfig-tiny-perl,
  libfile-which-perl,
  libipc-system-simple-perl,
+ liblist-moreutils-perl,
+ libmail-box-perl,
  libmime-tools-perl,
  python3,
  ${misc:Depends},
@@ -69,6 +71,8 @@ Description: collection of scripts for manipulating e-mail on Debian
  notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
  .
  notmuch-extract-patch -- extract a git patch series from notmuch
+ .
+ mbox-extract-patch -- extract a git patch series from an mbox
  .
  maildir-import-patch -- import a git patch series into a maildir
  .

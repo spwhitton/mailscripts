@@ -1,0 +1,70 @@
+=head1 NAME
+
+mbox-extract-patch - extract a git patch series from an mbox
+
+=head1 SYNOPSIS
+
+B<mbox-extract-patch> [I<OPTIONS>] <I<MBOX>
+
+=head1 DESCRIPTION
+
+B<mbox-extract-patch> extracts a series of git patches from an mbox.
+It is designed to extract patches that were originally sent using
+git-send-email(1).  It skips cover letters and replies/reviews in its
+output.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-v>|B<--reroll-count=>I<N>
+
+Try to extract the I<N>th version of a patch series, where these
+patches are identified by subject prefixes like "[PATCH vI<N> 1/3]".
+
+If this option is not specified, and there is more than one series,
+default to extracting the version of the patch series with the highest
+version number we find.
+
+Note that this option should not usually be needed, because best
+practices when sharing patches with git-send-email(1) include starting
+a new thread when posting a revised series.  The I<--in-reply-to>
+option to git-format-patch(1) is used mainly for posting a patch
+series in reply to a bug report.
+
+=item B<--trailers>
+
+Extract and add to patches lines like
+
+    Acked-by: A. Developer <a.dev@example.net>
+
+sent in reply to those patches.  B<--trailers> is on by default, and
+B<--no-trailers> can be used to disable adding the trailers.
+
+=item B<--cover-letter-trailers>
+
+Additionally add to all patches in the series any trailers sent in
+reply to the cover letter of the patch series.
+
+=back
+
+=head1 EXAMPLE
+
+=over 4
+
+    % git checkout -b test-feature
+    % mbox-extract-patch <thread.mbox | git am
+
+=back
+
+=head1 LIMITATIONS
+
+Detection of cover letters is currently quite simplistic.
+
+=head1 SEE ALSO
+
+notmuch(1), git-send-email(1), notmuch-extract-patch(1)
+
+=head1 AUTHOR
+
+Sean Whitton <spwhitton@spwhitton.name>

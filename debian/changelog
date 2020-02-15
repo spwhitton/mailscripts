@@ -1,3 +1,17 @@
+mailscripts (0.18-1) UNRELEASED; urgency=medium
+
+  * notmuch-extract-patch: rewrite:
+    - Split into notmuch-extract-patch(1) and mbox-extract-patch(1).
+    - Don't require -v when only one series in thread (Closes: #951218).
+      + When there is no -v, extract the patch series with the highest
+        reroll count that we see.
+    - New --trailers and --cover-letter-trailers features (Closes: #951211).
+      + --trailers is on by default; use --no-trailers to disable.
+    - Stop outputting message subjects on standard error.
+  * New dependencies on liblist-moreutils-perl, libmail-box-perl.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 15 Feb 2020 09:06:56 -0700
+
 mailscripts (0.17-1) unstable; urgency=medium
 
   * email-print-mime-structure: pass --disable-dirmngr to gpgsm and drop

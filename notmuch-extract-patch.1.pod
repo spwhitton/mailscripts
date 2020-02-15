@@ -4,34 +4,15 @@ notmuch-extract-patch - extract a git patch series from notmuch
 
 =head1 SYNOPSIS
 
-B<notmuch-extract-patch> [B<-v>|B<--reroll-count=>I<N>] I<QUERY>
+B<notmuch-extract-patch> [I<mbox-extract-patch(1) options>] [I<-->] I<QUERY>
 
 =head1 DESCRIPTION
 
-B<notmuch-extract-patch> extracts a series of git patches from your
-notmuch database.  It is designed to extract patches that were
-originally sent using git-send-email(1).  It skips cover letters and
-replies/reviews.
-
-=head1 OPTIONS
-
-=over 4
-
-=item B<-v>|B<--reroll-count=>I<N>
-
-Try to extract the I<N>th version of a patch series, where these
-patches are identified by subject prefixes like "[PATCH vI<N> 1/3]".
-
-If this option is not specified, default to extracting the first
-version of the patch series.
-
-Note that this option should not usually be needed, because best
-practices when sharing patches with git-send-email(1) include starting
-a new thread when posting a revised series.  The I<--in-reply-to>
-option to git-format-patch(1) is used mainly for posting a patch
-series in reply to a bug report.
-
-=back
+B<notmuch-extract-patch> is a wrapper around mbox-extract-patch(1) to
+extract a series of git patches from your notmuch database.  It is
+designed to extract patches that were originally sent using
+git-send-email(1).  It skips cover letters and replies/reviews in its
+output.
 
 =head1 EXAMPLE
 
@@ -44,18 +25,25 @@ series in reply to a bug report.
 
 =head1 LIMITATIONS
 
+We inherit limitations of mbox-extract-patch(1).
+
 B<notmuch-extract-patch> can select patches to extract based on the
-reroll count, but otherwise assumes that there is only one patch
-series in a thread.  If this assumption is violated, you would need to
-construct a notmuch query that includes only the patches you want to
-extract, which somewhat defeats the purpose of this script.
+reroll count (see -v in mbox-extract-patch(1)), but otherwise typical
+usage assumes that there is only one patch series in a thread.
+
+If this assumption is violated, you would need to construct a notmuch
+query that includes only the patches you want to extract, which
+somewhat defeats the purpose of having this script.
 
 =head1 SEE ALSO
 
-notmuch(1), git-send-email(1)
+notmuch(1), git-send-email(1), mbox-extract-patch(1)
+
+Emacs functions 'notmuch-extract-thread-patches' and
+'notmuch-extract-message-patches', provided by mailscripts.el
 
 =head1 AUTHOR
 
-B<notmuch-extract-patch> was written by Aurelien Aptel.  This manpage
-was written by Sean Whitton <spwhitton@spwhitton.name> for the Debian
-system, but may be used by others.
+Sean Whitton <spwhitton@spwhitton.name>
+
+Rewrite, with additional features, of a script by Aurelien Aptel.

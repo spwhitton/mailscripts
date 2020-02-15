@@ -1,5 +1,6 @@
 MANPAGES=mdmv.1 mbox2maildir.1 \
 	notmuch-slurp-debbug.1 notmuch-extract-patch.1 maildir-import-patch.1 \
+	mbox-extract-patch.1 \
 	imap-dl.1 \
 	email-extract-openpgp-certs.1 \
 	email-print-mime-structure.1 \
