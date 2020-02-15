@@ -67,7 +67,7 @@ See notmuch-extract-patch(1) manpage for limitations: in
 particular, this Emacs Lisp function supports passing only entire
 threads to the notmuch-extract-patch(1) command."
   (interactive
-   "Dgit repo: \nsbranch name (or leave blank to apply to current HEAD): \np")
+   "Dgit repo: \nsbranch name (or leave blank to apply to current HEAD): \nP")
   (let ((thread-id
          ;; If `notmuch-show' was called with a notmuch query rather
          ;; than a thread ID, as `org-notmuch-follow-link' in
@@ -82,9 +82,12 @@ threads to the notmuch-extract-patch(1) command."
         (default-directory (expand-file-name repo)))
     (mailscripts--check-out-branch branch)
     (shell-command
-     (format "notmuch-extract-patch -v%d %s | git am"
-             (if reroll-count reroll-count 1)
-             (shell-quote-argument thread-id))
+     (if reroll-count
+         (format "notmuch-extract-patch -v%d %s | git am"
+                 (prefix-numeric-value reroll-count)
+                 (shell-quote-argument thread-id))
+       (format "notmuch-extract-patch %s | git am"
+               (shell-quote-argument thread-id)))
      "*notmuch-apply-thread-series*")))
 
 ;;;###autoload
@@ -92,7 +95,9 @@ threads to the notmuch-extract-patch(1) command."
   "Like `notmuch-extract-thread-patches', but use projectile to choose the repo."
   (interactive)
   (mailscripts--projectile-repo-and-branch
-   'notmuch-extract-thread-patches (prefix-numeric-value current-prefix-arg)))
+   'notmuch-extract-thread-patches
+   (when current-prefix-arg
+     (prefix-numeric-value current-prefix-arg))))
 
 ;;;###autoload
 (defun notmuch-extract-message-patches (repo branch)

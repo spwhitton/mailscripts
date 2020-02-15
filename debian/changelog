@@ -9,6 +9,9 @@ mailscripts (0.18-1) UNRELEASED; urgency=medium
       + --trailers is on by default; use --no-trailers to disable.
     - Stop outputting message subjects on standard error.
   * New dependencies on liblist-moreutils-perl, libmail-box-perl.
+  * mailscripts.el: instead of defaulting to passing --reroll-count=1 to
+    notmuch-extract-patch, don't pass any reroll count unless there is a
+    prefix arg.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 15 Feb 2020 09:06:56 -0700
 
