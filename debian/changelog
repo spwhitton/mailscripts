@@ -1,4 +1,4 @@
-mailscripts (0.18-1) UNRELEASED; urgency=medium
+mailscripts (0.18-1) unstable; urgency=medium
 
   * notmuch-extract-patch: rewrite:
     - Split into notmuch-extract-patch(1) and mbox-extract-patch(1).
@@ -13,7 +13,7 @@ mailscripts (0.18-1) UNRELEASED; urgency=medium
     notmuch-extract-patch, don't pass any reroll count unless there is a
     prefix arg.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 15 Feb 2020 09:06:56 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 15 Feb 2020 15:10:56 -0700
 
 mailscripts (0.17-1) unstable; urgency=medium
 
