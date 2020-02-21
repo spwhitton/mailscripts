@@ -1,3 +1,31 @@
+mailscripts (0.18-1) unstable; urgency=medium
+
+  * notmuch-extract-patch: rewrite:
+    - Split into notmuch-extract-patch(1) and mbox-extract-patch(1).
+    - Don't require -v when only one series in thread (Closes: #951218).
+      + When there is no -v, extract the patch series with the highest
+        reroll count that we see.
+    - New --trailers and --cover-letter-trailers features (Closes: #951211).
+      + --trailers is on by default; use --no-trailers to disable.
+    - Stop outputting message subjects on standard error.
+  * New dependencies on liblist-moreutils-perl, libmail-box-perl.
+  * mailscripts.el: instead of defaulting to passing --reroll-count=1 to
+    notmuch-extract-patch, don't pass any reroll count unless there is a
+    prefix arg.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 15 Feb 2020 15:10:56 -0700
+
+mailscripts (0.17-1) unstable; urgency=medium
+
+  * email-print-mime-structure: pass --disable-dirmngr to gpgsm and drop
+    <!nocheck> build-dep on dirmngr (Closes: #946111).
+    Thanks to Daniel Kahn Gillmor for a patch.
+  * New script: imap-dl (Closes: #940461).
+    Thanks to Daniel Kahn Gillmor and Jameson Rollins for the patch, and
+    others for testing out the new tool.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 14 Feb 2020 10:37:02 -0700
+
 mailscripts (0.16-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.

@@ -1,0 +1,278 @@
+#!/usr/bin/python3
+# PYTHON_ARGCOMPLETE_OK
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2019-2020 Daniel Kahn Gillmor
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+DESCRIPTION = '''A simple replacement for a minimalist use of getmail.
+
+In particular, if you use getmail to reach an IMAP server as though it
+were POP (retrieving from the server and optionally deleting), you can
+point this script to the getmail config and it should do the same
+thing.
+
+It tries to ensure that the configuration file is of the expected
+type, and will terminate raising an exception, and it should not lose
+messages.
+
+If there's any interest in supporting other similarly simple use cases
+for getmail, patches are welcome.
+
+If you've never used getmail, you can make the simplest possible
+config file like so:
+
+----------
+[retriever]
+server = mail.example.net
+username = foo
+password = sekr1t!
+
+[destination]
+path = /home/foo/Maildir
+
+[options]
+delete = True
+----------
+'''
+
+import re
+import sys
+import ssl
+import enum
+import time
+import imaplib
+import logging
+import mailbox
+import os.path
+import argparse
+import statistics
+import configparser
+
+from typing import Dict, List, Union, Tuple
+
+try:
+    import argcomplete #type: ignore
+except ImportError:
+    argcomplete = None
+
+class Splitter(object):
+    def __init__(self, name:str, match:bytes):
+        self._splitter = re.compile(match)
+        self._name = name
+    def breakup(self, line:bytes) -> Dict[str,int]:
+        match = self._splitter.match(line)
+        if not match:
+            raise Exception(f'malformed {self._name} line {line!r}')
+        ret:Dict[str,int] = {}
+        i:str
+        for i in ['id', 'uid', 'size']:
+            ret[i] = int(match[i])
+        return ret
+
+OnSizeMismatch = enum.Enum('OnSizeMismatch', 'warn error none')
+
+# b'1 (UID 160 RFC822.SIZE 1867)' -> {id: 1, uid: 160, size: 1867}
+_summary_re = rb'^(?P<id>[0-9]+) \(UID (?P<uid>[0-9]+) RFC822.SIZE (?P<size>[0-9]+)\)$'
+summary_splitter = Splitter('summary', _summary_re)
+# b'1 (UID 160 BODY[] {1867}' -> {id: 1, uid: 160, size: 1867}
+_fetch_re = rb'^(?P<id>[0-9]+) \(UID (?P<uid>[0-9]+) (FLAGS \([\\A-Za-z ]*\) )?BODY\[\] \{(?P<size>[0-9]+)\}$'
+fetch_splitter = Splitter('fetch', _fetch_re)
+
+def scan_msgs(configfile:str, verbose:bool) -> None:
+    conf = configparser.ConfigParser()
+    conf.read_file(open(configfile, 'r'))
+    oldloglevel = logging.getLogger().getEffectiveLevel()
+    conf_verbose = conf.getint('options', 'verbose', fallback=1)
+    if conf_verbose > 1:
+        verbose = True
+    if verbose:
+        logging.getLogger().setLevel(logging.INFO)
+    logging.info('pulling from config file %s', configfile)
+    delete = conf.getboolean('options', 'delete', fallback=False)
+    read_all = conf.getboolean('options', 'read_all', fallback=True)
+    if not read_all:
+        raise NotImplementedError('imap-dl only supports options.read_all=True, got False')
+    rtype = conf.get('retriever', 'type', fallback='SimpleIMAPSSLRetriever')
+    if rtype.lower() != 'simpleimapsslretriever':
+        raise NotImplementedError(f'imap-dl only supports retriever.type=SimpleIMAPSSLRetriever, got {rtype}')
+    # FIXME: handle `retriever.record_mailbox`
+    dtype = conf.get('destination', 'type', fallback='Maildir')
+    if dtype.lower() != 'maildir':
+        raise NotImplementedError(f'imap-dl only supports destination.type=Maildir, got {dtype}')
+    dst = conf.get('destination', 'path')
+    dst = os.path.expanduser(dst)
+    if os.path.exists(dst) and not os.path.isdir(dst):
+        raise Exception('expected destination directory, but %s is not a directory'%(dst,))
+    mdst:mailbox.Maildir = mailbox.Maildir(dst, create=True)
+    ca_certs = conf.get('retriever', 'ca_certs', fallback=None)
+    on_size_mismatch_str:str = conf.get('options', 'on_size_mismatch', fallback='error').lower()
+    try:
+        on_size_mismatch:OnSizeMismatch = OnSizeMismatch.__members__[on_size_mismatch_str]
+    except KeyError:
+        raise Exception(f'options.on_size_mismatch value should be one of:\n'
+                        '{list(OnSizeMismatch.__members__.keys())}\n'
+                        '(found "{on_size_mismatch_str}")')
+
+    ctx = ssl.create_default_context(cafile=ca_certs)
+    server:str = conf.get('retriever', 'server')
+    with imaplib.IMAP4_SSL(host=server, #type: ignore
+                           port=int(conf.get('retriever', 'port', fallback=993)),
+                           ssl_context=ctx) as imap:
+        username:str = conf.get('retriever', 'username')
+        logging.info('Logging in as %s', username)
+        resp:Tuple[str, List[Union[bytes,Tuple[bytes,bytes]]]]
+        resp = imap.login(username, conf.get('retriever', 'password'))
+        if resp[0] != 'OK':
+            raise Exception(f'login failed with {resp} as user {username} on {server}')
+        if verbose: # only enable debugging after login to avoid leaking credentials in the log
+            imap.debug = 4
+        logging.info("capabilities reported: %s", ', '.join(imap.capabilities))
+        resp = imap.select(readonly=not delete)
+        if resp[0] != 'OK':
+            raise Exception(f'selection failed: {resp}')
+        if len(resp[1]) != 1:
+            raise Exception(f'expected exactly one EXISTS response from select, got {resp[1]}')
+        data:Union[bytes,Tuple[bytes,bytes]] = resp[1][0]
+        if not isinstance(data, bytes):
+            raise Exception(f'expected bytes in response to SELECT, got {data}')
+        n:int = int(data)
+        if n == 0:
+            logging.info('No messages to retrieve')
+        else:
+            pull_msgs(imap, n, mdst, on_size_mismatch, delete)
+    logging.getLogger().setLevel(oldloglevel)
+
+def pull_msgs(imap:imaplib.IMAP4_SSL, n:int, mdst:mailbox.Maildir,
+              on_size_mismatch:OnSizeMismatch, delete:bool) -> None:
+    sizes_mismatched:List[int] = []
+    resp:Tuple[str, List[Union[bytes,Tuple[bytes,bytes]]]]
+    resp = imap.fetch('1:%d'%(n), '(UID RFC822.SIZE)')
+    if resp[0] != 'OK':
+        raise Exception(f'initial FETCH 1:{n} not OK ({resp})')
+
+    pending:List[Dict[str,int]] = []
+    for data in resp[1]:
+        if not isinstance(data, bytes):
+            raise TypeError(f'Expected bytes, got {type(data)}')
+        pending.append(summary_splitter.breakup(data))
+
+    sizes:Dict[int,int] = {}
+    for m in pending:
+        sizes[m['uid']] = m['size']
+    fetched:Dict[int,int] = {}
+    uids = ','.join(map(str, sorted([x['uid'] for x in pending])))
+    totalbytes = sum([x['size'] for x in pending])
+    logging.info('Fetching %d messages, expecting %d bytes of message content',
+                 len(pending), totalbytes)
+    # FIXME: sort by size?
+    # FIXME: fetch in batches or singly instead of all-at-once?
+    # FIXME: rolling deletion?
+    # FIXME: asynchronous work?
+    before = time.perf_counter()
+    resp = imap.uid('FETCH', uids, '(UID BODY.PEEK[])')
+    after = time.perf_counter()
+    if resp[0] != 'OK':
+        raise Exception('UID fetch failed {resp[0]}')
+    expected_objects:int = len(pending) * 2
+    if len(resp[1]) != expected_objects:
+        raise Exception(f'expected {expected_objects} responses for fetch, got {len(resp[1])}')
+    for n in range(0, expected_objects, 2):
+        # expected response is one "fetch" line, followed by a close-paren item
+        data = resp[1][n]
+        if not isinstance(data, tuple) or len(data) != 2:
+            raise Exception(f'expected 2-part tuple, got {type(data)}')
+
+        closeparen = resp[1][n+1]
+        if not isinstance(closeparen, bytes) or closeparen != b')':
+            raise Exception('Expected close parenthesis after message fetch')
+
+        m = fetch_splitter.breakup(data[0])
+        if m['size'] != len(data[1]):
+            raise Exception(f'expected {m["size"]} octets, got {len(data[1])}')
+        if m['size'] != sizes[m['uid']]:
+            if on_size_mismatch == OnSizeMismatch.warn:
+                if len(sizes_mismatched) == 0:
+                    logging.warning('size mismatch: summary said %d octets, fetch sent %d',
+                                    sizes[m['uid']], m['size'])
+                elif len(sizes_mismatched) == 1:
+                    logging.warning('size mismatch: (mismatches after the first suppressed until summary)')
+                sizes_mismatched.append(sizes[m['uid']] - m['size'])
+            elif on_size_mismatch == OnSizeMismatch.error:
+                raise Exception(f"size mismatch: summary said {sizes[m['uid']]} octets, "
+                                "fetch sent {m['size']}\n"
+                                "(set options.on_size_mismatch to none or warn to avoid hard failure)")
+        # convert any CRLF line-endings to UNIX standard line-
+        # endings:
+        fname = mdst.add(data[1].replace(b'\r\n', b'\n'))
+        logging.info('stored message %d/%d (uid %d, %d bytes) in %s',
+                     len(fetched) + 1, len(pending), m['uid'], m['size'], fname)
+        del sizes[m['uid']]
+        fetched[m['uid']] = m['size']
+    if sizes:
+        logging.warning('unhandled UIDs: %s', sizes)
+    logging.info('%d bytes of %d messages fetched in %g seconds (~%g KB/s)',
+                 sum(fetched.values()), len(fetched), after - before,
+                 sum(fetched.values())/((after - before)*1024))
+    if on_size_mismatch == OnSizeMismatch.warn and len(sizes_mismatched) > 1:
+        logging.warning('%d size mismatches out of %d messages (mismatches in bytes: mean %f, stddev %f)',
+                        len(sizes_mismatched), len(fetched),
+                        statistics.mean(sizes_mismatched),
+                        statistics.stdev(sizes_mismatched))
+    if delete:
+        logging.info('trying to delete %d messages from IMAP store', len(fetched))
+        resp = imap.uid('STORE', ','.join(map(str, fetched.keys())), '+FLAGS', r'(\Deleted)')
+        if resp[0] != 'OK':
+            raise Exception(f'failed to set \\Deleted flag: {resp}')
+        resp = imap.expunge()
+        if resp[0] != 'OK':
+            raise Exception(f'failed to expunge! {resp}')
+    else:
+        logging.info('not deleting any messages, since options.delete is not set')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description=DESCRIPTION,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        'config', nargs='+', metavar='CONFIG',
+        help="configuration file")
+    parser.add_argument(
+        '-v', '--verbose', action='store_true',
+        help="verbose log output")
+
+    if argcomplete:
+        argcomplete.autocomplete(parser)
+    elif '_ARGCOMPLETE' in os.environ:
+        logging.error('Argument completion requested but the "argcomplete" '
+                      'module is not installed. '
+                      'Maybe you want to "apt install python3-argcomplete"')
+        sys.exit(1)
+
+    args = parser.parse_args()
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.INFO)
+
+    errs = {}
+    for confname in args.config:
+        try:
+            scan_msgs(confname, args.verbose)
+        except imaplib.IMAP4.error as e:
+            logging.error('IMAP failure for config file %s: %s', confname, e)
+            errs[confname] = e
+    if errs:
+        exit(1)

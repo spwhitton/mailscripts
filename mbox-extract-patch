@@ -1,0 +1,223 @@
+#!/usr/bin/perl
+
+# mbox-extract-patch -- extract a git patch series from an mbox
+#
+# Copyright (C) 2020 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+use 5.028;
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Mail::Box::Mbox;
+use File::Temp ();
+use List::Util qw(max);
+
+our $patch_tag_re = qr/\[(.*PATCH.*)\]/;
+our $trailer_re   = qr/^[A-Z][a-z-]+: .+$/;
+# ordering here is from Konstantin Ryabitsev's get-lore-mbox.py
+our @trailer_order = (
+    "fixes", "reported",   "suggested", "original",
+    "co-",   "signed-off", "tested",    "reviewed",
+    "acked", "cc",         "link",      "",
+);
+
+# empty STDIN into a temporary file
+my $mbox = File::Temp->new;
+binmode STDIN;
+binmode $mbox;
+my $BUFSIZ = 64 * (2**10);
+while (read STDIN, my $buf, $BUFSIZ) {
+    print $mbox $buf
+      or die "couldn't write to " . $mbox->filename . ": $!";
+}
+$mbox->close;    # close filehandle for writing; keeps the file
+
+# command line arguments
+my $extract_trailers = 1;
+my ($reroll_count, $cover_letter_trailers);
+Getopt::Long::Configure("bundling");
+GetOptions
+  "reroll-count|v=i"       => \$reroll_count,
+  "trailers!"              => \$extract_trailers,
+  "cover-letter-trailers!" => \$cover_letter_trailers;
+
+my $folder = Mail::Box::Mbox->new(folder => $mbox->filename, access => "rw");
+
+# first pass: extract info from messages, and delete some known not to
+# be wanted patches
+my (@reroll_counts, %trailers, %covers);
+foreach my $message ($folder->messages) {
+    # we assume that the first text/plain part we find is the
+    # patch/message, and if none, we give up on the message
+    $message->delete, next unless defined $message->first_text_plain_part;
+
+    my $subject = $message->study("subject");
+    $subject =~ /$patch_tag_re/, my $subject_front = $` if defined $subject;
+    my @lines = $message->first_text_plain_part->body->decoded->lines;
+
+    # $is_cover is a bit simplistic right now
+    my $is_patch = grep /^@@ [0-9 +,-]+ @@/, @lines;
+    my $is_cover
+      = defined $message->patch_count
+      && $message->patch_count == 0
+      && defined $subject_front
+      && $subject_front !~ /Re: \z/i;
+
+    if ($is_patch) {
+        $message->delete, next
+          if $reroll_count and $reroll_count != $message->reroll_count;
+        # record reroll counts seen so we can determine, later,
+        # whether there is more than one version of the patch series
+        # in our input
+        push @reroll_counts, $message->reroll_count;
+    } elsif ($is_cover) {
+        # all we need from covers is their msgids so we can look for
+        # trailers sent in reply to those covers
+        $covers{ $message->reroll_count } = $message->messageId;
+        $message->delete;
+    } else {
+        my $in_replies_to = $message->get("In-Reply-To");
+        if ($in_replies_to and my @ids = $in_replies_to =~ m/\<([^>]+)\>/g) {
+            warn "In-Reply-To field with more than one Message-Id; using first"
+              if @ids > 1;
+            my $id = $ids[0];
+            my @ts = grep /$trailer_re/, @lines;
+            push $trailers{$id}->@*, @ts;
+        }
+        $message->delete;
+    }
+}
+# expunge deleted messages
+$folder->write or die "failed to update mbox!";
+
+# second pass requires $reroll_count to be set, and we can now
+# determine what it should be based on information gathered during the
+# first pass
+unless ($reroll_count) {
+    if (@reroll_counts > 0) {
+        # we saw one or more series, and user did not specify a reroll
+        # count, so we extract the series with the highest version number
+        $reroll_count = max @reroll_counts;
+    } else {
+        # we didn't see any reroll counts, so we mustn't have seen any
+        # patches
+        exit;
+    }
+}
+
+# second pass: edits to patch messages, and delete remaining unwanted
+# messages.  note that only patches remain in the mbox after first
+# pass
+foreach my $message ($folder->messages) {
+    $message->delete, next
+      unless $reroll_count == $message->reroll_count;
+
+    my @ts;
+    my $id  = $message->messageId;
+    my $cid = $covers{ $message->reroll_count };
+    @ts = $trailers{$id}->@* if $extract_trailers and $trailers{$id};
+    push @ts, $trailers{$cid}->@*
+      if $cover_letter_trailers and $trailers{$cid};
+    $message->insert_trailers(@ts) if @ts;
+
+    # if Subject: contains [PATCH nn/mm] then any text before that
+    # should be stripped, as it should not form part of the commit
+    # message.  (The debbugs system prepends 'Bug#nnnnnn: ')
+    my $subject = $message->study("subject");
+    $subject =~ /$patch_tag_re.*$/;
+    $message->head->set(Subject => $&);
+}
+
+# save mbox and output
+$folder->close or die "failed to update & close mbox!";
+exit unless -e $mbox->filename;    # no patches to extract
+open my $fh, "< :raw :bytes", $mbox->filename
+  or die "couldn't open " . $mbox->filename . " for reading";
+while (read $fh, my $buf, $BUFSIZ) {
+    print $buf;
+}
+
+package Mail::Message {
+    use Carp;
+    use Mail::Message::Body;
+    use List::MoreUtils qw(first_index);
+
+    sub insert_trailers {
+        my ($self, @ts) = @_;
+        my $part = $self->first_text_plain_part;
+        return unless defined $part;
+        my @lines = $part->body->decoded->lines;
+        my $i = my $j = first_index { /^---$/ } @lines;
+        carp "couldn't find cut; not daring insert any trailers", return
+          if $i == -1;
+        $i-- while $i > 0 and $lines[$i - 1] =~ /$trailer_re/;
+        unshift @ts, splice @lines, $i, $j - $i;
+
+        # algorithm based on Konstantin Ryabitsev's in his get-lore-mbox.py
+        my (@new_ts, %added);
+        foreach my $pat (@trailer_order) {
+            foreach my $t (@ts) {
+                next if exists $added{$t};
+                next unless $t =~ /^$pat(?:-by)?:/i;
+                push @new_ts, $t;
+                $added{$t} = undef;
+            }
+        }
+
+        splice @lines, $i, 0, @new_ts;
+        my $body = Mail::Message::Body->new(
+            charset => "PERL",
+            data    => \@lines
+        );
+        $body->encode;
+        $part->body($body);
+    }
+
+    sub first_text_plain_part {
+        my $self = shift;
+        if ($self->isMultipart) {
+            for ($self->parts("RECURSE")) {
+                return $_ if $_->body->mimeType eq "text/plain";
+            }
+        } else {
+            return $self if $self->body->mimeType eq "text/plain";
+        }
+        return;
+    }
+
+    sub reroll_count {
+        for (shift->_subject_patch_components) {
+            /\Av([0-9]+)\z/ and return $1;
+        }
+        return 1;
+    }
+
+    sub patch_count {
+        for (shift->_subject_patch_components) {
+            m#\A([0-9]+)/[0-9]+\z# and return $1;
+        }
+        return;
+    }
+
+    sub _subject_patch_components {
+        my $subject = shift->study("subject");
+        return unless defined $subject;
+        $subject =~ /$patch_tag_re/;
+        return unless defined $1;
+        split " ", $1;
+    }
+}

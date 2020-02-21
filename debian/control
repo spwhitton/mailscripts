@@ -7,7 +7,6 @@ Build-Depends:
  bash-completion,
  debhelper (>= 10),
  dh-elpa,
- dirmngr <!nocheck>,
  gnutls-bin <!nocheck>,
  gpg <!nocheck>,
  gpg-agent <!nocheck>,
@@ -41,6 +40,8 @@ Depends:
  libconfig-tiny-perl,
  libfile-which-perl,
  libipc-system-simple-perl,
+ liblist-moreutils-perl,
+ libmail-box-perl,
  libmime-tools-perl,
  python3,
  ${misc:Depends},
@@ -70,6 +71,8 @@ Description: collection of scripts for manipulating e-mail on Debian
  .
  notmuch-extract-patch -- extract a git patch series from notmuch
  .
+ mbox-extract-patch -- extract a git patch series from an mbox
+ .
  maildir-import-patch -- import a git patch series into a maildir
  .
  notmuch-import-patch -- import a git patch series into notmuch
@@ -77,3 +80,5 @@ Description: collection of scripts for manipulating e-mail on Debian
  email-print-mime-structure -- tree view of a message's MIME structure
  .
  email-extract-openpgp-certs -- extract OpenPGP certificates from a message
+ .
+ imap-dl -- download messages from an IMAP mailbox to a maildir
