@@ -1,3 +1,11 @@
+mailscripts (0.19-1) UNRELEASED; urgency=medium
+
+  * notmuch-slurp-debbug: rework to use Mail::Box rather than shelling out
+    to scripts to move mail around.
+    - Drop dependency on libmime-tools-perl.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 22 Feb 2020 00:10:58 -0700
+
 mailscripts (0.18-1) unstable; urgency=medium
 
   * notmuch-extract-patch: rewrite:
