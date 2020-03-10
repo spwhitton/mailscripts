@@ -50,12 +50,18 @@ import argparse
 import statistics
 import configparser
 
-from typing import Dict, List, Union, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 try:
     import argcomplete #type: ignore
 except ImportError:
     argcomplete = None
+
+try:
+    import gssapi # type: ignore
+except ModuleNotFoundError:
+    gssapi = None
+
 
 class Splitter(object):
     def __init__(self, name:str, match:bytes):
@@ -87,6 +93,52 @@ def auth_builtin(username:str, imap:imaplib.IMAP4_SSL,
     resp = imap.login(username, conf.get('retriever', 'password'))
     if resp[0] != 'OK':
         raise Exception(f'login failed with {resp} as user {username} on {server}')
+
+# imaplib auth methods need to be in the form of callables, and they all
+# requre both additional parameters and storage beyond what the function
+# interface provides.
+class GSSAPI_handler():
+    gss_vc:gssapi.SecurityContext
+    username:str
+
+    def __init__(self, server:str, username:str) -> None:
+        name = gssapi.Name(f'imap@{server}', gssapi.NameType.hostbased_service)
+        self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
+        self.username = username
+
+    def __call__(self, token:Optional[bytes]) -> bytes:
+        if token == b"":
+            token = None
+        if not self.gss_vc.complete:
+            response = self.gss_vc.step(token)
+            return response if response else b"" # type: ignore
+        elif token is None:
+            return b""
+
+        response = self.gss_vc.unwrap(token)
+
+        # Preserve the "length" of the message we received, and set the first
+        # byte to one.  If username is provided, it's next.
+        reply:List[int] = []
+        reply[0:4] = response.message[0:4]
+        reply[0] = 1
+        if self.username:
+            reply[5:] = self.username.encode("utf-8")
+
+        response = self.gss_vc.wrap(bytes(reply), response.encrypted)
+        return response.message if response.message else b"" # type: ignore
+
+def auth_gssapi(username:str, imap:imaplib.IMAP4_SSL,
+                conf:configparser.ConfigParser, server:str) -> None:
+    if not gssapi:
+        raise Exception('Kerberos requested, but python3-gssapi not found')
+
+    logging.info(f'Logging in as {username} with GSSAPI')
+
+    callback = GSSAPI_handler(server, username)
+    resp = imap.authenticate("GSSAPI", callback)
+    if resp[0] != 'OK':
+        raise Exception(f'GSSAPI login failed with {resp} as user {username} on {server}')
 
 def scan_msgs(configfile:str, verbose:bool) -> None:
     conf = configparser.ConfigParser()
@@ -133,7 +185,13 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
                            port=int(conf.get('retriever', 'port', fallback=993)),
                            ssl_context=ctx) as imap:
         username:str = conf.get('retriever', 'username')
-        auth_builtin(username, imap, conf, server)
+        use_kerberos = conf.getboolean('retriever', 'use_kerberos',
+                                       fallback=False)
+        if use_kerberos:
+            auth_gssapi(username, imap, conf, server)
+        else:
+            auth_builtin(username, imap, conf, server)
+
         if verbose: # only enable debugging after login to avoid leaking credentials in the log
             imap.debug = 4
         logging.info("capabilities reported: %s", ', '.join(imap.capabilities))

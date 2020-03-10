@@ -51,6 +51,7 @@ Recommends:
  git,
  notmuch,
  python3-argcomplete,
+ python3-gssapi,
  python3-pgpy,
 Suggests:
  gnutls-bin,
