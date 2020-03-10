@@ -17,22 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-DESCRIPTION = '''A simple replacement for a minimalist use of getmail.
+DESCRIPTION = '''Fetch messages from an IMAP inbox into a maildir
 
-In particular, if you use getmail to reach an IMAP server as though it
-were POP (retrieving from the server and optionally deleting), you can
-point this script to the getmail config and it should do the same
-thing.
-
-It tries to ensure that the configuration file is of the expected
-type, and will terminate raising an exception, and it should not lose
-messages.
-
-If there's any interest in supporting other similarly simple use cases
-for getmail, patches are welcome.
-
-If you've never used getmail, you can make the simplest possible
-config file like so:
+Example config file:
 
 ----------
 [retriever]
@@ -46,6 +33,8 @@ path = /home/foo/Maildir
 [options]
 delete = True
 ----------
+
+Run "man imap-dl" for more details.
 '''
 
 import re

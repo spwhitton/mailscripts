@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-imap-dl -- a simple replacement for a minimalist user of getmail
+imap-dl -- fetch messages from an IMAP inbox into a maildir
 
 =head1 SYNOPSIS
 
@@ -10,35 +10,61 @@ B<imap-dl> [B<-v>|B<--verbose>] B<configfile>...
 
 =head1 DESCRIPTION
 
+B<imap-dl> tries to retrieve all messages from an IMAP inbox and put
+them in a maildir.
+
 If you use getmail to reach an IMAP server as though it were POP
 (retrieving from the server, storing it in a maildir and optionally
-deleting), you can point this script to the getmail config and it
-should do the same thing.
+deleting), you can point this script to the getmail configfile and it
+should do the same thing.  While the minimal configuration file
+matches the syntax for common getmail configurations, some other
+options might be specific to B<imap-dl>.
 
-It tries to ensure that the configuration file is of the expected
-type, and otherwise it will terminate with an error.  It should not
-lose e-mail messages.
+B<imap-dl> tries to ensure that the configuration file is of the
+expected type, and otherwise it will terminate with an error.  It
+should never lose e-mail messages.
 
 If there's any interest in supporting other similarly simple use cases
-for getmail, patches are welcome.
+for fetching messages from an IMAP account into a maildir, patches are
+welcome.
 
 =head1 OPTIONS
 
 B<-v> or B<--verbose> causes B<imap-dl> to print more details
 about what it is doing.
 
+=head1 CONFIGFILE OPTIONS
+
+B<imap-dl> uses an ini-style configfile, with [Sections] which each
+have keyword arguments within them.  We use the syntax B<foo.bar> here
+to mean keyword B<bar> in section B<foo>.  B<imap-dl> inherits some
+basic configuration options from B<getmail>, including the following
+options:
+
+B<retriever.server> is the dns name of the mailserver.
+
+B<retriever.username> is the username of the IMAP account.
+
+B<retriever.password> is the password for the IMAP account when using
+plaintext passwords.
+
+B<destination.path> is the location of the target maildir.
+
+B<options.delete> is a boolean, whether to delete the messages that
+were successfully retreived (default: false).
+
 In addition to parts of the standard B<getmail> configuration,
-B<imap-dl> supports the following keywords in the config file:
+B<imap-dl> supports the following keywords in the configfile:
 
 B<options.on_size_mismatch> can be set to B<error>, B<none>, or
 B<warn>.  This governs what to do when the remote IMAP server claims a
 different size in the message summary list than the actual message
 retrieval (default: B<error>).
 
-=head1 EXAMPLE CONFIG
+=head1 EXAMPLE CONFIGFILE
 
-If you've never used getmail, you can make the simplest possible
-config file like so:
+This configfile fetches all the mail from the given IMAP account's
+inbox, and deletes the messages when they are successfully fetched:
 
 =over 4
 
