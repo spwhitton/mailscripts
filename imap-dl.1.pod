@@ -48,6 +48,10 @@ B<retriever.username> is the username of the IMAP account.
 B<retriever.password> is the password for the IMAP account when using
 plaintext passwords.
 
+B<retriever.ssl_ciphers> is an OpenSSL cipher string to use instead of the
+defaults.  (The defaults are good; this should be avoided except to work
+around bugs.)
+
 B<destination.path> is the location of the target maildir.
 
 B<options.delete> is a boolean, whether to delete the messages that

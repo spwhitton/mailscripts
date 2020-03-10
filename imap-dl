@@ -116,6 +116,10 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
                         '(found "{on_size_mismatch_str}")')
 
     ctx = ssl.create_default_context(cafile=ca_certs)
+    ssl_ciphers = conf.get('retriever', 'ssl_ciphers', fallback=None)
+    if ssl_ciphers:
+        ctx.set_ciphers(ssl_ciphers)
+
     server:str = conf.get('retriever', 'server')
     with imaplib.IMAP4_SSL(host=server, #type: ignore
                            port=int(conf.get('retriever', 'port', fallback=993)),
