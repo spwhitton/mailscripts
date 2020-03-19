@@ -43,14 +43,14 @@ options:
 
 B<retriever.server> is the dns name of the mailserver.
 
+B<retriever.authentication> is either "basic" (the default, using the
+IMAP LOGIN verb) or "kerberos" (IMAP AUTHENTICATE with GSSAPI,
+requires the python3-gssapi module).
+
 B<retriever.username> is the username of the IMAP account.
 
 B<retriever.password> is the password for the IMAP account when using
-plaintext passwords.
-
-B<retriever.use_kerberos> (boolean) requests that Kerberos (through GSSAPI) is
-to be used instead of password-based auth.  There is no need to specify
-password when using Kerberos.  This requires the python3-gssapi module.
+B<retriever.authentication> is set to "basic".
 
 B<retriever.ssl_ciphers> is an OpenSSL cipher string to use instead of the
 defaults.  (The defaults are good; this should be avoided except to work
