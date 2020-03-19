@@ -7,6 +7,11 @@ mailscripts (0.19-1) UNRELEASED; urgency=medium
     - Update documentation to be less oriented towards former users of
       getmail (Closes: #953582).
       Thanks to Daniel Kahn Gillmor for the patch.
+    - Allow specifying ssl_ciphers.
+      Thanks to Robbie Harwood for the patch.
+    - Add support for GSSAPI authentication.
+      Thanks to Robbie Harwood for the patch and Daniel Kahn Gillmor for
+      review.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 22 Feb 2020 00:10:58 -0700
 
