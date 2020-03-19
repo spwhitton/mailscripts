@@ -49,7 +49,7 @@ requires the python3-gssapi module).
 
 B<retriever.username> is the username of the IMAP account.
 
-B<retriever.password> is the password for the IMAP account when using
+B<retriever.password> is the password for the IMAP account when
 B<retriever.authentication> is set to "basic".
 
 B<retriever.ssl_ciphers> is an OpenSSL cipher string to use instead of the
