@@ -44,8 +44,8 @@ options:
 B<retriever.server> is the dns name of the mailserver.
 
 B<retriever.authentication> is either "basic" (the default, using the
-IMAP LOGIN verb) or "kerberos" (IMAP AUTHENTICATE with GSSAPI,
-requires the python3-gssapi module).
+IMAP LOGIN verb) or "gssapi" (IMAP AUTHENTICATE with GSSAPI, requires
+the python3-gssapi module). "kerberos" is an alias for "gssapi".
 
 B<retriever.username> is the username of the IMAP account.
 

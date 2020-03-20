@@ -193,14 +193,14 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
         # installed and the user has a reasonable identity in their
         # local credential cache, choose kerberos, otherwise, choose
         # "basic".
-        if authentication == 'kerberos':
+        if authentication in ['kerberos', 'gssapi']:
             auth_gssapi(username, imap, conf, server)
         elif authentication == 'basic':
             auth_builtin(username, imap, conf, server)
         else:
             # FIXME: implement other authentication mechanisms
             raise Exception(f'retriever.authentication should be one of:\n'
-                            '"basic" or "kerberos", got "{authentication}"')
+                            '"basic" or "gssapi" (or "kerberos"). Got "{authentication}"')
 
         if verbose: # only enable debugging after login to avoid leaking credentials in the log
             imap.debug = 4
