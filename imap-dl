@@ -95,39 +95,41 @@ def auth_builtin(username:str, imap:imaplib.IMAP4_SSL,
     if resp[0] != 'OK':
         raise Exception(f'login failed with {resp} as user {username} on {server}')
 
-# imaplib auth methods need to be in the form of callables, and they all
-# requre both additional parameters and storage beyond what the function
-# interface provides.
-class GSSAPI_handler():
-    gss_vc:gssapi.SecurityContext
-    username:str
+if gssapi:
+    # imaplib auth methods need to be in the form of callables, and they all
+    # requre both additional parameters and storage beyond what the function
+    # interface provides.
+    class GSSAPI_handler():
+        gss_vc:gssapi.SecurityContext
+        username:str
 
-    def __init__(self, server:str, username:str) -> None:
-        name = gssapi.Name(f'imap@{server}', gssapi.NameType.hostbased_service)
-        self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
-        self.username = username
+        def __init__(self, server:str, username:str) -> None:
+            name = gssapi.Name(f'imap@{server}',
+                               gssapi.NameType.hostbased_service)
+            self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
+            self.username = username
 
-    def __call__(self, token:Optional[bytes]) -> bytes:
-        if token == b"":
-            token = None
-        if not self.gss_vc.complete:
-            response = self.gss_vc.step(token)
-            return response if response else b"" # type: ignore
-        elif token is None:
-            return b""
+        def __call__(self, token:Optional[bytes]) -> bytes:
+            if token == b"":
+                token = None
+            if not self.gss_vc.complete:
+                response = self.gss_vc.step(token)
+                return response if response else b"" # type: ignore
+            elif token is None:
+                return b""
 
-        response = self.gss_vc.unwrap(token)
+            response = self.gss_vc.unwrap(token)
 
-        # Preserve the "length" of the message we received, and set the first
-        # byte to one.  If username is provided, it's next.
-        reply:List[int] = []
-        reply[0:4] = response.message[0:4]
-        reply[0] = 1
-        if self.username:
-            reply[5:] = self.username.encode("utf-8")
+            # Preserve the "length" of the message we received, and set the
+            # first byte to one.  If username is provided, it's next.
+            reply:List[int] = []
+            reply[0:4] = response.message[0:4]
+            reply[0] = 1
+            if self.username:
+                reply[5:] = self.username.encode("utf-8")
 
-        response = self.gss_vc.wrap(bytes(reply), response.encrypted)
-        return response.message if response.message else b"" # type: ignore
+            response = self.gss_vc.wrap(bytes(reply), response.encrypted)
+            return response.message if response.message else b"" # type: ignore
 
 def auth_gssapi(username:str, imap:imaplib.IMAP4_SSL,
                 conf:configparser.ConfigParser, server:str) -> None:
