@@ -1,3 +1,10 @@
+mailscripts (0.20-1) UNRELEASED; urgency=medium
+
+  * imap-dl: Fix failure when python3-gssapi isn't installed (Closes: #955011).
+    Thanks to Robbie Harwood for the patch.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 27 Mar 2020 11:50:27 -0700
+
 mailscripts (0.19-1) unstable; urgency=medium
 
   * notmuch-slurp-debbug: rework to use Mail::Box rather than shelling out
