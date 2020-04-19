@@ -42,7 +42,6 @@ Depends:
  libipc-system-simple-perl,
  liblist-moreutils-perl,
  libmail-box-perl,
- libmime-tools-perl,
  python3,
  ${misc:Depends},
  ${perl:Depends},
@@ -51,6 +50,7 @@ Recommends:
  git,
  notmuch,
  python3-argcomplete,
+ python3-gssapi,
  python3-pgpy,
 Suggests:
  gnutls-bin,

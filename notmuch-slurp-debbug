@@ -2,7 +2,7 @@
 
 # notmuch-slurp-debbug -- add messages from a Debian bug to notmuch
 
-# Copyright (C) 2018-2019 Sean Whitton
+# Copyright (C) 2018-2020 Sean Whitton
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,80 +23,68 @@ use warnings;
 use Config::Tiny;
 use File::Spec::Functions qw(catfile);
 use File::Which;
-use File::Temp;
 use Getopt::Long;
 use IPC::System::Simple qw(systemx capturex);
-use MIME::Head;
+use Mail::Box::Manager;
 
-my $Config = Config::Tiny->new;
+my $bts = "https://bugs.debian.org";
+GetOptions "bts-server=s" => \$bts;
 
-my $bts_server = undef;
-GetOptions('bts-server=s' => \$bts_server);
-die "notmuch-slurp-debbug: usage: notmuch-slurp-debbug [--bts-server=SERVER] BUG"
-  if (scalar @ARGV != 1);
-
+die "usage: notmuch-slurp-debbug [--bts-server=SERVER] BUG"
+  unless @ARGV == 1;
 die "notmuch-slurp-debbug: this script requires notmuch to be installed"
-  unless defined which "notmuch";
+  unless which "notmuch";
 die "notmuch-slurp-debbug: this script requires the 'devscripts' apt package"
-  unless defined which "bts";
-
-my $maildir;
+  unless which "bts";
 my $bug = pop @ARGV;
 
-my $mailscripts_conf_dir = defined $ENV{'XDG_CONFIG_HOME'}
-  ? catfile $ENV{'XDG_CONFIG_HOME'}, "/mailscripts"
-  : catfile $ENV{'HOME'}, "/.config/mailscripts";
-
-my $notmuch_slurp_debbug_conf = "$mailscripts_conf_dir/notmuch-slurp-debbug";
-if (-f $notmuch_slurp_debbug_conf) {
-    $Config = Config::Tiny->read($notmuch_slurp_debbug_conf);
+my $mgr = Mail::Box::Manager->new;
+my $maildir;
+my $conf_r = $ENV{XDG_CONFIG_HOME} || catfile $ENV{HOME}, ".config";
+my $conf_f = catfile $conf_r, "mailscripts", "notmuch-slurp-debbug";
+if (-f $conf_f) {
+    my $Config = Config::Tiny::read($conf_f);
     $maildir = $Config->{_}->{maildir};
 } else {
     # default to where a lot of people have their inbox
-    my $database_path = `notmuch config get database.path`;
-    chomp $database_path;
+    chomp(my $database_path = `notmuch config get database.path`);
     $maildir = catfile $database_path, "inbox";
 }
+$maildir = $mgr->open(
+    folder    => $maildir,
+    access    => "a",
+    keep_dups => 1,
+    type      => "maildir"
+);
 
-die "notmuch-slurp-debbug: $maildir does not look to be a maildir"
-  unless (-d catfile($maildir, "cur")
-          && -d catfile($maildir, "new")
-          && -d catfile($maildir, "tmp"));
+# we use bts(1) to download the mbox because it has some logic to find
+# the right URI and the user might have enabled its caching features.
+# see #904182 for why we invoke it like this
+systemx(
+    qw(bts --bts-server),
+    $bts, qw(--mbox --mailreader),
+    "true %s", "show", $bug
+);
 
-my @bts_server_args = defined $bts_server
-  ? ("--bts-server", $bts_server)
-  : undef;
+my $cache_r = $ENV{XDG_CACHE_HOME} || catfile $ENV{HOME}, ".cache";
+my $cache_d = catfile $cache_r, "devscripts", "bts";
+my $mbox = $mgr->open(
+    folder    => catfile($cache_d, "$bug.mbox"),
+    access    => "r",
+    keep_dups => 1,
+    type      => "mbox"
+);
 
-# see #904182 for why we have to do it like this
-my @bts_args = grep defined, @bts_server_args,
-  qw(--mbox --mailreader), "true %s", "show", $bug;
-systemx("bts", @bts_args);
-
-my $dir = File::Temp->newdir();
-mkdir catfile($dir, "cur");
-mkdir catfile($dir, "new");
-mkdir catfile($dir, "tmp");
-
-my $devscripts_cache = defined $ENV{'XDG_CACHE_HOME'}
-  ? catfile $ENV{'XDG_CACHE_HOME'}, "devscripts", "bts"
-  : catfile $ENV{'HOME'}, ".cache", "devscripts", "bts";
-
-my $mbox = catfile $devscripts_cache, "$bug.mbox";
-
-# note that mb2md won't work; it thinks Debian BTS mboxes contain just
-# a single message
-systemx("mbox2maildir", $mbox, $dir);
-
-foreach my $message (glob "$dir/*/*") {
-    my $message_head = MIME::Head->from_file($message);
-    my $mid = $message_head->get('Message-ID');
+foreach my $message ($mbox->messages) {
+    my $mid = $message->messageId;
     # if this message does not have a message-id, do not import it;
-    # that is asking for trouble
+    # that would be asking for trouble
     next unless defined $mid;
     $mid =~ s/(<|>)//g;
-    my $match = capturex(qw(notmuch search), "id:$mid");
-    my $match_lines = $match =~ tr/\n//;
-    systemx("mdmv", $message, $maildir) if ($match_lines == 0);
+
+    chomp(my $match = capturex(qw(notmuch search), "id:$mid"));
+
+    $mgr->copyMessage($maildir, $message) unless $match;
 }
 
 systemx(qw(notmuch new));
