@@ -1,3 +1,9 @@
+mailscripts (0.19-1~bpo10+1) buster-backports; urgency=medium
+
+  * Rebuild for buster-backports.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 19 Apr 2020 16:53:53 -0700
+
 mailscripts (0.19-1) unstable; urgency=medium
 
   * notmuch-slurp-debbug: rework to use Mail::Box rather than shelling out
