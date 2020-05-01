@@ -123,7 +123,7 @@ git-format-patch(1)."
    "Dgit repo: \nsnew branch name (or leave blank to apply to current HEAD): ")
   (with-current-notmuch-show-message
    (let ((default-directory (expand-file-name repo))
-         (mm-handle (mm-dissect-buffer)))
+         (mm-handle (mm-dissect-buffer t)))
      (mailscripts--check-out-branch branch)
      (notmuch-foreach-mime-part
       (lambda (p)
