@@ -34,6 +34,17 @@ E.g. `email/'."
   :type 'string
   :group 'mailscripts)
 
+(defcustom mailscripts-detach-head-from-existing-branch nil
+  "Whether to detach HEAD before applying patches to an existing branch.
+
+This is useful if you want to manually review the result of
+applying patches before updating any of your existing branches,
+or for quick, ad hoc testing of a patch series.
+
+Note that this does not prevent the creation of new branches."
+  :type 'boolean
+  :group 'mailscripts)
+
 ;;;###autoload
 (defun notmuch-slurp-debbug (bug &optional no-open)
   "Slurp Debian bug with bug number BUG and open the thread in notmuch.
@@ -131,7 +142,9 @@ git-format-patch(1)."
   (mailscripts--projectile-repo-and-branch 'notmuch-extract-message-patches))
 
 (defun mailscripts--check-out-branch (branch)
-  (unless (string= branch "")
+  (if (string= branch "")
+      (when mailscripts-detach-head-from-existing-branch
+        (call-process-shell-command "git checkout --detach"))
     (call-process-shell-command
      (format "git checkout -b %s"
              (shell-quote-argument

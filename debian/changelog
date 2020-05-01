@@ -9,6 +9,7 @@ mailscripts (0.20-1) UNRELEASED; urgency=medium
       When the user inputs a branch name, it is used only to attempt the
       creation of a new branch, but the old prompt suggests that inputting
       an existing branch name would cause that branch to be checked out.
+    - Add mailscripts-detach-head-from-existing-branch defcustom.
   * Add mailing list info to CONTRIBUTING.md.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 27 Mar 2020 11:50:27 -0700
