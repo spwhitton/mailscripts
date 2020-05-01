@@ -2,6 +2,7 @@ mailscripts (0.20-1) UNRELEASED; urgency=medium
 
   * imap-dl: Fix failure when python3-gssapi isn't installed (Closes: #955011).
     Thanks to Robbie Harwood for the patch.
+  * Add mailing list info to CONTRIBUTING.md.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 27 Mar 2020 11:50:27 -0700
 
