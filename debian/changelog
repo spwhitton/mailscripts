@@ -3,7 +3,7 @@ mailscripts (0.20-1) UNRELEASED; urgency=medium
   * imap-dl: Fix failure when python3-gssapi isn't installed (Closes: #955011).
     Thanks to Robbie Harwood for the patch.
   * imap-dl: Update for imaplib type changes (Closes: #959607).
-    Thanks to Robbie Harwood for the patch.
+    Thanks to Robbie Harwood for the patch and David Bremner for testing.
   * notmuch-slurp-debbug: Fix reading configuration file (Closes: #958391).
     Thanks to intrigeri for the patch.
   * mailscripts.el:
