@@ -24,7 +24,6 @@ use Cwd;
 use File::Basename;
 use File::Temp ();
 use File::Which;
-use Git::Wrapper;
 use List::MoreUtils "firstidx";
 use Mail::Box::Manager;
 
@@ -32,6 +31,8 @@ my $us          = basename $0;
 my $maildir_dir = shift
   or die "$us: usage: $us MAILDIR [git-format-patch(1) args]\n";
 which "git" or die "$us: this script requires git to be installed\n";
+eval { require Git::Wrapper }
+  or die "$us: this script requires Git::Wrapper (libgit-wrapper-perl)\n";
 
 my $git = Git::Wrapper->new(getcwd);
 my $toplevel;
