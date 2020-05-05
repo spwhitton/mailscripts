@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.18
+;; Version: 0.20
 ;; Package-Requires: (notmuch projectile)
 
 ;; Copyright (C) 2018, 2019 Sean Whitton
@@ -130,8 +130,8 @@ git-format-patch(1)."
         (let* ((disposition (mm-handle-disposition p))
                (filename (cdr (assq 'filename disposition))))
           (and filename
-               (string-match
-                "^\\(v[0-9]+-\\)?[0-9]+-.+\.\\(patch\\|diff\\|txt\\)$" filename)
+               (string-match "^\\(v?[0-9]+\\)-.+\\.\\(patch\\|diff\\|txt\\)$"
+                             filename)
                (mm-pipe-part p "git am"))))
       mm-handle))))
 

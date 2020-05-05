@@ -12,6 +12,8 @@ mailscripts (0.20-1) UNRELEASED; urgency=medium
     - Add mailscripts-detach-head-from-existing-branch defcustom.
     - notmuch-extract-message-patches: set NO-STRICT-MIME argument of
       `mm-dissect-buffer' to enable extracting patches from more messages.
+    - notmuch-extract-message-patches: attempt to improve regexp to
+      extract more wanted patches.
   * maildir-import-patch: Prepend "[PATCH fooproject imported]" to the
     subject lines of patches, unless the user supplies a --subject-prefix
     option to be passed on to git-format-patch(1).
