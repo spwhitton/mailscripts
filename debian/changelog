@@ -1,4 +1,4 @@
-mailscripts (0.20-1) UNRELEASED; urgency=medium
+mailscripts (0.20-1) unstable; urgency=medium
 
   * imap-dl: Fix failure when python3-gssapi isn't installed (Closes: #955011).
     Thanks to Robbie Harwood for the patch.
@@ -24,7 +24,7 @@ mailscripts (0.20-1) UNRELEASED; urgency=medium
     - Add libgit-wrapper-perl to Recommends.
   * Add mailing list & IRC channel info to CONTRIBUTING.rst.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 27 Mar 2020 11:50:27 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 05 May 2020 10:53:38 -0700
 
 mailscripts (0.19-1) unstable; urgency=medium
 
