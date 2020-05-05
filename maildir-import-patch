@@ -69,8 +69,8 @@ unless ($pid) {
       or die "couldn't reopen child's STDOUT: $!";
     exec qw(git format-patch --no-cc --no-to --stdout --thread=shallow), @ARGV;
 }
-wait;
 $mbox_file->close;
+wait;
 
 my $mbox = $mgr->open($mbox_file->filename, type => "mbox", access => "r");
 $mgr->copyMessage($maildir, $_) for $mbox->messages;
