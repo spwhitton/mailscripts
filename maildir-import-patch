@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/perl
 
 # maildir-import-patch -- import a git patch series into a maildir
 
-# Copyright (C) 2019 Sean Whitton
+# Copyright (C) 2019-2020 Sean Whitton
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,40 +17,59 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import sys
-import mailbox
-import shutil
-import subprocess
-import tempfile
+use strict;
+use warnings;
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+use Cwd;
+use File::Basename;
+use File::Temp ();
+use File::Which;
+use Git::Wrapper;
+use List::MoreUtils "firstidx";
+use Mail::Box::Manager;
 
-us = os.path.basename(sys.argv[0])
+my $us          = basename $0;
+my $maildir_dir = shift
+  or die "$us: usage: $us MAILDIR [git-format-patch(1) args]\n";
+which "git" or die "$us: this script requires git to be installed\n";
 
-if len(sys.argv) < 2:
-    eprint(us + ": usage: " + us + " MAILDIR [git-format-patch(1) args]")
-    sys.exit(1)
+my $git = Git::Wrapper->new(getcwd);
+my $toplevel;
+{
+    local $@;
+    eval { ($toplevel) = $git->rev_parse({ show_toplevel => 1 }) };
+    $@ and die "$us: pwd doesn't look like a git repository ..\n";
+}
+$toplevel =~ s/\.git$//;
 
-if not shutil.which("git"):
-    eprint(us + ": this script requires git to be installed")
-    sys.exit(1)
+if (firstidx(sub { /^--subject-prefix/ }, @ARGV) == -1) {
+    my $subject_prefix;
+    my $rfc_idx = firstidx { /^--rfc$/ } @ARGV;
+    if ($rfc_idx == -1) {
+        $subject_prefix = "PATCH";
+    } else {
+        $subject_prefix = "RFC PATCH";
+        splice @ARGV, $rfc_idx, 1;
+    }
+    my ($project) = $git->config(qw|--local --get --default|,
+        basename($toplevel), "mailscripts.project-shortname");
+    unshift @ARGV, "--subject-prefix=$subject_prefix $project imported";
+}
 
-dest_path = sys.argv[1]
-dest = mailbox.Maildir(dest_path)
+my $mgr = Mail::Box::Manager->new;
+my $maildir
+  = $mgr->open($maildir_dir, type => "maildir", access => "w", create => 1);
 
-cmd = [
-    "git", "format-patch",
-    "--thread=shallow", "--no-cc", "--no-to",
-    "--stdout",
-]
-user_args = sys.argv[2:]
+my $mbox_file = File::Temp->new;
+my $pid       = fork;
+die "fork() failed: $!" unless defined $pid;
+unless ($pid) {
+    open STDOUT, ">&=", $mbox_file->fileno
+      or die "couldn't reopen child's STDOUT: $!";
+    exec qw(git format-patch --no-cc --no-to --stdout --thread=shallow), @ARGV;
+}
+wait;
+$mbox_file->close;
 
-with tempfile.NamedTemporaryFile() as fp:
-    subprocess.run(cmd + user_args, stdout=fp)
-    source = mailbox.mbox(fp.name)
-    dest.lock()
-    for message in source:
-        dest.add(message)
-    dest.close()
+my $mbox = $mgr->open($mbox_file->filename, type => "mbox", access => "r");
+$mgr->copyMessage($maildir, $_) for $mbox->messages;
