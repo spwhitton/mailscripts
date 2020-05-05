@@ -49,6 +49,7 @@ Depends:
 Recommends:
  devscripts,
  git,
+ libgit-wrapper-perl,
  notmuch,
  python3-argcomplete,
  python3-gssapi,
