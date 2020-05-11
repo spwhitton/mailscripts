@@ -43,8 +43,7 @@ my $maildir;
 my $conf_r = $ENV{XDG_CONFIG_HOME} || catfile $ENV{HOME}, ".config";
 my $conf_f = catfile $conf_r, "mailscripts", "notmuch-slurp-debbug";
 if (-f $conf_f) {
-    my $Config = Config::Tiny::read($conf_f);
-    $maildir = $Config->{_}->{maildir};
+    $maildir = Config::Tiny->new->read($conf_f)->{_}->{maildir};
 } else {
     # default to where a lot of people have their inbox
     chomp(my $database_path = `notmuch config get database.path`);

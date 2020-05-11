@@ -87,49 +87,52 @@ summary_splitter = Splitter('summary', _summary_re)
 _fetch_re = rb'^(?P<id>[0-9]+) \(UID (?P<uid>[0-9]+) (FLAGS \([\\A-Za-z ]*\) )?BODY\[\] \{(?P<size>[0-9]+)\}$'
 fetch_splitter = Splitter('fetch', _fetch_re)
 
-def auth_builtin(username:str, imap:imaplib.IMAP4_SSL,
+def auth_builtin(username:str, imap:imaplib.IMAP4,
                  conf:configparser.ConfigParser, server:str) -> None:
     logging.info('Logging in as %s', username)
     resp:Tuple[str, List[Union[bytes,Tuple[bytes,bytes]]]]
-    resp = imap.login(username, conf.get('retriever', 'password'))
-    if resp[0] != 'OK':
-        raise Exception(f'login failed with {resp} as user {username} on {server}')
+    try:
+        imap.login(username, conf.get('retriever', 'password'))
+    except Exception as e:
+        raise Exception(f'login failed with {e} as user {username} on {server}')
 
-# imaplib auth methods need to be in the form of callables, and they all
-# requre both additional parameters and storage beyond what the function
-# interface provides.
-class GSSAPI_handler():
-    gss_vc:gssapi.SecurityContext
-    username:str
+if gssapi:
+    # imaplib auth methods need to be in the form of callables, and they all
+    # requre both additional parameters and storage beyond what the function
+    # interface provides.
+    class GSSAPI_handler():
+        gss_vc:gssapi.SecurityContext
+        username:str
 
-    def __init__(self, server:str, username:str) -> None:
-        name = gssapi.Name(f'imap@{server}', gssapi.NameType.hostbased_service)
-        self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
-        self.username = username
+        def __init__(self, server:str, username:str) -> None:
+            name = gssapi.Name(f'imap@{server}',
+                               gssapi.NameType.hostbased_service)
+            self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
+            self.username = username
 
-    def __call__(self, token:Optional[bytes]) -> bytes:
-        if token == b"":
-            token = None
-        if not self.gss_vc.complete:
-            response = self.gss_vc.step(token)
-            return response if response else b"" # type: ignore
-        elif token is None:
-            return b""
+        def __call__(self, token:Optional[bytes]) -> bytes:
+            if token == b"":
+                token = None
+            if not self.gss_vc.complete:
+                response = self.gss_vc.step(token)
+                return response if response else b"" # type: ignore
+            elif token is None:
+                return b""
 
-        response = self.gss_vc.unwrap(token)
+            response = self.gss_vc.unwrap(token)
 
-        # Preserve the "length" of the message we received, and set the first
-        # byte to one.  If username is provided, it's next.
-        reply:List[int] = []
-        reply[0:4] = response.message[0:4]
-        reply[0] = 1
-        if self.username:
-            reply[5:] = self.username.encode("utf-8")
+            # Preserve the "length" of the message we received, and set the
+            # first byte to one.  If username is provided, it's next.
+            reply:List[int] = []
+            reply[0:4] = response.message[0:4]
+            reply[0] = 1
+            if self.username:
+                reply[5:] = self.username.encode("utf-8")
 
-        response = self.gss_vc.wrap(bytes(reply), response.encrypted)
-        return response.message if response.message else b"" # type: ignore
+            response = self.gss_vc.wrap(bytes(reply), response.encrypted)
+            return response.message if response.message else b"" # type: ignore
 
-def auth_gssapi(username:str, imap:imaplib.IMAP4_SSL,
+def auth_gssapi(username:str, imap:imaplib.IMAP4,
                 conf:configparser.ConfigParser, server:str) -> None:
     if not gssapi:
         raise Exception('Kerberos requested, but python3-gssapi not found')
@@ -182,7 +185,7 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
         ctx.set_ciphers(ssl_ciphers)
 
     server:str = conf.get('retriever', 'server')
-    with imaplib.IMAP4_SSL(host=server, #type: ignore
+    with imaplib.IMAP4_SSL(host=server,
                            port=int(conf.get('retriever', 'port', fallback=993)),
                            ssl_context=ctx) as imap:
         username:str = conf.get('retriever', 'username')
@@ -210,7 +213,7 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
             raise Exception(f'selection failed: {resp}')
         if len(resp[1]) != 1:
             raise Exception(f'expected exactly one EXISTS response from select, got {resp[1]}')
-        data:Union[bytes,Tuple[bytes,bytes]] = resp[1][0]
+        data:Optional[bytes] = resp[1][0]
         if not isinstance(data, bytes):
             raise Exception(f'expected bytes in response to SELECT, got {data}')
         n:int = int(data)
@@ -220,10 +223,9 @@ def scan_msgs(configfile:str, verbose:bool) -> None:
             pull_msgs(imap, n, mdst, on_size_mismatch, delete)
     logging.getLogger().setLevel(oldloglevel)
 
-def pull_msgs(imap:imaplib.IMAP4_SSL, n:int, mdst:mailbox.Maildir,
+def pull_msgs(imap:imaplib.IMAP4, n:int, mdst:mailbox.Maildir,
               on_size_mismatch:OnSizeMismatch, delete:bool) -> None:
     sizes_mismatched:List[int] = []
-    resp:Tuple[str, List[Union[bytes,Tuple[bytes,bytes]]]]
     resp = imap.fetch('1:%d'%(n), '(UID RFC822.SIZE)')
     if resp[0] != 'OK':
         raise Exception(f'initial FETCH 1:{n} not OK ({resp})')
