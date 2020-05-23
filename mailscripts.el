@@ -71,8 +71,10 @@ If NO-OPEN, don't open the thread."
   "When viewing a Debian bug in notmuch, download any missing messages."
   (interactive)
   (let ((subject (notmuch-show-get-subject)))
-    (when (string-match "Bug#\\([0-9]+\\):" subject)
-      (notmuch-slurp-debbug (match-string 1 subject) t))
+    (notmuch-slurp-debbug
+     (if (string-match "Bug#\\([0-9]+\\):" subject)
+         (match-string 1 subject)
+       (read-string "Bug number: ")) t)
     (notmuch-refresh-this-buffer)))
 
 ;;;###autoload

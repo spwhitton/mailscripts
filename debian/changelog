@@ -2,6 +2,8 @@ mailscripts (0.20-2) UNRELEASED; urgency=medium
 
   * mailscripts.el:
     - new command: notmuch-slurp-debbug-at-point
+    - notmuch-slurp-this-debbug: if fail to extract bug number from
+      subject line, prompt user for one
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 23 May 2020 10:49:57 -0700
 
