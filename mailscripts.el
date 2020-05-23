@@ -54,7 +54,15 @@ If NO-OPEN, don't open the thread."
   (interactive "sBug number: ")
   (call-process-shell-command (concat "notmuch-slurp-debbug " bug))
   (unless no-open
-    (notmuch-show (concat "Bug#" bug))))
+    (let* ((search (concat "Bug#" bug))
+           (thread-id (car (process-lines notmuch-command
+                                          "search"
+                                          "--output=threads"
+                                          "--limit=1"
+                                          "--format=text"
+                                          "--format-version=4" search))))
+      (notmuch-show thread-id nil nil nil
+                    (concat "*notmuch-show-" search "*")))))
 
 ;;;###autoload
 (defun notmuch-slurp-debbug-at-point ()

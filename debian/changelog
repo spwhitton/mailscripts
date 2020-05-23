@@ -4,6 +4,10 @@ mailscripts (0.20-2) UNRELEASED; urgency=medium
     - new command: notmuch-slurp-debbug-at-point
     - notmuch-slurp-this-debbug: if fail to extract bug number from
       subject line, prompt user for one
+    - notmuch-slurp-debbug: invoke notmuch to determine the thread-id
+      rather than passing the search query directly to `notmuch-show'.
+      That is not how `notmuch-show' is meant to be called and can result
+      in strange behaviour.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 23 May 2020 10:49:57 -0700
 
