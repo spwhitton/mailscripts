@@ -1,10 +1,10 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.20
+;; Version: 0.21
 ;; Package-Requires: (notmuch projectile)
 
-;; Copyright (C) 2018, 2019 Sean Whitton
+;; Copyright (C) 2018, 2019, 2020 Sean Whitton
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 (require 'notmuch)
 (require 'projectile)
+(require 'thingatpt)
 
 (defgroup mailscripts nil
   "Customisation of functions in the mailscripts package.")
@@ -54,6 +55,16 @@ If NO-OPEN, don't open the thread."
   (call-process-shell-command (concat "notmuch-slurp-debbug " bug))
   (unless no-open
     (notmuch-show (concat "Bug#" bug))))
+
+;;;###autoload
+(defun notmuch-slurp-debbug-at-point ()
+  "Slurp Debian bug with bug number at point and open the thread in notmuch."
+  (interactive)
+  (save-excursion
+    ;; the bug number might be prefixed with a # or 'Bug#'; try
+    ;; skipping over those to see if there's a number afterwards
+    (skip-chars-forward "#bBug" (+ 4 (point)))
+    (notmuch-slurp-debbug (number-to-string (number-at-point)))))
 
 ;;;###autoload
 (defun notmuch-slurp-this-debbug ()
