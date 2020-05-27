@@ -19,6 +19,7 @@ Build-Depends:
  python3-pgpy <!nocheck>,
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
+Homepage: https://git.spwhitton.name/mailscripts
 
 Package: elpa-mailscripts
 Architecture: all
