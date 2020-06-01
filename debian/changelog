@@ -1,4 +1,4 @@
-mailscripts (0.21-1) UNRELEASED; urgency=medium
+mailscripts (0.21-1) unstable; urgency=medium
 
   * mailscripts.el:
     - new command: notmuch-slurp-debbug-at-point
@@ -13,7 +13,7 @@ mailscripts (0.21-1) UNRELEASED; urgency=medium
   * Add a Homepage: to the Debian packaging metadata (Closes: #961664).
     Thanks to Daniel Kahn Gillmor for the patch.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 23 May 2020 10:49:57 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 01 Jun 2020 10:11:47 -0700
 
 mailscripts (0.20-1) unstable; urgency=medium
 
