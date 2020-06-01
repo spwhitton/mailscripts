@@ -178,6 +178,8 @@ package Mail::Message {
             }
         }
 
+        $lines[$i - 1] =~ /^$/ or unshift @new_ts, "\n";
+
         splice @lines, $i, 0, @new_ts;
         my $body = Mail::Message::Body->new(
             charset => "PERL",

@@ -8,6 +8,8 @@ mailscripts (0.21-1) UNRELEASED; urgency=medium
       rather than passing the search query directly to `notmuch-show'.
       That is not how `notmuch-show' is meant to be called and can result
       in strange behaviour.
+  * mbox-extract-patch: When inserting trailers, ensure there is a blank
+    line before the block of trailers.
   * Add a Homepage: to the Debian packaging metadata (Closes: #961664).
     Thanks to Daniel Kahn Gillmor for the patch.
 
