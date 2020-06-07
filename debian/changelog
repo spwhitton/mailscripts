@@ -1,3 +1,20 @@
+mailscripts (0.21-1) unstable; urgency=medium
+
+  * mailscripts.el:
+    - new command: notmuch-slurp-debbug-at-point
+    - notmuch-slurp-this-debbug: if fail to extract bug number from
+      subject line, prompt user for one
+    - notmuch-slurp-debbug: invoke notmuch to determine the thread-id
+      rather than passing the search query directly to `notmuch-show'.
+      That is not how `notmuch-show' is meant to be called and can result
+      in strange behaviour.
+  * mbox-extract-patch: When inserting trailers, ensure there is a blank
+    line before the block of trailers.
+  * Add a Homepage: to the Debian packaging metadata (Closes: #961664).
+    Thanks to Daniel Kahn Gillmor for the patch.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 01 Jun 2020 10:11:47 -0700
+
 mailscripts (0.20-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.

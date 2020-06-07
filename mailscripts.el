@@ -1,10 +1,10 @@
 ;;; mailscripts.el --- functions to access tools in the mailscripts package
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 0.20
+;; Version: 0.21
 ;; Package-Requires: (notmuch projectile)
 
-;; Copyright (C) 2018, 2019 Sean Whitton
+;; Copyright (C) 2018, 2019, 2020 Sean Whitton
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 (require 'notmuch)
 (require 'projectile)
+(require 'thingatpt)
 
 (defgroup mailscripts nil
   "Customisation of functions in the mailscripts package.")
@@ -53,15 +54,35 @@ If NO-OPEN, don't open the thread."
   (interactive "sBug number: ")
   (call-process-shell-command (concat "notmuch-slurp-debbug " bug))
   (unless no-open
-    (notmuch-show (concat "Bug#" bug))))
+    (let* ((search (concat "Bug#" bug))
+           (thread-id (car (process-lines notmuch-command
+                                          "search"
+                                          "--output=threads"
+                                          "--limit=1"
+                                          "--format=text"
+                                          "--format-version=4" search))))
+      (notmuch-show thread-id nil nil nil
+                    (concat "*notmuch-show-" search "*")))))
+
+;;;###autoload
+(defun notmuch-slurp-debbug-at-point ()
+  "Slurp Debian bug with bug number at point and open the thread in notmuch."
+  (interactive)
+  (save-excursion
+    ;; the bug number might be prefixed with a # or 'Bug#'; try
+    ;; skipping over those to see if there's a number afterwards
+    (skip-chars-forward "#bBug" (+ 4 (point)))
+    (notmuch-slurp-debbug (number-to-string (number-at-point)))))
 
 ;;;###autoload
 (defun notmuch-slurp-this-debbug ()
   "When viewing a Debian bug in notmuch, download any missing messages."
   (interactive)
   (let ((subject (notmuch-show-get-subject)))
-    (when (string-match "Bug#\\([0-9]+\\):" subject)
-      (notmuch-slurp-debbug (match-string 1 subject) t))
+    (notmuch-slurp-debbug
+     (if (string-match "Bug#\\([0-9]+\\):" subject)
+         (match-string 1 subject)
+       (read-string "Bug number: ")) t)
     (notmuch-refresh-this-buffer)))
 
 ;;;###autoload
