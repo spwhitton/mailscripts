@@ -213,9 +213,8 @@ git-format-patch(1)."
 		(nil
 		 (user-error
 		  "Please customize variable `mailscripts-project-library'."))))
-        (branch (completing-read
-                 "Branch name (or leave blank to apply to current HEAD): "
-                 nil)))
+        (branch (read-from-minibuffer
+                 "Branch name (or leave blank to apply to current HEAD): ")))
     (apply f repo branch args)))
 
 (provide 'mailscripts)
