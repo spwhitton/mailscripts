@@ -2,7 +2,7 @@
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
 ;; Version: 0.21
-;; Package-Requires: (notmuch projectile)
+;; Package-Requires: (notmuch)
 
 ;; Copyright (C) 2018, 2019, 2020 Sean Whitton
 
@@ -22,7 +22,6 @@
 ;;; Code:
 
 (require 'notmuch)
-(require 'projectile)
 (require 'thingatpt)
 
 (defgroup mailscripts nil
@@ -44,6 +43,23 @@ or for quick, ad hoc testing of a patch series.
 
 Note that this does not prevent the creation of new branches."
   :type 'boolean
+  :group 'mailscripts)
+
+(defcustom mailscripts-project-library 'projectile
+  "Which project management library to use to choose from known projects.
+
+Some mailscripts functions allow selecting the repository to
+which patches will be applied from the list of projects already
+known to Emacs.  There is more than one popular library for
+maintaining a list of known projects, however, so this variable
+must be set to the one you use.
+
+Once there is a more fully-featured version of project.el
+included in the latest stable release of GNU Emacs, the default
+value of this variable may change, so if you wish to continue
+using Projectile, you should explicitly customize this."
+  :type '(choice (const :tag "project.el" project)
+		 (const :tag "Projectile" projectile))
   :group 'mailscripts)
 
 ;;;###autoload
@@ -123,10 +139,16 @@ threads to the notmuch-extract-patch(1) command."
      "*notmuch-apply-thread-series*")))
 
 ;;;###autoload
-(defun notmuch-extract-thread-patches-projectile ()
-  "Like `notmuch-extract-thread-patches', but use projectile to choose the repo."
+(define-obsolete-function-alias
+  'notmuch-extract-thread-patches-projectile
+  'notmuch-extract-thread-patches-to-project
+  "mailscripts 0.22")
+
+;;;###autoload
+(defun notmuch-extract-thread-patches-to-project ()
+  "Like `notmuch-extract-thread-patches', but choose repo from known projects."
   (interactive)
-  (mailscripts--projectile-repo-and-branch
+  (mailscripts--project-repo-and-branch
    'notmuch-extract-thread-patches
    (when current-prefix-arg
      (prefix-numeric-value current-prefix-arg))))
@@ -157,10 +179,16 @@ git-format-patch(1)."
       mm-handle))))
 
 ;;;###autoload
-(defun notmuch-extract-message-patches-projectile ()
-  "Like `notmuch-extract-message-patches', but use projectile to choose the repo."
+(define-obsolete-function-alias
+  'notmuch-extract-message-patches-projectile
+  'notmuch-extract-message-patches-to-project
+  "mailscripts 0.22")
+
+;;;###autoload
+(defun notmuch-extract-message-patches-to-project ()
+  "Like `notmuch-extract-message-patches', but choose repo from known projects."
   (interactive)
-  (mailscripts--projectile-repo-and-branch 'notmuch-extract-message-patches))
+  (mailscripts--project-repo-and-branch 'notmuch-extract-message-patches))
 
 (defun mailscripts--check-out-branch (branch)
   (if (string= branch "")
@@ -173,9 +201,18 @@ git-format-patch(1)."
                   (concat mailscripts-extract-patches-branch-prefix branch)
                 branch))))))
 
-(defun mailscripts--projectile-repo-and-branch (f &rest args)
-  (let ((repo (projectile-completing-read
-               "Select projectile project: " projectile-known-projects))
+(defun mailscripts--project-repo-and-branch (f &rest args)
+  (let ((repo (case mailscripts-project-library
+		('project
+		 (require 'project)
+		 (project-prompt-project-dir))
+		('projectile
+		 (require 'projectile)
+		 (projectile-completing-read
+		  "Select Projectile project: " projectile-known-projects))
+		(nil
+		 (user-error
+		  "Please customize variable `mailscripts-project-library'."))))
         (branch (completing-read
                  "Branch name (or leave blank to apply to current HEAD): "
                  nil)))
