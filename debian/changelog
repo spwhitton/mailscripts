@@ -1,4 +1,4 @@
-mailscripts (0.22-1) UNRELEASED; urgency=medium
+mailscripts (0.22-1) unstable; urgency=medium
 
   * mailscripts.el:
     - drop hard dependency on Projectile
@@ -8,7 +8,7 @@ mailscripts (0.22-1) UNRELEASED; urgency=medium
       projects
     - Use 'cl-case' not 'case' and require cl-lib.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 21 Jul 2020 21:22:39 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 19 Jan 2021 16:14:45 -0700
 
 mailscripts (0.21-1) unstable; urgency=medium
 
