@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'notmuch)
 (require 'thingatpt)
 
@@ -202,7 +203,7 @@ git-format-patch(1)."
                 branch))))))
 
 (defun mailscripts--project-repo-and-branch (f &rest args)
-  (let ((repo (case mailscripts-project-library
+  (let ((repo (cl-case mailscripts-project-library
 		('project
 		 (require 'project)
 		 (project-prompt-project-dir))

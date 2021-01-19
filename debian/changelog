@@ -5,7 +5,8 @@ mailscripts (0.22-1) UNRELEASED; urgency=medium
     - add new defcustom, mailscripts-project-library
     - replace *-projectile commands with new *-to-project commands, which
       support both Projectile and project.el for choosing from known
-      projects.
+      projects
+    - Use 'cl-case' not 'case' and require cl-lib.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 21 Jul 2020 21:22:39 -0700
 
