@@ -257,9 +257,12 @@ sub gemtext_to_mail {
                 Filename    => (split "/", $uri)[-1],
                 Disposition => "inline"
             );
-        } elsif (/^(?:=>|#+)/) {
-            &$pad;
+        } elsif (/^=>/) {
+            &$pad unless @buffer and $buffer[$#buffer] =~ /^=>/;
             push @buffer, $_;
+	} elsif (/^#+/) {
+	    &$pad;
+	    push @buffer, $_;
         } else {
             &$pad;
             push @buffer, split "\n", wrap "", "", $_;
