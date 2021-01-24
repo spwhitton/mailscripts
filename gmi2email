@@ -114,39 +114,44 @@ foreach my $sub (<$subs_fh>) {
             chomp($gemlog = $');
         } elsif (my ($uri, $y, $m, $d, $title)
             = /^=>\s*(\S+)\s+([0-9]{4})-([0-9]{2})-([0-9]{2})[\s-]*(.*)/) {
-            my ($rows)
-              = $dbh->selectrow_array(
-                "SELECT COUNT(*) FROM seen WHERE uri = \"$uri\"");
-            next unless $rows == 0;
-            my $mail = 1;
-            my ($type, $data);
-	    #<<<
-            try {
-                ($type, $data) = gemini_fetch($uri, abs_links => 1);
-            } catch {
-                warn "when fetching $uri, $_";
-                my ($code) = /"gemini error: ([1-6])/;
-                if ($code == 4) {
-                    next;    # try again next run
-                } else {
-                    $mail = 0;    # don't try this one again
-                }
-            };
-	    #>>>
-            $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
-            $mail and !$no_mail or next;
-            if ($type =~ m{^text/gemini}) {
-                gemtext_to_mail(
-                    $data, %to_mail_opts,
-                    gemlog     => $gemlog // "unknown gemlog",
-                    link_title => $title,
-                    date       => email_date timelocal 0,
-                    0, 12, $d, $m - 1, $y
-                )->send;
-            } else {
-                warn "$uri is not gemtext";
-            }
+            send_subscribed_gemtext($uri, $gemlog // "unknown gemlog",
+                $title, timelocal 0, 0, 12, $d, $m - 1, $y);
         }
+    }
+}
+
+sub send_subscribed_gemtext {
+    my ($uri, $gemlog, $link_title, $feed_date) = @_;
+    my ($rows)
+      = $dbh->selectrow_array(
+        "SELECT COUNT(*) FROM seen WHERE uri = \"$uri\"");
+    next unless $rows == 0;
+    my $mail = 1;
+    my ($type, $data);
+    #<<<
+    try {
+        ($type, $data) = gemini_fetch($uri, abs_links => 1);
+    } catch {
+        warn "when fetching $uri, $_";
+        my ($code) = /"gemini error: ([1-6])/;
+        if ($code == 4) {
+            return;    # try again next run
+        } else {
+            $mail = 0;    # don't try this one again
+        }
+    };
+    #>>>
+    $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
+    $mail and !$no_mail or return;
+    if ($type =~ m{^text/gemini}) {
+        gemtext_to_mail(
+            $data, %to_mail_opts,
+            gemlog     => $gemlog // "unknown gemlog",
+            link_title => $link_title,
+            date       => email_date $feed_date
+        )->send;
+    } else {
+        warn "$uri is not gemtext";
     }
 }
 
