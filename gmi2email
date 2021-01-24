@@ -17,6 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# TESTING/DEVEL
+#
+# To forget about seen entries of a feed:
+#
+#     % perl -MDBI
+#     -we'DBI->connect("dbi:SQLite:dbname=$ENV{HOME}/.cache/mailscripts/gmi2email.db",
+#     "", "")->do("DELETE FROM seen WHERE uri LIKE \"gemini://example.com/%\"")'
+
 use 5.028;
 use strict;
 use warnings;
