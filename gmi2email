@@ -33,12 +33,13 @@ use Email::Date::Format "email_date";
 use Time::Local;
 use Mail::Field::AddrList;
 
-my ($from, $to, $do_subs, $inline_images);
+my ($from, $to, $do_subs, $inline_images, $no_mail);
 GetOptions
   "from=s"         => \$from,
   "to=s"           => \$to,
   "subscriptions!" => \$do_subs,
-  "inline-images!" => \$inline_images;
+  "inline-images!" => \$inline_images,
+  "no-send!"       => \$no_mail;
 
 my $conf_r = $ENV{XDG_CONFIG_HOME} || catfile $ENV{HOME}, ".config";
 my $conf_f = catfile $conf_r, "mailscripts", "gmi2email.config";
@@ -74,7 +75,7 @@ for (@ARGV) {
         ($type, $data) = gemini_fetch($_, abs_links => 1);
         $type =~ m{^text/gemini} or die "$_ is not gemtext";
     }
-    gemtext_to_mail($data, %to_mail_opts)->send;
+    $no_mail or gemtext_to_mail($data, %to_mail_opts)->send;
 }
 
 exit unless $do_subs;
@@ -133,7 +134,7 @@ foreach my $sub (<$subs_fh>) {
             };
 	    #>>>
             $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
-            $mail or next;
+            $mail and !$no_mail or next;
             if ($type =~ m{^text/gemini}) {
                 gemtext_to_mail(
                     $data, %to_mail_opts,

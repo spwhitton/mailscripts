@@ -36,6 +36,12 @@ B<~/.config/mailscripts/gmi2email.subscriptions>.
 
 Download and inline any images included in the post.
 
+=item B<--no-send>
+
+Don't actually send any mail.  Intended when you just added some new
+subscriptions and want to avoid receiving all the old posts you've already
+read.
+
 =item B<--from=>I<ADDRESS>
 
 Set the From: address, overriding the configuration file.
