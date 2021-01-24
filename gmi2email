@@ -249,7 +249,7 @@ sub gemtext_to_mail {
             &$pad;
             push @buffer, split "\n", wrap "• ", "  ", $';
         } elsif ($opts{inline_images}
-            and my ($uri) = /^=>\s(\S+\.(?:jpg|jpeg|png|gif))\s/) {
+            and my ($uri) = m{^=>\s(gemini://\S+\.(?:jpg|jpeg|png|gif))\s}) {
             &$flush;
             my ($type, $data) = gemini_fetch($uri);
             $msg->attach(
