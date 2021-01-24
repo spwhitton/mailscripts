@@ -116,35 +116,34 @@ foreach my $sub (<$subs_fh>) {
             my ($rows)
               = $dbh->selectrow_array(
                 "SELECT COUNT(*) FROM seen WHERE uri = \"$uri\"");
-            if ($rows == 0) {
-                my $mail = 1;
-                my ($type, $data);
-		#<<<
-                try {
-                    ($type, $data) = gemini_fetch($uri, abs_links => 1);
-                } catch {
-                    warn "when fetching $uri, $_";
-                    my ($code) = /"gemini error: ([1-6])/;
-                    if ($code == 4) {
-                        next;    # try again next run
-                    } else {
-                        $mail = 0;    # don't try this one again
-                    }
-                };
-		#>>>
-                $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
-                $mail or next;
-                if ($type =~ m{^text/gemini}) {
-                    gemtext_to_mail(
-                        $data, %to_mail_opts,
-                        gemlog     => $gemlog // "unknown gemlog",
-                        link_title => $title,
-                        date       => email_date timelocal 0,
-                        0, 12, $d, $m - 1, $y
-                    )->send;
+            next unless $rows == 0;
+            my $mail = 1;
+            my ($type, $data);
+	    #<<<
+            try {
+                ($type, $data) = gemini_fetch($uri, abs_links => 1);
+            } catch {
+                warn "when fetching $uri, $_";
+                my ($code) = /"gemini error: ([1-6])/;
+                if ($code == 4) {
+                    next;    # try again next run
                 } else {
-                    warn "$uri is not gemtext";
+                    $mail = 0;    # don't try this one again
                 }
+            };
+	    #>>>
+            $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
+            $mail or next;
+            if ($type =~ m{^text/gemini}) {
+                gemtext_to_mail(
+                    $data, %to_mail_opts,
+                    gemlog     => $gemlog // "unknown gemlog",
+                    link_title => $title,
+                    date       => email_date timelocal 0,
+                    0, 12, $d, $m - 1, $y
+                )->send;
+            } else {
+                warn "$uri is not gemtext";
             }
         }
     }
