@@ -57,6 +57,7 @@ Recommends:
  libemail-date-format-perl,
  libtry-tiny-perl,
  libmailtools-perl,
+ libxml-feed-perl,
  notmuch,
  python3-argcomplete,
  python3-gssapi,

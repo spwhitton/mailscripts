@@ -23,8 +23,9 @@ text/gemini content specified on the command line.
 In addition to mailing any URIs/files specified on the command line, check
 subscribed gemlogs for new posts and send those too.  Useful in a crontab.
 
-Currently we only support the subscription mechanism described at
-<gemini://gemini.circumlunar.space/docs/companion/subscription.gmi>.
+We support the subscription mechanism described at
+<gemini://gemini.circumlunar.space/docs/companion/subscription.gmi> as well as
+Atom feeds.
 
 B<gmi2email> looks for a file with a list of gemini:// URIs to check for new
 posts, one per line, in

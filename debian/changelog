@@ -2,8 +2,8 @@ mailscripts (0.23-1) UNRELEASED; urgency=medium
 
   * New script: gmi2email
     - add libdbd-sqlite3-perl, libio-socket-ssl-perl, libmime-lite-perl,
-      libemail-date-format-perl, libtry-tiny-perl and libmailtools-perl to
-      Recommends.
+      libemail-date-format-perl, libtry-tiny-perl, libmailtools-perl and
+      libxml-feed-perl to Recommends.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 23 Jan 2021 16:36:25 -0700
 
