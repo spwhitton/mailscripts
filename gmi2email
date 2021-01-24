@@ -119,7 +119,7 @@ foreach my $sub (<$subs_fh>) {
                     $title, timelocal 0, 0, 12, $d, $m - 1, $y);
             }
         }
-    } elsif ($type =~ m{^(?:text|application)/xml}) {
+    } elsif ($type =~ m{^(?:text|application)/(?:atom\+)?xml}) {
         my $feed = XML::Feed->parse(\$data);
         send_subscribed_gemtext($_->link, $feed->title, $_->title,
             ($_->issued // $_->modified)->epoch)
