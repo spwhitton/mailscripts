@@ -125,7 +125,7 @@ foreach my $sub (<$subs_fh>) {
             ($_->issued // $_->modified)->epoch)
           for $feed->entries;
     } else {
-        die "$sub is not gemtext";
+        die "$sub is not gemtext or an Atom feed, so far as I can tell";
     }
 }
 
