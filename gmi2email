@@ -182,8 +182,16 @@ sub gemini_fetch {
     );
     print $cl "$uri\r\n";
 
-    my ($status, $meta) = <$cl> =~ /^([0-9]+) (.+)/;
-    20 <= $status and $status < 30 or die "gemini error: $status $meta";
+    my ($status, $meta) = <$cl> =~ /^([0-9]+) (\V+)/;
+    if (30 <= $status and $status < 40) {
+	$opts{orig_uri} = $uri unless $opts{redirects};
+        die "too many redirects while fetching $opts{orig_uri}"
+          if $opts{redirects} and $opts{redirects} > 5;
+	$opts{redirects}++;
+	return gemini_fetch($meta, %opts);
+    } elsif ($status < 20 or $status >= 40) {
+	die "gemini error: $status $meta";
+    }
 
     if ($meta =~ "^text/gemini") {
         my @lines;
