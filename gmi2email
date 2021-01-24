@@ -134,7 +134,7 @@ sub send_subscribed_gemtext {
     my ($rows)
       = $dbh->selectrow_array(
         "SELECT COUNT(*) FROM seen WHERE uri = \"$uri\"");
-    next unless $rows == 0;
+    return unless $rows == 0;
     my $mail = 1;
     my ($type, $data);
     #<<<
