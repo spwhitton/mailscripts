@@ -51,6 +51,12 @@ Recommends:
  devscripts,
  git,
  libgit-wrapper-perl,
+ libdbd-sqlite3-perl,
+ libio-socket-ssl-perl,
+ libmime-lite-perl,
+ libemail-date-format-perl,
+ libtry-tiny-perl,
+ libmailtools-perl,
  notmuch,
  python3-argcomplete,
  python3-gssapi,
@@ -85,3 +91,5 @@ Description: collection of scripts for manipulating e-mail on Debian
  email-extract-openpgp-certs -- extract OpenPGP certificates from a message
  .
  imap-dl -- download messages from an IMAP mailbox to a maildir
+ .
+ gmi2email -- subscribe to gemlogs and read individual Gemini pages by e-mail

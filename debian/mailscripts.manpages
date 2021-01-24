@@ -8,3 +8,4 @@ mbox-extract-patch.1
 notmuch-extract-patch.1
 notmuch-import-patch.1
 notmuch-slurp-debbug.1
+gmi2email.1

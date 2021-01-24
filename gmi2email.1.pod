@@ -1,0 +1,81 @@
+=head1 NAME
+
+gmi2email - subscribe to gemlogs and read individual Gemini pages by e-mail
+
+=head1 SYNOPSIS
+
+B<gmi2email> [I<OPTIONS>] [I<URI or FILE>] ...
+
+=head1 DESCRIPTION
+
+B<gmi2email> fetches pages served using the Gemini protocol, converts them to
+e-mail messages, and then sends those messages.  It is mainly useful for
+subscribing to Gemini logs ("gemlogs") by e-mail, like rss2email(1).
+B<gmi2email> fetches, converts and sends all URIs and files containing
+text/gemini content specified on the command line.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--subscriptions>
+
+In addition to mailing any URIs/files specified on the command line, check
+subscribed gemlogs for new posts and send those too.  Useful in a crontab.
+
+Currently we only support the subscription mechanism described at
+<gemini://gemini.circumlunar.space/docs/companion/subscription.gmi>.
+
+B<gmi2email> looks for a file with a list of gemini:// URIs to check for new
+posts, one per line, in
+B<$XDG_CONFIG_HOME/mailscripts/gmi2email.subscriptions>, or if XDG_CONFIG_HOME
+is not set, it falls back to trying to read
+B<~/.config/mailscripts/gmi2email.subscriptions>.
+
+=item B<--inline-images>
+
+Download and inline any images included in the post.
+
+=item B<--from=>I<ADDRESS>
+
+Set the From: address, overriding the configuration file.
+
+=item B<--to=>I<ADDRESS>
+
+Set the To: address, overriding the configuration file.
+
+=back
+
+=head1 CONFIGURATION
+
+B<gmi2email> tries to read configuration from the file
+B<$XDG_CONFIG_HOME/mailscripts/gmi2email.config>, or if XDG_CONFIG_HOME is not
+set, it falls back to trying to read
+B<~/.config/mailscripts/gmi2email.config>.
+
+The format is I<key = value>, one per line.  The following
+configuration keys are supported:
+
+=over 4
+
+=item B<from>
+
+Set the From: address.
+
+=item B<to>
+
+Set the To: address.
+
+=item inline_images
+
+Set to 1 to implicitly pass B<--inline-images>.
+
+=back
+
+=head1 SEE ALSO
+
+<https://gemini.circumlunar.space/>
+
+=head1 AUTHOR
+
+B<gmi2email> was written by Sean Whitton <spwhitton@spwhitton.name>.
