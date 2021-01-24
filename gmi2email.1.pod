@@ -14,6 +14,47 @@ subscribing to Gemini logs ("gemlogs") by e-mail, like rss2email(1).
 B<gmi2email> fetches, converts and sends all URIs and files containing
 text/gemini content specified on the command line.
 
+=head2 TYPICAL USAGE
+
+1. Ensure you have a working MTA: B<gmi2email> will use the sendmail(1)
+command to send mail.
+
+2. Create B<~/.config/mailscripts/gmi2email.config> with content like this:
+
+=over 4
+
+    from = rss@example.com
+    to = your_email@example.com
+    inline_images = 1
+
+=back
+
+3. Create B<~/.config/mailscripts/gmi2email.subscriptions> with some feed
+URIs, e.g.
+
+=over 4
+
+    gemini://example.com/my_cool_gemlog/
+    gemini://example.com/other_cool_gemlog/feed.xml
+
+=back
+
+4. Just once, execute
+
+=over 4
+
+    % gmi2email --subscriptions --no-send
+
+=back
+
+5. Periodically, execute
+
+=over 4
+
+    % gmi2email --subscriptions
+
+=back
+
 =head1 OPTIONS
 
 =over 4
