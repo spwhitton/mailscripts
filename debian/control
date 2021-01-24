@@ -51,13 +51,6 @@ Recommends:
  devscripts,
  git,
  libgit-wrapper-perl,
- libdbd-sqlite3-perl,
- libio-socket-ssl-perl,
- libmime-lite-perl,
- libemail-date-format-perl,
- libtry-tiny-perl,
- libmailtools-perl,
- libxml-feed-perl,
  notmuch,
  python3-argcomplete,
  python3-gssapi,
@@ -68,6 +61,13 @@ Suggests:
  gpg-agent,
  gpgsm,
  openssl,
+ libdbd-sqlite3-perl,
+ libio-socket-ssl-perl,
+ libmime-lite-perl,
+ libemail-date-format-perl,
+ libtry-tiny-perl,
+ libmailtools-perl,
+ libxml-feed-perl,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail
