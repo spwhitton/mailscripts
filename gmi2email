@@ -198,7 +198,7 @@ sub gemini_fetch {
 	$opts{redirects}++;
 	return gemini_fetch($meta, %opts);
     } elsif ($status < 20 or $status >= 40) {
-	die "gemini error: $status $meta";
+	die "while fetching $uri: gemini error: $status $meta";
     }
 
     if ($meta =~ "^text/gemini") {
