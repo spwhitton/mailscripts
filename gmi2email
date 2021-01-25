@@ -55,7 +55,7 @@ my $conf_f = catfile $conf_r, "mailscripts", "gmi2email.config";
 -e $conf_f
   or (defined $to and defined $from)
   or die
-  "no config file or sufficient command line options: don't know who to mail";
+  "no config file nor sufficient command line options: don't know who to mail";
 my $conf = Config::Tiny->new->read($conf_f);
 
 my %to_mail_opts = (
