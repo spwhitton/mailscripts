@@ -158,18 +158,17 @@ sub send_subscribed_gemtext {
         }
     };
     #>>>
-    $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
-    $mail and !$no_mail or return;
     if ($type =~ m{^text/gemini}) {
         gemtext_to_mail(
             $data, %to_mail_opts,
             gemlog     => $gemlog // "unknown gemlog",
             link_title => $link_title,
             date       => email_date $feed_date
-        )->send;
+        )->send if $mail and !$no_mail;
     } else {
         warn "$uri is not gemtext";
     }
+    $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
 }
 
 sub gemini_fetch {
