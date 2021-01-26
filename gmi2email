@@ -120,7 +120,7 @@ foreach my $sub (<$subs_fh>) {
     if ($type =~ m{^text/gemini}) {
         for (@$data) {
             if (/^#\s*/ and not $gemlog) {
-                chomp($gemlog = $');
+                $gemlog = $';
             } elsif (my ($uri, $y, $m, $d, $title)
                 = /^=>\s*(\S+)\s+([0-9]{4})-([0-9]{2})-([0-9]{2})[\s-]*(.*)/) {
                 send_subscribed_gemtext($uri, $gemlog // "unknown gemlog",
