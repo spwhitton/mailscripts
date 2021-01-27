@@ -164,7 +164,8 @@ sub send_subscribed_gemtext {
             gemlog     => $gemlog // "unknown gemlog",
             link_title => $link_title,
             date       => email_date $feed_date
-        )->send if $mail and !$no_mail;
+          )->send
+          if $mail and !$no_mail;
     } else {
         warn "$uri is not gemtext";
     }
@@ -191,13 +192,13 @@ sub gemini_fetch {
 
     my ($status, $meta) = <$cl> =~ /^([0-9]+) (\V+)/;
     if (30 <= $status and $status < 40) {
-	$opts{orig_uri} = $uri unless $opts{redirects};
+        $opts{orig_uri} = $uri unless $opts{redirects};
         die "too many redirects while fetching $opts{orig_uri}"
           if $opts{redirects} and $opts{redirects} > 5;
-	$opts{redirects}++;
-	return gemini_fetch($meta, %opts);
+        $opts{redirects}++;
+        return gemini_fetch($meta, %opts);
     } elsif ($status < 20 or $status >= 40) {
-	die "while fetching $uri: gemini error: $status $meta";
+        die "while fetching $uri: gemini error: $status $meta";
     }
 
     if ($meta =~ "^text/gemini") {
@@ -290,9 +291,9 @@ sub gemtext_to_mail {
         } elsif (/^=>/) {
             &$pad unless @buffer and $buffer[$#buffer] =~ /^=>/;
             push @buffer, $_;
-	} elsif (/^#+/) {
-	    &$pad;
-	    push @buffer, $_;
+        } elsif (/^#+/) {
+            &$pad;
+            push @buffer, $_;
         } else {
             &$pad;
             push @buffer, split "\n", wrap "", "", $_;
