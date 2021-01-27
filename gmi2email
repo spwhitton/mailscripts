@@ -42,13 +42,13 @@ use Time::Local;
 use Mail::Field::AddrList;
 use XML::Feed;
 
-my ($from, $to, $do_subs, $inline_images, $no_mail);
+my ($from, $to, $subs, $inline_images, $no_mail);
 GetOptions
-  "from=s"         => \$from,
-  "to=s"           => \$to,
-  "subscriptions!" => \$do_subs,
-  "inline-images!" => \$inline_images,
-  "no-send!"       => \$no_mail;
+  "from=s"          => \$from,
+  "to=s"            => \$to,
+  "subscriptions:s" => \$subs,
+  "inline-images!"  => \$inline_images,
+  "no-send!"        => \$no_mail;
 
 my $conf_r = $ENV{XDG_CONFIG_HOME} || catfile $ENV{HOME}, ".config";
 my $conf_f = catfile $conf_r, "mailscripts", "gmi2email.config";
@@ -57,6 +57,8 @@ my $conf_f = catfile $conf_r, "mailscripts", "gmi2email.config";
   or die
   "no config file nor sufficient command line options: don't know who to mail";
 my $conf = Config::Tiny->new->read($conf_f);
+$subs ||= catfile $conf_r, "mailscripts", "gmi2email.subscriptions"
+  if defined $subs;
 
 my %to_mail_opts = (
     from => (
@@ -72,7 +74,7 @@ my %to_mail_opts = (
     inline_images => $inline_images // $conf->{_}->{inline_images} // 0
 );
 
-@ARGV or $do_subs or die "nothing to do\n";
+@ARGV or $subs or die "nothing to do\n";
 
 for (@ARGV) {
     my $data;
@@ -87,11 +89,9 @@ for (@ARGV) {
     $no_mail or gemtext_to_mail($data, %to_mail_opts)->send;
 }
 
-exit unless $do_subs;
-
-my $subs_f = catfile $conf_r, "mailscripts", "gmi2email.subscriptions";
--e $subs_f or die "no list of subscriptions";
-open my $subs_fh, "<", $subs_f;
+exit unless $subs;
+-r $subs or die "file $subs not readable";
+open my $subs_fh, "<", $subs;
 
 my $db_r = $ENV{XDG_CACHE_HOME} || catfile $ENV{HOME}, ".cache";
 my $db_d = catfile $db_r, "mailscripts";

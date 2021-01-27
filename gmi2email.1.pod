@@ -59,7 +59,7 @@ URIs, e.g.
 
 =over 4
 
-=item B<--subscriptions>
+=item B<--subscriptions>[=I<FILE>]
 
 In addition to mailing any URIs/files specified on the command line, check
 subscribed gemlogs for new posts and send those too.  Useful in a crontab.
@@ -69,7 +69,7 @@ We support the subscription mechanism described at
 Atom feeds.
 
 B<gmi2email> looks for a file with a list of gemini:// URIs to check for new
-posts, one per line, in
+posts, one per line, in I<FILE>, or if that is not set, in
 B<$XDG_CONFIG_HOME/mailscripts/gmi2email.subscriptions>, or if XDG_CONFIG_HOME
 is not set, it falls back to trying to read
 B<~/.config/mailscripts/gmi2email.subscriptions>.
