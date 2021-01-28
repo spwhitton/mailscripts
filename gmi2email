@@ -212,11 +212,14 @@ sub gemini_fetch {
         my @lines;
         if ($opts{abs_links}) {
 	    $path =~ s{^/}{};
+            (my $dir = $path) =~ s{[^/]*$}{};
             $authority =~ m{/$} or $authority .= "/";
             $path =~ m{/$}      or $path      .= "/";
             for (<$cl>) {
                 s/\r?\n\z//;
-                if (m{^=> (?!/)} and not m{^=> [a-z]+://}) {
+                if (m{^=>\s*\./}) {
+                    push @lines, "=> gemini://$authority$dir$'";
+                } elsif (m{^=> (?!/)} and not m{^=> [a-z]+://}) {
                     push @lines, "=> gemini://$authority$path$'";
                 } elsif (m{^=> /}) {
                     push @lines, "=> gemini://$authority$'";
