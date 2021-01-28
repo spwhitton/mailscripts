@@ -109,7 +109,9 @@ foreach my $sub (<$subs_fh>) {
         ($type, $data) = gemini_fetch($sub, abs_links => 1);
     } catch {
         my ($code) = /"gemini error: ([1-6])/;
-        if (defined $code and $code == 4 or /missing or invalid gemini response/) {
+        if (   defined $code and $code == 4
+            or /missing or invalid gemini response/
+            or /failed to establish SSL connection/) {
             warn "temporary failure retrieving $sub";
             $next = 1, return;    # try again next run
         } else {
