@@ -166,14 +166,14 @@ sub send_subscribed_gemtext {
     } catch {
         warn "when fetching $uri, $_";
         my ($code) = /"gemini error: ([1-6])/;
-        if ($code == 4) {
+        if ($code and $code == 4) {
             return;    # try again next run
         } else {
             $mail = 0;    # don't try this one again
         }
     };
     #>>>
-    if ($type =~ m{^text/gemini}) {
+    if ($type and $type =~ m{^text/gemini}) {
         gemtext_to_mail(
             $data, %to_mail_opts,
             gemlog     => $gemlog // "unknown gemlog",
@@ -236,7 +236,7 @@ sub gemini_fetch {
         } else {
             @lines = <$cl>;
         }
-        push @lines, "" unless $lines[$#lines] eq "";
+        push @lines, "" unless !@lines or $lines[$#lines] eq "";
         push @lines, "Retrieved from $uri\n            at " . localtime;
         return $meta, \@lines;
     } else {
