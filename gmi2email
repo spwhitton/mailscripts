@@ -103,7 +103,7 @@ $dbh->do("CREATE TABLE IF NOT EXISTS seen (uri TEXT PRIMARY KEY)")
 
 foreach my $sub (<$subs_fh>) {
     chomp $sub;
-    my ($gemlog, $type, $data);
+    my ($gemlog, $type, $data, $next);
     #<<<
     try {
         ($type, $data) = gemini_fetch($sub, abs_links => 1);
@@ -111,12 +111,13 @@ foreach my $sub (<$subs_fh>) {
         my ($code) = /"gemini error: ([1-6])/;
         if ($code == 4) {
             warn "temporary failure retrieving $sub";
-            next;		# try again next run
+            $next = 1, return;    # try again next run
         } else {
             die "while retrieving $sub $_";
         }
     };
     #>>>
+    next if $next;
     if ($type =~ m{^text/gemini}) {
         for (@$data) {
             if (/^#\s*/ and not $gemlog) {
