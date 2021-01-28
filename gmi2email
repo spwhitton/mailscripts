@@ -211,6 +211,7 @@ sub gemini_fetch {
     if ($meta =~ "^text/gemini") {
         my @lines;
         if ($opts{abs_links}) {
+	    $path =~ s{^/}{};
             $authority =~ m{/$} or $authority .= "/";
             $path =~ m{/$}      or $path      .= "/";
             for (<$cl>) {
