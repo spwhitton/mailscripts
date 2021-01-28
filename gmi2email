@@ -226,7 +226,10 @@ sub gemini_fetch {
             while (local $_ = <$cl>) {
                 s/\r?\n\z//;
 		if (m{^=>\s*\./} || m{^=>\s*(?!/)} and not m{^=> [a-z]+://}) {
-                    push @lines, "=> gemini://$authority$dir$'";
+		    my $link = "$dir$'";
+		    # attempt to resolve any use of '..' notation
+		    1 while $link =~ s{/[^/]+/../}{/};
+                    push @lines, "=> gemini://$authority$link";
                 } elsif (m{^=>\s*/}) {
                     push @lines, "=> gemini://$authority$'";
                 } else {
