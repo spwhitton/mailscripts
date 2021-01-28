@@ -132,11 +132,11 @@ foreach my $sub (<$subs_fh>) {
         }
     } elsif ($type =~ m{^(?:text|application)/(?:atom\+)?xml}) {
         my $feed = XML::Feed->parse(\$data);
-	for ($feed->entries) {
-	    my $date = $_->issued // $_->modified;
-	    $date = $date->epoch if $date;
-	    send_subscribed_gemtext($_->link, $feed->title, $_->title, $date);
-	}
+        for ($feed->entries) {
+            my $date = $_->issued // $_->modified;
+            $date = $date->epoch if $date;
+            send_subscribed_gemtext($_->link, $feed->title, $_->title, $date);
+        }
     } else {
         die "$sub is not gemtext nor an Atom feed, so far as I can tell";
     }
