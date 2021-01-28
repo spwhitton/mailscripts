@@ -130,7 +130,7 @@ foreach my $sub (<$subs_fh>) {
                     $title, timelocal 0, 0, 12, $d, $m - 1, $y);
             }
         }
-    } elsif ($type =~ m{^(?:text|application)/(?:atom\+)?xml}) {
+    } elsif ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}) {
         my $feed = XML::Feed->parse(\$data);
         for ($feed->entries) {
             my $date = $_->issued // $_->modified;
