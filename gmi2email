@@ -192,6 +192,8 @@ sub gemini_fetch {
     print $cl "$uri\r\n";
 
     my ($status, $meta) = <$cl> =~ /^([0-9]+) (\V+)/;
+    defined $status and defined $meta
+      or die "while fetching $uri: missing or invalid gemini response\n";
     if (30 <= $status and $status < 40) {
         $opts{orig_uri} = $uri unless $opts{redirects};
         die "too many redirects while fetching $opts{orig_uri}"
