@@ -215,7 +215,7 @@ sub gemini_fetch {
             (my $dir = $path) =~ s{[^/]*$}{};
             $authority =~ m{/$} or $authority .= "/";
             $path =~ m{/$}      or $path      .= "/";
-            for (<$cl>) {
+            while (local $_ = <$cl>) {
                 s/\r?\n\z//;
                 if (m{^=>\s*\./}) {
                     push @lines, "=> gemini://$authority$dir$'";
