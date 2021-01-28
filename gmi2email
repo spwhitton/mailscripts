@@ -292,13 +292,21 @@ sub gemtext_to_mail {
         } elsif ($opts{inline_images}
             and my ($uri) = m{^=>\s*(gemini://\S+\.(?:jpg|jpeg|png|gif))}) {
             &$flush;
-            my ($type, $data) = gemini_fetch($uri);
+            my ($type, $data, $failed);
+	    #<<<
+            try {
+                ($type, $data) = gemini_fetch($uri);
+            } catch {
+		push @buffer, "when fetching $uri, $_";
+		$failed = 1;
+            };
+	    #>>>
             $msg->attach(
                 Type        => $type,
                 Data        => $data,
                 Filename    => (split "/", $uri)[-1],
                 Disposition => "inline"
-            );
+            ) unless $failed;
         } elsif (/^=>/) {
             &$pad unless @buffer and $buffer[$#buffer] =~ /^=>/;
             push @buffer, $_;
