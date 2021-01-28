@@ -188,7 +188,7 @@ sub gemini_fetch {
         PeerHost        => $host,
         PeerPort        => $port // 1965,
         SSL_verify_mode => SSL_VERIFY_NONE
-    );
+    ) or die "while fetching $uri: failed to establish SSL connection\n";
     print $cl "$uri\r\n";
 
     my ($status, $meta) = <$cl> =~ /^([0-9]+) (\V+)/;
