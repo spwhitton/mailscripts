@@ -112,7 +112,7 @@ foreach my $sub (<$subs_fh>) {
         if (   defined $code and $code == 4
             or /missing or invalid gemini response/
             or /failed to establish SSL connection/) {
-            warn "temporary failure retrieving $sub";
+            warn "temporary failure retrieving $sub; will try again later:\n    $_";
             $next = 1, return;    # try again next run
         } else {
             die "while retrieving $sub $_";
