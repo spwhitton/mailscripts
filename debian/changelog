@@ -1,3 +1,24 @@
+mailscripts (0.23-1) unstable; urgency=medium
+
+  * New script: gmi2email
+    - add libdbd-sqlite3-perl, libio-socket-ssl-perl, libmime-lite-perl,
+      libemail-date-format-perl, libtry-tiny-perl, libmailtools-perl and
+      libxml-feed-perl to Suggests.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Thu, 28 Jan 2021 16:34:40 -0700
+
+mailscripts (0.22-1) unstable; urgency=medium
+
+  * mailscripts.el:
+    - drop hard dependency on Projectile
+    - add new defcustom, mailscripts-project-library
+    - replace *-projectile commands with new *-to-project commands, which
+      support both Projectile and project.el for choosing from known
+      projects
+    - Use 'cl-case' not 'case' and require cl-lib.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 19 Jan 2021 16:14:45 -0700
+
 mailscripts (0.21-1~bpo10+1) buster-backports; urgency=medium
 
   * Rebuild for buster-backports.

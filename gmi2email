@@ -1,0 +1,333 @@
+#!/usr/bin/perl
+
+# gmi2email -- subscribe to gemlogs and read individual Gemini pages by e-mail
+
+# Copyright (C) 2021 Sean Whitton
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# TESTING/DEVEL
+#
+# To forget about seen entries of a feed:
+#
+#     % perl -MDBI
+#     -we'DBI->connect("dbi:SQLite:dbname=$ENV{HOME}/.cache/mailscripts/gmi2email.db",
+#     "", "")->do("DELETE FROM seen WHERE uri LIKE \"gemini://example.com/%\"")'
+
+use 5.028;
+use strict;
+use warnings;
+
+use DBI;
+use File::Spec::Functions "catfile";
+use IO::Socket::SSL;
+use MIME::Lite;
+use Config::Tiny;
+use Text::Wrap;
+use Try::Tiny;
+use Getopt::Long;
+use Email::Date::Format "email_date";
+use Time::Local;
+use Mail::Field::AddrList;
+use XML::Feed;
+
+my ($from, $to, $subs, $inline_images, $no_mail);
+GetOptions
+  "from=s"          => \$from,
+  "to=s"            => \$to,
+  "subscriptions:s" => \$subs,
+  "inline-images!"  => \$inline_images,
+  "no-send!"        => \$no_mail;
+
+my $conf_r = $ENV{XDG_CONFIG_HOME} || catfile $ENV{HOME}, ".config";
+my $conf_f = catfile $conf_r, "mailscripts", "gmi2email.config";
+-e $conf_f
+  or (defined $to and defined $from)
+  or die
+  "no config file nor sufficient command line options: don't know who to mail";
+my $conf = Config::Tiny->new->read($conf_f);
+$subs ||= catfile $conf_r, "mailscripts", "gmi2email.subscriptions"
+  if defined $subs;
+
+my %to_mail_opts = (
+    from => (
+             $from
+          or $conf->{_}->{from}
+          or die "no From: address set in config or on command line"
+    ),
+    to => (
+             $to
+          or $conf->{_}->{to}
+          or die "no To: address set in config or on command line"
+    ),
+    inline_images => $inline_images // $conf->{_}->{inline_images} // 0
+);
+
+@ARGV or $subs or die "nothing to do\n";
+
+for (@ARGV) {
+    my $data;
+    if (-f) {
+        open my $fh, "<", $_;
+        $data = [<$fh>];
+    } else {
+        my $type;
+        ($type, $data) = gemini_fetch($_, abs_links => 1);
+        $type =~ m{^text/gemini} or die "$_ is not gemtext";
+    }
+    $no_mail or gemtext_to_mail($data, %to_mail_opts)->send;
+}
+
+exit unless $subs;
+-r $subs or die "file $subs not readable";
+open my $subs_fh, "<", $subs;
+
+my $db_r = $ENV{XDG_CACHE_HOME} || catfile $ENV{HOME}, ".cache";
+my $db_d = catfile $db_r, "mailscripts";
+-d $db_d or mkdir $db_d;
+my $db_f = catfile $db_d, "gmi2email.db";
+my $dbh = DBI->connect("dbi:SQLite:dbname=$db_f", "", "");
+$dbh->do("CREATE TABLE IF NOT EXISTS seen (uri TEXT PRIMARY KEY)")
+  or die "failed to initialise database";
+
+foreach my $sub (<$subs_fh>) {
+    chomp $sub;
+    my ($gemlog, $type, $data, $next);
+    #<<<
+    try {
+        ($type, $data) = gemini_fetch($sub, abs_links => 1);
+    } catch {
+        my ($code) = /"gemini error: ([1-6])/;
+        if (   defined $code and $code == 4
+            or /missing or invalid gemini response/
+            or /failed to establish SSL connection/) {
+            warn "temporary failure retrieving $sub; will try again later:\n    $_";
+            $next = 1, return;    # try again next run
+        } else {
+            die "while retrieving $sub $_";
+        }
+    };
+    #>>>
+    next if $next;
+    if ($type =~ m{^text/gemini}) {
+        for (@$data) {
+            if (/^#\s*/ and not $gemlog) {
+                $gemlog = $';
+            } elsif (my ($uri, $y, $m, $d, $title)
+                = /^=>\s*(\S+)\s+([0-9]{4})-([0-9]{2})-([0-9]{2})[\s-]*(.*)/) {
+                send_subscribed_gemtext($uri, $gemlog // "unknown gemlog",
+                    $title, timelocal 0, 0, 12, $d, $m - 1, $y);
+            }
+        }
+    } elsif ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}) {
+        my $feed = XML::Feed->parse(\$data);
+        for ($feed->entries) {
+            my $date = $_->issued // $_->modified;
+            $date = $date->epoch if $date;
+
+	    my $link;
+	    if ($_->link =~ m{^//}) {
+		$link = "gemini:" . $_->link;
+	    } elsif ($_->link !~ m{^[a-z]+://}) {
+		$link = "gemini://" . $_->link;
+	    } else {
+		$link = $_->link;
+	    }
+
+            send_subscribed_gemtext($link, $feed->title, $_->title, $date);
+        }
+    } else {
+        die "$sub is not gemtext nor an Atom feed, so far as I can tell";
+    }
+}
+
+sub send_subscribed_gemtext {
+    my ($uri, $gemlog, $link_title, $feed_date) = @_;
+    my ($rows)
+      = $dbh->selectrow_array(
+        "SELECT COUNT(*) FROM seen WHERE uri = \"$uri\"");
+    return unless $rows == 0;
+    my $mail = 1;
+    my ($type, $data);
+    #<<<
+    try {
+        ($type, $data) = gemini_fetch($uri, abs_links => 1);
+    } catch {
+        warn "when fetching $uri, $_";
+        my ($code) = /"gemini error: ([1-6])/;
+        if ($code and $code == 4) {
+            return;    # try again next run
+        } else {
+            $mail = 0;    # don't try this one again
+        }
+    };
+    #>>>
+    if ($type and $type =~ m{^text/gemini}) {
+        gemtext_to_mail(
+            $data, %to_mail_opts,
+            gemlog     => $gemlog // "unknown gemlog",
+            link_title => $link_title,
+            date       => email_date $feed_date // time
+          )->send
+          if $mail and !$no_mail;
+    } else {
+        warn "$uri is not gemtext";
+    }
+    $dbh->do("INSERT INTO seen VALUES (\"$uri\")");
+}
+
+sub gemini_fetch {
+    my ($uri, %opts) = @_;
+
+    # regexp from Alex Schroeder's moku-pona program
+    my ($scheme, $authority, $path, $query, $fragment)
+      = $uri
+      =~ m|(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|;
+    $scheme and $scheme eq "gemini"
+      or die "'$uri' does not use the gemini scheme";
+    $authority or die "'$uri' lacks an authority";
+    my ($host, $port) = split ":", $authority;
+    my $cl = IO::Socket::SSL->new(
+        PeerHost        => $host,
+        PeerPort        => $port // 1965,
+        SSL_verify_mode => SSL_VERIFY_NONE
+    ) or die "while fetching $uri: failed to establish SSL connection\n";
+    print $cl "$uri\r\n";
+
+    my ($status, $meta) = <$cl> =~ /^([0-9]+) (\V+)/;
+    defined $status and defined $meta
+      or die "while fetching $uri: missing or invalid gemini response\n";
+    if (30 <= $status and $status < 40) {
+        $opts{orig_uri} = $uri unless $opts{redirects};
+        die "too many redirects while fetching $opts{orig_uri}"
+          if $opts{redirects} and $opts{redirects} > 5;
+        $opts{redirects}++;
+        return gemini_fetch($meta, %opts);
+    } elsif ($status < 20 or $status >= 40) {
+        die "while fetching $uri: gemini error: $status $meta";
+    }
+
+    if ($meta =~ "^text/gemini") {
+        my @lines;
+        if ($opts{abs_links}) {
+            my $dir = $path =~ s{[^/]*$}{}r =~ s{^/}{}r;
+            $authority =~ m{/$} or $authority .= "/";
+            while (local $_ = <$cl>) {
+                s/\r?\n\z//;
+		if (m{^=>\s*\./} || m{^=>\s*(?!/)} and not m{^=> [a-z]+://}) {
+		    my $link = "$dir$'";
+		    # attempt to resolve any use of '..' notation
+		    1 while $link =~ s{/[^/]+/../}{/};
+                    push @lines, "=> gemini://$authority$link";
+                } elsif (m{^=>\s*/}) {
+                    push @lines, "=> gemini://$authority$'";
+                } else {
+                    push @lines, $_;
+                }
+            }
+        } else {
+            @lines = <$cl>;
+        }
+        push @lines, "" unless !@lines or $lines[$#lines] eq "";
+        push @lines, "Retrieved from $uri\n            at " . localtime;
+        return $meta, \@lines;
+    } else {
+        return $meta, do { local $/; <$cl> };
+    }
+}
+
+sub gemtext_to_mail {
+    my ($gemtext, %opts) = @_;
+    $opts{from} or die "no From: address specified";
+    $opts{to}   or die "no To: address specified";
+
+    my $subject = $opts{link_title} // "";
+    if ($gemtext->[0] =~ m{^#(?!#)\s*}) {
+        $subject = $';
+        shift @$gemtext;
+        shift @$gemtext while $gemtext->[0] =~ /^$/;
+    }
+
+    if ($opts{gemlog}) {
+        $opts{from}
+          = Mail::Field->new("From")->create($opts{from}, $opts{gemlog})
+          ->stringify;
+        $subject = "$opts{gemlog}: $subject" if $subject;
+    }
+
+    my $msg = MIME::Lite->new(
+        From    => $opts{from},
+        To      => $opts{to},
+        Subject => $subject,
+        Type    => "multipart/mixed"
+    );
+    $msg->add(Date => $opts{date}) if $opts{date};
+
+    my ($pre, @buffer);
+    my $flush = sub {
+        return unless @buffer;
+        $msg->attach(Type => "TEXT", Data => join "\r\n", @buffer);
+        undef @buffer;
+    };
+    my $pad
+      = sub { push @buffer, "" unless !@buffer or $buffer[$#buffer] eq "" };
+    for (@$gemtext) {
+        if ($pre) {
+            if (/^```/) {
+                $pre = 0;
+            } else {
+                push @buffer, "    $_";
+            }
+        } elsif (/^```/) {
+            &$pad;
+            $pre = 1;
+        } elsif (/^>\s*/) {
+            &$pad;
+            push @buffer, split "\n", wrap "> ", "> ", $';
+        } elsif (/^\*\s*/) {
+            &$pad;
+            push @buffer, split "\n", wrap "• ", "  ", $';
+        } elsif ($opts{inline_images}
+            and my ($uri) = m{^=>\s*(gemini://\S+\.(?:jpg|jpeg|png|gif))}) {
+            &$flush;
+            my ($type, $data, $failed);
+	    #<<<
+            try {
+                ($type, $data) = gemini_fetch($uri);
+            } catch {
+		push @buffer, "when fetching $uri, $_";
+		$failed = 1;
+            };
+	    #>>>
+            $msg->attach(
+                Type        => $type,
+                Data        => $data,
+                Filename    => (split "/", $uri)[-1],
+                Disposition => "inline"
+            ) unless $failed;
+        } elsif (/^=>/) {
+            &$pad unless @buffer and $buffer[$#buffer] =~ /^=>/;
+            push @buffer, $_;
+        } elsif (/^#+/) {
+            &$pad;
+            push @buffer, $_;
+        } else {
+            &$pad;
+            push @buffer, split "\n", wrap "", "", $_;
+        }
+    }
+
+    &$flush;
+    return $msg;
+}

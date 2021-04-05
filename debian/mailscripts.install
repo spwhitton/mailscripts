@@ -8,3 +8,4 @@ mbox-extract-patch /usr/bin
 notmuch-extract-patch /usr/bin
 notmuch-import-patch /usr/bin
 notmuch-slurp-debbug /usr/bin
+gmi2email /usr/bin
