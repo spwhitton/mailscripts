@@ -121,17 +121,7 @@ foreach my $sub (<$subs_fh>) {
     };
     #>>>
     next if $next;
-    if ($type =~ m{^text/gemini}) {
-        for (@$data) {
-            if (/^#\s*/ and not $gemlog) {
-                $gemlog = $';
-            } elsif (my ($uri, $y, $m, $d, $title)
-                = /^=>\s*(\S+)\s+([0-9]{4})-([0-9]{2})-([0-9]{2})[\s-]*(.*)/) {
-                send_subscribed_gemtext($uri, $gemlog // "unknown gemlog",
-                    $title, timelocal 0, 0, 12, $d, $m - 1, $y);
-            }
-        }
-    } elsif ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}) {
+    if ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}) {
         my $feed = XML::Feed->parse(\$data);
         for ($feed->entries) {
             my $date = $_->issued // $_->modified;
@@ -147,6 +137,16 @@ foreach my $sub (<$subs_fh>) {
 	    }
 
             send_subscribed_gemtext($link, $feed->title, $_->title, $date);
+        }
+    } elsif ($type =~ m{^text/gemini}) {
+        for (@$data) {
+            if (/^#\s*/ and not $gemlog) {
+                $gemlog = $';
+            } elsif (my ($uri, $y, $m, $d, $title)
+                = /^=>\s*(\S+)\s+([0-9]{4})-([0-9]{2})-([0-9]{2})[\s-]*(.*)/) {
+		send_subscribed_gemtext($uri, $gemlog // "unknown gemlog",
+                    $title, timelocal 0, 0, 12, $d, $m - 1, $y);
+            }
         }
     } else {
         die "$sub is not gemtext nor an Atom feed, so far as I can tell";
