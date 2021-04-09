@@ -72,7 +72,8 @@ B<gmi2email> looks for a file with a list of gemini:// URIs to check for new
 posts, one per line, in I<FILE>, or if that is not set, in
 B<$XDG_CONFIG_HOME/mailscripts/gmi2email.subscriptions>, or if XDG_CONFIG_HOME
 is not set, it falls back to trying to read
-B<~/.config/mailscripts/gmi2email.subscriptions>.
+B<~/.config/mailscripts/gmi2email.subscriptions>.  Lines beginning with '#'
+are treated as comments and ignored.
 
 =item B<--inline-images>
 
