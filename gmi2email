@@ -121,7 +121,10 @@ foreach my $sub (<$subs_fh>) {
     };
     #>>>
     next if $next;
-    if ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}) {
+    # some XML feeds out there are published using the text/gemini MIME type,
+    # so also look at the file extension
+    if ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}
+	or $sub =~ /\.xml$/) {
         my $feed = XML::Feed->parse(\$data);
         for ($feed->entries) {
             my $date = $_->issued // $_->modified;
@@ -219,7 +222,9 @@ sub gemini_fetch {
         die "while fetching $uri: gemini error: $status $meta";
     }
 
-    if ($meta =~ "^text/gemini") {
+    # don't rely only on MIME type server sends us when URI ends in .xml, as
+    # some feeds out there are published with the text/gemini MIME type
+    if ($meta =~ "^text/gemini" and not $uri =~ /\.xml\z/) {
         my @lines;
         if ($opts{abs_links}) {
             my $dir = $path =~ s{[^/]*$}{}r =~ s{^/}{}r;
