@@ -42,6 +42,8 @@ notmuch(1), git-send-email(1), mbox-extract-patch(1)
 Emacs functions 'notmuch-extract-thread-patches' and
 'notmuch-extract-message-patches', provided by mailscripts.el
 
+The piem project: <https://docs.kyleam.com/piem/>
+
 =head1 AUTHOR
 
 Sean Whitton <spwhitton@spwhitton.name>
