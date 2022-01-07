@@ -2,6 +2,9 @@ mailscripts (0.24-1) UNRELEASED; urgency=medium
 
   * mailscripts.el:
     - Enable lexical binding.
+    - notmuch-slurp-debbug: at end, call notmuch-search not notmuch-show.
+      This should avoid leaving the user viewing a thread containing only
+      control messages, with no easy way to get to the bug correspondence.
     - mailscripts-detach-head-from-existing-branch can now have value `ask'.
   * gmi2email:
     - Support commenting out subscriptions.

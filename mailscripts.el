@@ -80,8 +80,7 @@ If NO-OPEN, don't open the thread."
                                           "--limit=1"
                                           "--format=text"
                                           "--format-version=4" search))))
-      (notmuch-show thread-id nil nil nil
-                    (concat "*notmuch-show-" search "*")))))
+      (notmuch-search search t thread-id))))
 
 ;;;###autoload
 (defun notmuch-slurp-debbug-at-point ()
