@@ -4,7 +4,7 @@
 ;; Version: 0.23
 ;; Package-Requires: (notmuch)
 
-;; Copyright (C) 2018, 2019, 2020 Sean Whitton
+;; Copyright (C) 2018, 2019, 2020, 2022 Sean Whitton
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -43,7 +43,9 @@ applying patches before updating any of your existing branches,
 or for quick, ad hoc testing of a patch series.
 
 Note that this does not prevent the creation of new branches."
-  :type 'boolean
+  :type '(choice (const :tag "Always detach" t)
+		 (const :tag "Never detach" nil)
+		 (const :tag "Ask whether to detach" ask))
   :group 'mailscripts)
 
 (defcustom mailscripts-project-library 'projectile
@@ -193,7 +195,9 @@ git-format-patch(1)."
 
 (defun mailscripts--check-out-branch (branch)
   (if (string= branch "")
-      (when mailscripts-detach-head-from-existing-branch
+      (when (or (eq mailscripts-detach-head-from-existing-branch t)
+		(and (eq mailscripts-detach-head-from-existing-branch 'ask)
+		     (yes-or-no-p "Detach HEAD before applying patches?")))
         (call-process-shell-command "git checkout --detach"))
     (call-process-shell-command
      (format "git checkout -b %s"

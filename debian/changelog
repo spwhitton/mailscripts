@@ -1,3 +1,10 @@
+mailscripts (0.24-1) UNRELEASED; urgency=medium
+
+  * mailscripts.el:
+    - mailscripts-detach-head-from-existing-branch can now have value `ask'.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 07 Jan 2022 14:21:25 -0700
+
 mailscripts (0.23-1) unstable; urgency=medium
 
   * New script: gmi2email
