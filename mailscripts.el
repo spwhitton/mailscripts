@@ -1,4 +1,4 @@
-;;; mailscripts.el --- functions to access tools in the mailscripts package
+;;; mailscripts.el --- functions to access tools in the mailscripts package  -*- lexical-binding: t; -*-
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
 ;; Version: 0.23
