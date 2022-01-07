@@ -1,4 +1,4 @@
-mailscripts (0.24-1) UNRELEASED; urgency=medium
+mailscripts (0.24-1) unstable; urgency=medium
 
   * mailscripts.el:
     - Enable lexical binding.
@@ -11,7 +11,7 @@ mailscripts (0.24-1) UNRELEASED; urgency=medium
     - Cope with XML feeds sent with text/gemini MIME type.
   * notmuch-extract-patch(1): add link to the piem project.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 07 Jan 2022 14:21:25 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 07 Jan 2022 14:48:01 -0700
 
 mailscripts (0.23-1) unstable; urgency=medium
 
