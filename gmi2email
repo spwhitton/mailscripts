@@ -125,7 +125,14 @@ foreach my $sub (<$subs_fh>) {
     # so also look at the file extension
     if ($type =~ m{^(?:text|application)/(?:(?:atom|rss)\+)?xml}
 	or $sub =~ /\.xml$/) {
-        my $feed = XML::Feed->parse(\$data);
+	my $feed;
+	#<<<
+	try {
+	    $feed = XML::Feed->parse(\$data);
+	} catch {
+	    die "While parsing $sub, XML::Feed exception:\n$_";
+	};
+	#>>>
         for ($feed->entries) {
             my $date = $_->issued // $_->modified;
             $date = $date->epoch if $date;
