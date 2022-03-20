@@ -54,7 +54,7 @@ $maildir = $mgr->open(
     access    => "a",
     keep_dups => 1,
     type      => "maildir"
-);
+) or die "failed to open target maildir: $!\n";
 
 # we use bts(1) to download the mbox because it has some logic to find
 # the right URI and the user might have enabled its caching features.
@@ -72,7 +72,7 @@ my $mbox = $mgr->open(
     access    => "r",
     keep_dups => 1,
     type      => "mbox"
-);
+) or die "failed to open $bug.mbox: $!\n";
 
 foreach my $message ($mbox->messages) {
     my $mid = $message->messageId;

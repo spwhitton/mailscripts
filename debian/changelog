@@ -10,6 +10,7 @@ mailscripts (0.24-1) unstable; urgency=medium
     - Support commenting out subscriptions.
     - Cope with XML feeds sent with text/gemini MIME type.
   * notmuch-extract-patch(1): add link to the piem project.
+  * notmuch-slurp-debbug: exit immediately if Mail::Box::Manager::open fails.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 07 Jan 2022 14:48:01 -0700
 
