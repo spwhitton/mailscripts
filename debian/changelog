@@ -3,6 +3,9 @@ mailscripts (0.25-1) UNRELEASED; urgency=medium
   * notmuch-slurp-debbug:
     - Exit immediately if Mail::Box::Manager::open fails.
     - Support tilde expansion in 'maildir' configuration key.
+  * mdmv: ensure destination path ends with ':2,' when message has no flags.
+    Previously we were writing some messages with no flags into cur/
+    directories without this suffix, which is invalid (see maildir(5)).
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 20 Mar 2022 14:44:31 -0700
 

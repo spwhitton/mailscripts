@@ -59,7 +59,7 @@ for msg in sys.argv[1:-1]:
     if flags:
         msg_dest = os.path.join(os.path.join(dest, 'cur'), name_prefix + ':' + flags)
     else:
-        msg_dest = os.path.join(os.path.join(dest, 'cur'), name_prefix)
+        msg_dest = os.path.join(os.path.join(dest, 'cur'), name_prefix + ':2,')
 
     if os.path.exists(msg_dest):
         eprint(us + ": somehow, dest " + msg_dest + " already exists")
