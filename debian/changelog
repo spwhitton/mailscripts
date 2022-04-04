@@ -1,4 +1,4 @@
-mailscripts (0.25-1) UNRELEASED; urgency=medium
+mailscripts (25-1) UNRELEASED; urgency=medium
 
   * notmuch-slurp-debbug:
     - Exit immediately if Mail::Box::Manager::open fails.
@@ -10,6 +10,7 @@ mailscripts (0.25-1) UNRELEASED; urgency=medium
     Now that Emacs 28.1 is out, the latest stable release of Emacs
     contains a more fully-featured version of project.el, so change the
     default as we said we would.
+  * Drop the '0.' prefix to mailscripts version numbers.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 20 Mar 2022 14:44:31 -0700
 
