@@ -48,19 +48,14 @@ Note that this does not prevent the creation of new branches."
 		 (const :tag "Ask whether to detach" ask))
   :group 'mailscripts)
 
-(defcustom mailscripts-project-library 'projectile
+(defcustom mailscripts-project-library 'project
   "Which project management library to use to choose from known projects.
 
 Some mailscripts functions allow selecting the repository to
 which patches will be applied from the list of projects already
 known to Emacs.  There is more than one popular library for
 maintaining a list of known projects, however, so this variable
-must be set to the one you use.
-
-Once there is a more fully-featured version of project.el
-included in the latest stable release of GNU Emacs, the default
-value of this variable may change, so if you wish to continue
-using Projectile, you should explicitly customize this."
+must be set to the one you use."
   :type '(choice (const :tag "project.el" project)
 		 (const :tag "Projectile" projectile))
   :group 'mailscripts)

@@ -6,6 +6,10 @@ mailscripts (0.25-1) UNRELEASED; urgency=medium
   * mdmv: ensure destination path ends with ':2,' when message has no flags.
     Previously we were writing some messages with no flags into cur/
     directories without this suffix, which is invalid (see maildir(5)).
+  * mailscripts.el: change mailscripts-project-library default to `project'.
+    Now that Emacs 28.1 is out, the latest stable release of Emacs
+    contains a more fully-featured version of project.el, so change the
+    default as we said we would.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 20 Mar 2022 14:44:31 -0700
 
