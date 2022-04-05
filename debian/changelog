@@ -1,4 +1,4 @@
-mailscripts (25-1) UNRELEASED; urgency=medium
+mailscripts (25-1) unstable; urgency=medium
 
   * notmuch-slurp-debbug:
     - Exit immediately if Mail::Box::Manager::open fails.
@@ -12,7 +12,7 @@ mailscripts (25-1) UNRELEASED; urgency=medium
     default as we said we would.
   * Drop the '0.' prefix to mailscripts version numbers.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 20 Mar 2022 14:44:31 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 04 Apr 2022 18:07:45 -0700
 
 mailscripts (0.24-1) unstable; urgency=medium
 
