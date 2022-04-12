@@ -1,0 +1,45 @@
+=encoding utf8
+
+=head1 NAME
+
+sendmail-reinject - reinject an e-mail via sendmail
+
+=head1 SYNOPSIS
+
+B<sendmail-reinject> B<message.eml>
+
+B<sendmail-reinject> B<-> <B<message.eml>
+
+B<sendmail-reinject> B<-i> B<messageID>
+
+
+=head1 DESCRIPTION
+
+B<sendmail-reinject> reinjects a message to your MTA via sendmail.
+The message is read in (via path, stdin, or from notmuch via message
+ID), the sender and recipients are extracted, and the appropriate
+senmdail command is contructed to resent the message.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--notmuch-id>,B<-i> B<messageID>
+
+Message ID of message to reinject as know to a local notmuch database.
+Assumes the python3-notmuch package is available.
+
+=item B<--help>, B<-h>
+
+Show usage instructions.
+
+=back
+
+=head1 SEE ALSO
+
+sendmail(1), notmuch(1)
+
+=head1 AUTHOR
+
+B<sendmail-reinject> and this manpage were written by Jameson Graef
+Rollins <jrollins@finestructure.net>.

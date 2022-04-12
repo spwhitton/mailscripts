@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright 2022 Jameson Graef Rollins
+
+import sys
+import argparse
+import subprocess
+
+import email
+from email.policy import default
+from email.utils import parseaddr, getaddresses
+
+
+def sendmail(recipients, message, sender):
+    """send message via sendmail"""
+    cmd = [
+        'sendmail',
+        '-f', sender,
+    ] + recipients
+    print(' '.join(cmd), file=sys.stderr)
+    subprocess.run(
+        cmd,
+        input=message.as_bytes(),
+        check=True,
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Reinject an email message via sendmail.",
+    )
+    pgroup = parser.add_mutually_exclusive_group(required=True)
+    pgroup.add_argument(
+        'message', nargs='?', type=argparse.FileType('rb'),
+        help="email message path or '-' for stdin",
+    )
+    pgroup.add_argument(
+        '-i', '--notmuch-id',
+        help="message ID for notmuch extraction",
+    )
+
+    args = parser.parse_args()
+
+    if args.id:
+        import notmuch2 as notmuch
+        db = notmuch.Database()
+        query = f'id:{args.id}'
+        assert db.count_messages(query) == 1, "Message ID does not match exactly one message??"
+        for msg in db.messages(query):
+            path = msg.path
+            break
+        f = open(path, 'rb')
+    else:
+        f = args.message
+
+    # parse the email message
+    msg = email.message_from_binary_file(f, policy=default)
+
+    sender = parseaddr(msg['from'])[1]
+
+    # extract all recipients
+    tos = msg.get_all('to', [])
+    ccs = msg.get_all('cc', [])
+    resent_tos = msg.get_all('resent-to', [])
+    resent_ccs = msg.get_all('resent-cc', [])
+    recipients = [r[1] for r in getaddresses(tos + ccs + resent_tos + resent_ccs)]
+
+    sendmail(recipients, msg, sender)
+
+
+if __name__ == '__main__':
+    main()
