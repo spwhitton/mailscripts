@@ -1,11 +1,11 @@
 email-extract-openpgp-certs /usr/bin
 email-print-mime-structure /usr/bin
+gmi2email /usr/bin
 imap-dl /usr/bin
 maildir-import-patch /usr/bin
+mbox-extract-patch /usr/bin
 mbox2maildir /usr/bin
 mdmv /usr/bin
-mbox-extract-patch /usr/bin
 notmuch-extract-patch /usr/bin
 notmuch-import-patch /usr/bin
 notmuch-slurp-debbug /usr/bin
-gmi2email /usr/bin

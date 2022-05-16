@@ -60,14 +60,14 @@ Suggests:
  gpg,
  gpg-agent,
  gpgsm,
- openssl,
  libdbd-sqlite3-perl,
- libio-socket-ssl-perl,
- libmime-lite-perl,
  libemail-date-format-perl,
- libtry-tiny-perl,
+ libio-socket-ssl-perl,
  libmailtools-perl,
+ libmime-lite-perl,
+ libtry-tiny-perl,
  libxml-feed-perl,
+ openssl,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail
