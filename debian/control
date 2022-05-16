@@ -67,7 +67,9 @@ Suggests:
  libmime-lite-perl,
  libtry-tiny-perl,
  libxml-feed-perl,
+ default-mta | mail-transport-agent,
  openssl,
+ python3-notmuch,
 Architecture: all
 Description: collection of scripts for manipulating e-mail on Debian
  This package provides a collection of scripts for manipulating e-mail
@@ -94,3 +96,5 @@ Description: collection of scripts for manipulating e-mail on Debian
  imap-dl -- download messages from an IMAP mailbox to a maildir
  .
  gmi2email -- subscribe to gemlogs and read individual Gemini pages by e-mail
+ .
+ sendmail-reinject -- reinject an e-mail message via sendmail(1)
