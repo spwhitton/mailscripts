@@ -1,4 +1,4 @@
-mailscripts (26-1) UNRELEASED; urgency=medium
+mailscripts (26-1) unstable; urgency=medium
 
   * New script: sendmail-reinject (Closes: #1009617)
     - add default-mta | mail-transport-agent, python3-notmuch to Suggests
@@ -7,7 +7,7 @@ mailscripts (26-1) UNRELEASED; urgency=medium
     Thanks to Jameson Graef Rollins for the new script.
   * Run wrap-and-sort -abst.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 16 May 2022 16:46:46 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 16 May 2022 17:01:00 -0700
 
 mailscripts (25-1) unstable; urgency=medium
 
