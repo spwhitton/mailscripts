@@ -1,3 +1,10 @@
+mailscripts (27-1) unstable; urgency=medium
+
+  * Update Makefile register-python-argcomplete3 -> register-python-argcomplete
+    (Closes: #1013622).
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 24 Jun 2022 14:51:22 -0700
+
 mailscripts (26-1) unstable; urgency=medium
 
   * New script: sendmail-reinject (Closes: #1009617)
