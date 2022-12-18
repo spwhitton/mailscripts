@@ -328,14 +328,14 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
 
 (defun mailscripts--project-repo-and-branch (f &rest args)
   (let ((repo (cl-case mailscripts-project-library
-		('project
+		(project
 		 (require 'project)
 		 (project-prompt-project-dir))
-		('projectile
+		(projectile
 		 (require 'projectile)
 		 (projectile-completing-read
 		  "Select Projectile project: " projectile-known-projects))
-		(nil
+		(t
 		 (user-error
 		  "Please customize variable `mailscripts-project-library'."))))
         (branch (read-from-minibuffer

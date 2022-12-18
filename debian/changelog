@@ -2,7 +2,8 @@ mailscripts (28-1) UNRELEASED; urgency=medium
 
   * mailscripts.el:
     - new commands: mailscripts-git-format-patch-{attach,drafts}
-    - new DWIM wrapper command: mailscripts-prepare-patch.
+    - new DWIM wrapper command: mailscripts-prepare-patch
+    - fix usage of cl-case in an internal function.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 18 Dec 2022 10:40:55 -0700
 
