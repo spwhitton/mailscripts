@@ -1,4 +1,4 @@
-;;; mailscripts.el --- functions to access tools in the mailscripts package  -*- lexical-binding: t; -*-
+;;; mailscripts.el --- utilities for handling mail on Unixes  -*- lexical-binding: t; -*-
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
 ;; Version: 27
@@ -18,6 +18,17 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; The original purpose of this package was to make it easy to use the small
+;; mail-handling utilities shipped in Debian's 'mailscripts' package from
+;; within Emacs.  It now also contains some additional, thematically-related
+;; utilities which don't invoke any of those scripts.
+;;
+;; Entry points you might like to look at if you're new to this package:
+;; mailscripts-prepare-patch, notmuch-slurp-debbug,
+;; notmuch-extract-{thread,message}-patches{,-to-project}.
 
 ;;; Code:
 

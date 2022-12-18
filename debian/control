@@ -33,9 +33,15 @@ Recommends:
 Enhances:
  emacs,
  emacs25,
-Description: Emacs functions for accessing tools in the mailscripts package
- This package adds to Emacs functions to access tools in the
- mailscripts package from Emacs.
+Description: Emacs utilities for handling mail on Unixes
+ The original purpose of this package was to make it easy to use the small
+ mail-handling utilities shipped in the 'mailscripts' package from within
+ Emacs.  It now also contains some additional, thematically-related utilities
+ which don't invoke any of those scripts.
+ .
+ Entry points you might like to look at if you're new to this package:
+ mailscripts-prepare-patch, notmuch-slurp-debbug,
+ notmuch-extract-{thread,message}-patches{,-to-project}.
 
 Package: mailscripts
 Depends:
