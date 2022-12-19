@@ -133,27 +133,31 @@ particular, this Emacs Lisp function supports passing only entire
 threads to the notmuch-extract-patch(1) command."
   (interactive
    "Dgit repo: \nsnew branch name (or leave blank to apply to current HEAD): \nP")
-  (require 'notmuch)
-  (let ((thread-id
-         ;; If `notmuch-show' was called with a notmuch query rather
-         ;; than a thread ID, as `org-notmuch-follow-link' in
-         ;; org-notmuch.el does, then `notmuch-show-thread-id' might
-         ;; be an arbitrary notmuch query instead of a thread ID.  We
-         ;; need to wrap such a query in thread:{} before passing it
-         ;; to notmuch-extract-patch(1), or we might not get a whole
-         ;; thread extracted (e.g. if the query is just id:foo)
-         (if (string= (substring notmuch-show-thread-id 0 7) "thread:")
-             notmuch-show-thread-id
-           (concat "thread:{" notmuch-show-thread-id "}")))
+  (let ((search
+	 (cond
+	  ((derived-mode-p 'gnus-summary-mode 'gnus-article-mode)
+	   (mailscripts--gnus-message-id-search t))
+	  ((derived-mode-p 'notmuch-show-mode)
+           ;; If `notmuch-show' was called with a notmuch query rather
+           ;; than a thread ID, as `org-notmuch-follow-link' in
+           ;; org-notmuch.el does, then `notmuch-show-thread-id' might
+           ;; be an arbitrary notmuch query instead of a thread ID.  We
+           ;; need to wrap such a query in thread:{} before passing it
+           ;; to notmuch-extract-patch(1), or we might not get a whole
+           ;; thread extracted (e.g. if the query is just id:foo)
+           (if (string= (substring notmuch-show-thread-id 0 7) "thread:")
+	       notmuch-show-thread-id
+             (concat "thread:{" notmuch-show-thread-id "}")))
+	  (t (user-error "Unsupported major mode"))))
         (default-directory (expand-file-name repo)))
     (mailscripts--check-out-branch branch)
     (shell-command
      (if reroll-count
          (format "notmuch-extract-patch -v%d %s | git am"
                  (prefix-numeric-value reroll-count)
-                 (shell-quote-argument thread-id))
+                 (shell-quote-argument search))
        (format "notmuch-extract-patch %s | git am"
-               (shell-quote-argument thread-id)))
+               (shell-quote-argument search)))
      "*notmuch-apply-thread-series*")))
 
 ;;;###autoload
@@ -358,6 +362,10 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
               (if mailscripts-extract-patches-branch-prefix
                   (concat mailscripts-extract-patches-branch-prefix branch)
                 branch))))))
+
+(defun mailscripts--gnus-message-id-search (&optional thread)
+  (format (if thread "thread:{id:%s}" "id:%s")
+	  (string-trim (gnus-summary-header "message-id") "<" ">")))
 
 (defvar projectile-known-projects)
 (declare-function project-prompt-project-dir "project")
