@@ -242,7 +242,7 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
 	      subject
 	      (if (file-exists-p (car patches))
 		  (with-temp-buffer
-		    (insert-file (car patches))
+		    (insert-file-contents (car patches))
 		    (and-let* ((subject (message-fetch-field "subject")))
 		      (if (cdr patches)
 			  (and (string-match
