@@ -181,8 +181,11 @@ threads to the notmuch-extract-patch(1) command."
 (declare-function notmuch-foreach-mime-part "notmuch")
 (declare-function notmuch--call-process "notmuch-lib")
 (declare-function notmuch-show-get-message-id "notmuch-show")
+(declare-function notmuch-show-pipe-message "notmuch-show")
 (defvar gnus-article-buffer)
+(declare-function article-decode-charset "gnus-art")
 (declare-function gnus-article-mime-handles "gnus-art")
+(declare-function gnus-summary-show-article "gnus-sum")
 
 ;;;###autoload
 (defalias 'notmuch-extract-message-patches
@@ -191,6 +194,8 @@ threads to the notmuch-extract-patch(1) command."
 ;;;###autoload
 (defun mailscripts-extract-message-patches (repo branch)
   "Extract patches attached to current message to branch BRANCH in repo REPO.
+If there are no attachments that look like patches, offer to try piping the
+whole message.
 
 The target branch may or may not already exist.
 
@@ -220,8 +225,24 @@ git-format-patch(1)."
 	     "\\`\\(?:v?[0-9]+\\)-.+\\.\\(?:patch\\|diff\\|txt\\)\\'"
 	     filename)))
 	handles)
-    (mailscripts--check-out-branch branch)
-    (dolist (handle handles) (mm-pipe-part handle "git am"))))
+    (cond (handles
+	   (mailscripts--check-out-branch branch)
+	   (dolist (handle handles)
+	     (mm-pipe-part handle "git am")))
+	  ;; We ask for confirmation because our patch-identification code is
+	  ;; very simple.  Also note that `notmuch-extract-thread-patches' is
+	  ;; the usual way to apply patches from the message body.
+	  ((yes-or-no-p
+	    "Could not identify any attached patches; try piping whole message?")
+	   (mailscripts--check-out-branch branch)
+	   (cond ((derived-mode-p 'gnus-summary-mode 'gnus-article-mode)
+		  (gnus-summary-show-article 'raw)
+		  (with-current-buffer gnus-article-buffer
+		    (let ((default-directory (expand-file-name repo)))
+		      (article-decode-charset)
+		      (call-process-region nil nil "git" nil nil nil "am"))))
+		 ((derived-mode-p 'notmuch-show-mode)
+		  (notmuch-show-pipe-message nil "git am")))))))
 
 ;;;###autoload
 (define-obsolete-function-alias
