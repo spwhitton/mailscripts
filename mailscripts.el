@@ -279,6 +279,14 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
       (notmuch-user-agent (mailscripts--gfp-drafts-notmuch args))
       (t (user-error "Unsupported mail-user-agent `%s'" mail-user-agent)))))
 
+(declare-function gnus-summary-header "gnus-score")
+(declare-function gnus-summary-goto-article "gnus-sum")
+(declare-function gnus-summary-copy-article "gnus-sum")
+(declare-function gnus-summary-exit-no-update "gnus-sum")
+(declare-function gnus-uu-mark-buffer "gnus-uu")
+(declare-function gnus-group-read-group "gnus-group")
+(declare-function gnus-group-read-ephemeral-group "gnus-group")
+
 (defun mailscripts--gfp-drafts-gnus (args)
   (let* ((temp (make-temp-file "patches"))
 	 (group (concat "nndoc+ephemeral:" temp))
@@ -337,6 +345,10 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
               (if mailscripts-extract-patches-branch-prefix
                   (concat mailscripts-extract-patches-branch-prefix branch)
                 branch))))))
+
+(defvar projectile-known-projects)
+(declare-function project-prompt-project-dir "project")
+(declare-function projectile-completing-read "projectile")
 
 (defun mailscripts--project-repo-and-branch (f &rest args)
   (let ((repo (cl-case mailscripts-project-library
