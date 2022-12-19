@@ -131,6 +131,9 @@ option detailed in mbox-extract-patch(1).
 See notmuch-extract-patch(1) manpage for limitations: in
 particular, this Emacs Lisp function supports passing only entire
 threads to the notmuch-extract-patch(1) command."
+  ;; We could obtain a list of message IDs for a subthread, say, and disjoin
+  ;; them to produce a more specific query to pass to the script.  This could
+  ;; help in large threads where the script fails to extract the right thing.
   (interactive
    "Dgit repo: \nsnew branch name (or leave blank to apply to current HEAD): \nP")
   (let ((search
