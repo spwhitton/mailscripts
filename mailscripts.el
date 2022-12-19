@@ -40,7 +40,8 @@
 (require 'gnus)
 
 (defgroup mailscripts nil
-  "Customisation of functions in the mailscripts package.")
+  "Customisation of functions in the mailscripts package."
+  :group 'mail)
 
 (defcustom mailscripts-extract-patches-branch-prefix nil
   "Prefix for git branches created by functions which extract patch series.

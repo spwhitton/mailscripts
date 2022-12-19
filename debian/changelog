@@ -4,6 +4,7 @@ mailscripts (28-1) UNRELEASED; urgency=medium
     - new commands: mailscripts-git-format-patch-{attach,drafts}
     - new DWIM wrapper command: mailscripts-prepare-patch
     - rewrite short description and add a brief commentary
+    - move the mailscripts customisation group into the mail group
     - fix usage of cl-case in an internal function.
   * debian/control: update Description: for elpa-mailscripts.
     Use the new short description and commentary from mailscripts.el.
