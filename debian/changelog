@@ -10,6 +10,7 @@ mailscripts (28-1) UNRELEASED; urgency=medium
     - if mailscripts-extract-message-patches identifies no attachments,
       it now offers to pipe the whole message to 'git am'
 
+    - don't offer to detach a HEAD that's already detached
     - rewrite short description and add a brief commentary
     - load the notmuch library only when code that requires it is called
     - move the mailscripts customisation group into the mail group

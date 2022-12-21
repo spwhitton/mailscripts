@@ -395,9 +395,13 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
 
 (defun mailscripts--check-out-branch (branch)
   (if (string= branch "")
-      (when (or (eq mailscripts-detach-head-from-existing-branch t)
-		(and (eq mailscripts-detach-head-from-existing-branch 'ask)
-		     (yes-or-no-p "Detach HEAD before applying patches?")))
+      (when (and
+	     ;; Don't proceed if HEAD is already detached.
+	     (zerop (call-process "git" nil nil nil
+				  "symbolic-ref" "--quiet" "HEAD"))
+	     (or (eq mailscripts-detach-head-from-existing-branch t)
+		 (and (eq mailscripts-detach-head-from-existing-branch 'ask)
+		      (yes-or-no-p "Detach HEAD before applying patches?"))))
         (call-process-shell-command "git checkout --detach"))
     (call-process-shell-command
      (format "git checkout -b %s"
