@@ -221,8 +221,7 @@ git-format-patch(1)."
 	(lambda (h)
 	  (and-let*
 	      ((filename (cdr (assq 'filename (mm-handle-disposition h)))))
-	    (string-match
-	     "\\`\\(?:v?[0-9]+\\)-.+\\.\\(?:patch\\|diff\\|txt\\)\\'"
+	    (string-match "\\`v?[0-9]+-.+\\.\\(?:patch\\|diff\\|txt\\)\\'"
 	     filename)))
 	handles)
     (cond (handles
