@@ -301,6 +301,7 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
 	      (if (file-exists-p (car patches))
 		  (with-temp-buffer
 		    (insert-file-contents (car patches))
+		    (message-narrow-to-headers-or-head)
 		    (and-let* ((subject (message-fetch-field "subject")))
 		      (if (cdr patches)
 			  (and (string-match
