@@ -269,10 +269,24 @@ generate patches, etc.."
   (call-interactively
    (if (eq (vc-deduce-backend) 'Git)
        ;; For Git, default to one message per patch, like git-send-email(1).
-       (if (and (local-variable-p 'vc-prepare-patches-separately)
-		(not vc-prepare-patches-separately))
-	   #'mailscripts-git-format-patch-attach
-	 #'mailscripts-git-format-patch-drafts)
+       ;; Only use attachments when configured for this project.
+       ;;
+       ;; We presently assume that if patches-as-attachments has been
+       ;; configured for this project, it's unlikely that you'll want to send
+       ;; any messages with --scissors patches.  That may not be correct.
+       (cond
+	((and (local-variable-p 'vc-prepare-patches-separately)
+	      (not vc-prepare-patches-separately))
+	 #'mailscripts-git-format-patch-attach)
+	((and (catch 'found
+		(dolist (buffer (buffer-list))
+		  (when (and (string-search "unsent " (buffer-name buffer))
+			     (with-current-buffer buffer
+			       (derived-mode-p 'mail-mode 'message-mode)))
+		    (throw 'found t))))
+	      (yes-or-no-p "Append -- >8 -- patch to unsent message?"))
+	 #'mailscripts-git-format-patch-append)
+	(t #'mailscripts-git-format-patch-drafts))
      #'vc-prepare-patch)))
 
 ;;;###autoload
