@@ -1,7 +1,7 @@
 mailscripts (28-1) UNRELEASED; urgency=medium
 
   * mailscripts.el:
-    - new commands: mailscripts-git-format-patch-{attach,drafts}
+    - new commands: mailscripts-git-format-patch-{attach,drafts,append}
     - new DWIM wrapper command: mailscripts-prepare-patch
 
     - notmuch-extract-{thread,message}-patches: add Gnus support
