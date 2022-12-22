@@ -222,7 +222,7 @@ git-format-patch(1)."
 	  (and-let*
 	      ((filename (cdr (assq 'filename (mm-handle-disposition h)))))
 	    (string-match "\\`v?[0-9]+-.+\\.\\(?:patch\\|diff\\|txt\\)\\'"
-	     filename)))
+			  filename)))
 	handles)
     (cond (handles
 	   (mailscripts--check-out-branch branch)
