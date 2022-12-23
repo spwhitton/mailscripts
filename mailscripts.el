@@ -208,14 +208,24 @@ git-format-patch(1)."
   (interactive
    "Dgit repo: \nsnew branch name (or leave blank to apply to current HEAD): ")
   (let ((default-directory (expand-file-name repo))
-	handles)
+	handles raw)
     (cond ((derived-mode-p 'gnus-summary-mode 'gnus-article-mode)
 	   (with-current-buffer gnus-article-buffer
-	     (setq handles (mapcar #'cdr (gnus-article-mime-handles)))))
+	     (setq handles (mapcar #'cdr (gnus-article-mime-handles))
+		   raw (lambda ()
+			 (gnus-summary-show-article 'raw)
+			 (with-current-buffer gnus-article-buffer
+			   (article-decode-charset)
+			   (buffer-string))))))
 	  ((derived-mode-p 'notmuch-show-mode)
 	   (with-current-notmuch-show-message
 	    (notmuch-foreach-mime-part (lambda (handle) (push handle handles))
-				       (mm-dissect-buffer t))))
+				       (mm-dissect-buffer t)))
+	   (setq raw (lambda ()
+		       (let (ret)
+			 (with-current-notmuch-show-message
+			  (setq ret (buffer-string)))
+			 ret))))
 	  (t (user-error "Unsupported major mode")))
     (cl-callf2 cl-remove-if-not
 	(lambda (h)
@@ -224,24 +234,28 @@ git-format-patch(1)."
 	    (string-match "\\`v?[0-9]+-.+\\.\\(?:patch\\|diff\\|txt\\)\\'"
 			  filename)))
 	handles)
-    (cond (handles
-	   (mailscripts--check-out-branch branch)
-	   (dolist (handle handles)
-	     (mm-pipe-part handle "git am")))
-	  ;; We ask for confirmation because our patch-identification code is
-	  ;; very simple.  Also note that `notmuch-extract-thread-patches' is
-	  ;; the usual way to apply patches from the message body.
-	  ((yes-or-no-p
-	    "Could not identify any attached patches; try piping whole message?")
-	   (mailscripts--check-out-branch branch)
-	   (cond ((derived-mode-p 'gnus-summary-mode 'gnus-article-mode)
-		  (gnus-summary-show-article 'raw)
-		  (with-current-buffer gnus-article-buffer
-		    (let ((default-directory (expand-file-name repo)))
-		      (article-decode-charset)
-		      (call-process-region nil nil "git" nil nil nil "am"))))
-		 ((derived-mode-p 'notmuch-show-mode)
-		  (notmuch-show-pipe-message nil "git am")))))))
+    (if handles
+	(cl-loop initially (mailscripts--check-out-branch branch)
+		 for handle in handles do (mm-pipe-part handle "git am"))
+      ;; We ask for confirmation because our code for identifying attached
+      ;; patches, and for finding scissors, is very simple.
+      (setq raw (funcall raw))
+      (with-temp-buffer
+	(insert raw)
+	(goto-char (point-min))
+	(let ((scissors (re-search-forward "^-- >8 --\\s-*$" nil t)))
+	  (cl-case (or (and scissors
+			    (yes-or-no-p
+			     (substitute-quotes
+			      "Pipe whole message to `git am --scissors'?"))
+			    'scissors)
+		       (yes-or-no-p
+			(substitute-quotes
+			 (if scissors "Pipe whole message to `git am'?"
+"Could not identify attached patches; pipe whole message to `git am'?"))))
+	    (scissors
+	     (call-process-region nil nil "git" nil nil nil "am" "-c"))
+	    ((t) (call-process-region nil nil "git" nil nil nil "am"))))))))
 
 ;;;###autoload
 (define-obsolete-function-alias
