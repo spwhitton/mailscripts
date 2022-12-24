@@ -18,6 +18,7 @@ mailscripts (28-1) UNRELEASED; urgency=medium
     - fix usage of cl-case in an internal function.
   * debian/control: update Description: for elpa-mailscripts.
     Use the new short description and commentary from mailscripts.el.
+  * Add & install a README, to both binary packages.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 18 Dec 2022 10:40:55 -0700
 
