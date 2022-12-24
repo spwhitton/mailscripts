@@ -1,4 +1,4 @@
-mailscripts (28-1) UNRELEASED; urgency=medium
+mailscripts (28-1) unstable; urgency=medium
 
   * mailscripts.el:
     - new commands: mailscripts-git-format-patch-{attach,drafts,append}
@@ -21,7 +21,7 @@ mailscripts (28-1) UNRELEASED; urgency=medium
   * Add & install a README, to both binary packages.
   * Tighten build-dep on python3-pgpy to require >= 0.5.4-4.1.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 18 Dec 2022 10:40:55 -0700
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 24 Dec 2022 12:09:07 -0700
 
 mailscripts (27-1) unstable; urgency=medium
 

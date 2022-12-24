@@ -1,7 +1,7 @@
 ;;; mailscripts.el --- utilities for handling mail on Unixes  -*- lexical-binding: t; -*-
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 27
+;; Version: 28
 ;; Package-Requires: (notmuch)
 
 ;; Copyright (C) 2018, 2019, 2020, 2022 Sean Whitton
