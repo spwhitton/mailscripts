@@ -2,7 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2019 Daniel Kahn Gillmor
+# Copyright (C) 2019-2024 Daniel Kahn Gillmor
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import subprocess
 
 from argparse import ArgumentParser, Namespace
 from typing import Optional, Union, List, Tuple, Any
+from types import ModuleType
 from email.charset import Charset
 from email.message import Message
 
@@ -47,8 +48,9 @@ try:
 except ImportError:
     pgpy = None
 
+argcomplete:Optional[ModuleType]
 try:
-    import argcomplete #type: ignore
+    import argcomplete
 except ImportError:
     argcomplete = None
 
@@ -74,7 +76,7 @@ class MimePrinter(object):
             # FIXME: it looks like we are counting chars here, not bytes:
             nbytes = len(z.as_string())
         else:
-            payload:Union[List[Message], str, bytes, None] = z.get_payload()
+            payload = z.get_payload()
             if not isinstance(payload, (str,bytes)):
                 raise TypeError(f'expected payload to be either str or bytes, got {type(payload)}')
             # FIXME: it looks like we are counting chars here, not bytes:
@@ -106,7 +108,7 @@ class MimePrinter(object):
         else:
             if z.get_content_type().lower() == 'application/pkcs7-mime' and \
                str(z.get_param('smime-type')).lower() == 'signed-data':
-                bodypart:Union[List[Message],str,bytes,None] = z.get_payload(decode=True)
+                bodypart = z.get_payload(decode=True)
                 if isinstance(bodypart, bytes):
                     unwrapped = self.pipe_transform(bodypart, ['certtool', '--p7-show-data', '--p7-info', '--inder'])
                     if unwrapped:
@@ -118,7 +120,7 @@ class MimePrinter(object):
 
 
     def decrypt_part(self, msg:Message, flavor:EncType) -> Optional[Message]:
-        ciphertext:Union[List[Message],str,bytes,None] = msg.get_payload(decode=True)
+        ciphertext = msg.get_payload(decode=True)
         cryptopayload:Optional[Message] = None
         if not isinstance(ciphertext, bytes):
             logging.warning('encrypted part was not a leaf mime part somehow')
@@ -178,14 +180,18 @@ class MimePrinter(object):
                 prefix = prefix.rpartition('└')[0] + ' '
             if prefix.endswith('├'):
                 prefix = prefix.rpartition('├')[0] + '│'
-            parts:Union[List[Message], str, bytes, None] = z.get_payload()
+            parts = z.get_payload()
             if not isinstance(parts, list):
                 raise TypeError(f'parts was {type(parts)}, expected List[Message]')
             i = 0
             while (i < len(parts)-1):
-                self.print_tree(parts[i], prefix + '├', z, i+1)
+                msg = parts[i]
+                if isinstance(msg, Message):
+                    self.print_tree(msg, prefix + '├', z, i+1)
                 i += 1
-            self.print_tree(parts[i], prefix + '└', z, i+1)
+            msg = parts[i]
+            if isinstance(msg, Message):
+                self.print_tree(msg, prefix + '└', z, i+1)
             # FIXME: show epilogue?
         else:
             self.print_part(z, prefix+'─╴', parent, num)

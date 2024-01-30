@@ -2,7 +2,7 @@
 # PYTHON_ARGCOMPLETE_OK
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2019-2020 Daniel Kahn Gillmor
+# Copyright (C) 2019-2024 Daniel Kahn Gillmor
 # Copyright (C) 2020      Red Hat, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -52,14 +52,17 @@ import statistics
 import configparser
 
 from typing import Dict, List, Optional, Tuple, Union
+from types import ModuleType
 
+argcomplete:Optional[ModuleType]
 try:
-    import argcomplete #type: ignore
+    import argcomplete
 except ImportError:
     argcomplete = None
 
+gssapi:Optional[ModuleType]
 try:
-    import gssapi # type: ignore
+    import gssapi
 except ModuleNotFoundError:
     gssapi = None
 
@@ -96,15 +99,16 @@ def auth_builtin(username:str, imap:imaplib.IMAP4,
     except Exception as e:
         raise Exception(f'login failed with {e} as user {username} on {server}')
 
-if gssapi:
+if gssapi is not None:
     # imaplib auth methods need to be in the form of callables, and they all
     # requre both additional parameters and storage beyond what the function
     # interface provides.
     class GSSAPI_handler():
-        gss_vc:gssapi.SecurityContext
         username:str
 
         def __init__(self, server:str, username:str) -> None:
+            if gssapi is None:
+                raise Exception("Impossible state -- gssapi module is not loaded")
             name = gssapi.Name(f'imap@{server}',
                                gssapi.NameType.hostbased_service)
             self.gss_vc = gssapi.SecurityContext(usage="initiate", name=name)
