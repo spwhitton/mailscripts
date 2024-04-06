@@ -3,6 +3,7 @@ mailscripts (29-1) UNRELEASED; urgency=medium
   * Clean up types for mypy 1.9.0 (Closes: #1067796).
     Thanks to Daniel Kahn Gillmor for the patch.
     - New build-dep on python3-gssapi.
+    - Update copyright years for dkg.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 06 Apr 2024 16:21:55 +0800
 
