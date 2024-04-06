@@ -16,6 +16,7 @@ Build-Depends:
  perl,
  python3 <!nocheck>,
  python3-argcomplete,
+ python3-gssapi <!nocheck>,
  python3-pgpy (>= 0.5.4-4.1) <!nocheck>,
 Vcs-Git: https://git.spwhitton.name/mailscripts
 Vcs-Browser: https://git.spwhitton.name/mailscripts
