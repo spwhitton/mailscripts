@@ -1,3 +1,9 @@
+mailscripts (29-2) unstable; urgency=medium
+
+  * Rebuild against newer dh-elpa.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Fri, 26 Jul 2024 11:58:06 +0900
+
 mailscripts (29-1) unstable; urgency=medium
 
   * Clean up types for mypy 1.9.0 (Closes: #1067796).
