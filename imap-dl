@@ -119,7 +119,7 @@ if gssapi is not None:
                 token = None
             if not self.gss_vc.complete:
                 response = self.gss_vc.step(token)
-                return response if response else b"" # type: ignore
+                return response if response else b""
             elif token is None:
                 return b""
 
@@ -134,7 +134,7 @@ if gssapi is not None:
                 reply[5:] = self.username.encode("utf-8")
 
             response = self.gss_vc.wrap(bytes(reply), response.encrypted)
-            return response.message if response.message else b"" # type: ignore
+            return response.message if response.message else b""
 
 def auth_gssapi(username:str, imap:imaplib.IMAP4,
                 conf:configparser.ConfigParser, server:str) -> None:

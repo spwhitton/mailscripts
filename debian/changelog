@@ -1,3 +1,10 @@
+mailscripts (30-1) unstable; urgency=medium
+
+  * imap-dl: Drop two apparently-obsolete mypy "type: ignore" comments
+    (Closes: #1086292).
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Mon, 04 Nov 2024 09:08:01 +0800
+
 mailscripts (29-2) unstable; urgency=medium
 
   * Rebuild against newer dh-elpa.
