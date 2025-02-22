@@ -1,3 +1,11 @@
+mailscripts (30-2) unstable; urgency=medium
+
+  * Fix Suggests for sendmail-reinject, python3-notmuch -> python3-notmuch2
+    (Closes: #1098665).
+    Thanks to David Bremner for the report.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sat, 22 Feb 2025 21:07:27 +0800
+
 mailscripts (30-1) unstable; urgency=medium
 
   * imap-dl: Drop two apparently-obsolete mypy "type: ignore" comments
