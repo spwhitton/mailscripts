@@ -1,5 +1,5 @@
-└─╴application/pkcs7-mime 1196 bytes
- ↧ (decrypts to)
+└┬╴application/pkcs7-mime 1196 bytes
+ ╧ (decrypts to)
  └┬╴multipart/mixed 415 bytes
   ├┬╴multipart/alternative 234 bytes
   │├─╴text/plain 26 bytes

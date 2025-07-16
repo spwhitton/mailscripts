@@ -1,5 +1,5 @@
-└─╴application/pkcs7-mime 2538 bytes
- ⇩ (unwraps to)
+└┬╴application/pkcs7-mime 2538 bytes
+ ┴ (unwraps to)
  └┬╴multipart/mixed 415 bytes
   ├┬╴multipart/alternative 234 bytes
   │├─╴text/plain 26 bytes

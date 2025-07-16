@@ -108,7 +108,7 @@ class MimePrinter(object):
 
         if cryptopayload is not None:
             newprefix = prefix[:-3] + ' '
-            print(f'{newprefix}↧ (decrypts to)')
+            print(f'{newprefix}╧ (decrypts to)')
             self.print_tree(cryptopayload, newprefix + '└', z, 0)
         else:
             if z.get_content_type().lower() == 'application/pkcs7-mime' and \
@@ -118,7 +118,7 @@ class MimePrinter(object):
                     unwrapped = self.pipe_transform(bodypart, ['certtool', '--p7-show-data', '--p7-info', '--inder'])
                     if unwrapped:
                         newprefix = prefix[:-3] + ' '
-                        print(f'{newprefix}⇩ (unwraps to)')
+                        print(f'{newprefix}┴ (unwraps to)')
                         self.print_tree(unwrapped, newprefix + '└', z, 0)
                     else:
                         logging.warning(f'Unable to unwrap one-part PKCS#7 signed message (maybe try "apt install gnutls-bin")')
@@ -199,7 +199,17 @@ class MimePrinter(object):
                 self.print_tree(msg, prefix + '└', z, i+1)
             # FIXME: show epilogue?
         else:
-            self.print_part(z, prefix+'─╴', parent, num)
+            # if we're going to decrypt or unwrap, extend the tree
+            if (self.try_pgp_decrypt and \
+                z.get_content_type().lower() == 'application/octet-stream' and \
+                parent is not None and \
+                parent.get_content_type().lower() == 'multipart/encrypted') or \
+                (z.get_content_type().lower() == 'application/pkcs7-mime' and \
+                 (str(z.get_param('smime-type')).lower() == 'signed-data' or
+                  self.try_cms_decrypt)):
+                self.print_part(z, prefix+'┬╴', parent, num)
+            else:
+                self.print_part(z, prefix+'─╴', parent, num)
 
 def main() -> None:
     parser:ArgumentParser = ArgumentParser(description='Read RFC2822 MIME message from stdin and emit a tree diagram to stdout.',

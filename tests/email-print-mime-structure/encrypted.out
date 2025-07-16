@@ -1,7 +1,7 @@
 └┬╴multipart/encrypted 1366 bytes
  ├─╴application/pgp-encrypted 11 bytes
- └─╴application/octet-stream 971 bytes
-  ↧ (decrypts to)
+ └┬╴application/octet-stream 971 bytes
+  ╧ (decrypts to)
   └┬╴multipart/mixed 415 bytes
    ├┬╴multipart/alternative 234 bytes
    │├─╴text/plain 26 bytes
