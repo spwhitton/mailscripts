@@ -60,6 +60,13 @@ class MimePrinter(object):
     def __init__(self, args:Namespace):
         self.args = args
 
+    @property
+    def try_pgp_decrypt(self) -> bool:
+        return bool(self.args.pgpkey or self.args.use_gpg_agent)
+    @property
+    def try_cms_decrypt(self) -> bool:
+        return bool(self.args.cmskey or self.args.use_gpg_agent)
+
     def print_part(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
         ofname:Optional[str] = z.get_filename()
         fname:str = '' if ofname is None else f' [{ofname}]'
@@ -84,17 +91,15 @@ class MimePrinter(object):
 
         print(f'{prefix}{z.get_content_type()}{cset}{disposition}{fname} {nbytes:d} bytes')
         cryptopayload:Optional[Message] = None
-        try_pgp_decrypt:bool = self.args.pgpkey or self.args.use_gpg_agent
-        try_cms_decrypt:bool = self.args.cmskey or self.args.use_gpg_agent
 
-        if try_pgp_decrypt and \
+        if self.try_pgp_decrypt and \
            (parent is not None) and \
            (parent.get_content_type().lower() == 'multipart/encrypted') and \
            (str(parent.get_param('protocol')).lower() == 'application/pgp-encrypted') and \
            (num == 2):
             cryptopayload = self.decrypt_part(z, EncType.PGPMIME)
 
-        if try_cms_decrypt and \
+        if self.try_cms_decrypt and \
            cryptopayload is None and \
            z.get_content_type().lower() == 'application/pkcs7-mime' and \
            str(z.get_param('smime-type')).lower() in ['authenveloped-data',
