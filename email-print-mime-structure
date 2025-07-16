@@ -179,7 +179,7 @@ class MimePrinter(object):
         return None
 
     def print_tree(self, z:Message, prefix:str, parent:Optional[Message], num:int) -> None:
-        if (z.is_multipart()):
+        if z.is_multipart():
             self.print_part(z, prefix+'┬╴', parent, num)
             if prefix.endswith('└'):
                 prefix = prefix.rpartition('└')[0] + ' '
