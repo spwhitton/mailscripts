@@ -1,10 +1,10 @@
 mailscripts
 Collection of scripts for manipulating e-mail on Debian
 
-Copyright (C)2017-2021 Sean Whitton
-Copyright (C)2019-2025 Daniel Kahn Gillmor
-Copyright (C)2020      Red Hat, Inc.
-Copyright (C)2022      Jameson Graef Rollins
+Copyright (C)2017-2022,2026 Sean Whitton
+Copyright (C)2019-2025      Daniel Kahn Gillmor
+Copyright (C)2020           Red Hat, Inc.
+Copyright (C)2022           Jameson Graef Rollins
 
 These programs are free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as

@@ -1,10 +1,10 @@
 ;;; mailscripts.el --- utilities for handling mail on Unixes  -*- lexical-binding: t; -*-
 
 ;; Author: Sean Whitton <spwhitton@spwhitton.name>
-;; Version: 28
+;; Version: 31
 ;; Package-Requires: (notmuch)
 
-;; Copyright (C) 2018, 2019, 2020, 2022 Sean Whitton
+;; Copyright (C) 2018, 2019, 2020, 2022, 2026 Sean Whitton
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
