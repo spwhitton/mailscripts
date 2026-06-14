@@ -5,6 +5,10 @@ mailscripts (31-1) UNRELEASED; urgency=medium
   * mailscripts.el:
     - mailscripts-prepare-patch: Call message-buffers to see if there are
       any unsent messages instead of doing our own custom buffer search.
+    - mailscripts-git-format-patch-append: For notmuch users, call
+      message-buffers to find a buffer with an unsent message to which
+      we'll append a patch.  This is necessary because notmuch-mua-mail
+      ignores the CONTINUE argument.
     - Autoload mailscripts-git-format-patch-append.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 14 Jun 2026 20:40:13 +0100

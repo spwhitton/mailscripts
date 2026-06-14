@@ -415,7 +415,12 @@ The patch is formatted such that a recipient can use the --scissors option to
 git-am(1) to apply the patch; see \"DISCUSSION\" in git-format-patch(1)."
   (interactive (list (read-string "git format-patch " "-1 ")))
   (let ((dir default-directory))
-    (compose-mail nil nil nil t)
+    ;; `notmuch-mua-mail' ignores the CONTINUE argument, so look for an unsent
+    ;; message buffer the same way `message-mail' does.
+    (if-let* ((_ (eq mail-user-agent 'notmuch-user-agent))
+              (buffers (message-buffers)))
+        (pop-to-buffer (car buffers))
+      (compose-mail nil nil nil t))
     (save-excursion
       (save-restriction
 	(message-narrow-to-headers-or-head)
