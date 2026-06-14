@@ -292,12 +292,7 @@ generate patches, etc.."
 	((and (local-variable-p 'vc-prepare-patches-separately)
 	      (not vc-prepare-patches-separately))
 	 #'mailscripts-git-format-patch-attach)
-	((and (catch 'found
-		(dolist (buffer (buffer-list))
-		  (when (and (string-search "unsent " (buffer-name buffer))
-			     (with-current-buffer buffer
-			       (derived-mode-p 'mail-mode 'message-mode)))
-		    (throw 'found t))))
+	((and (message-buffers)
 	      (yes-or-no-p "Append -- >8 -- patch to unsent message?"))
 	 #'mailscripts-git-format-patch-append)
 	(t #'mailscripts-git-format-patch-drafts))

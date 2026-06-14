@@ -3,6 +3,8 @@ mailscripts (31-1) UNRELEASED; urgency=medium
   * email-print-mime-structure: Decryption/unwrapping uses BOX_DRAWINGS.
     This is compatible with more fonts.
   * mailscripts.el:
+    - mailscripts-prepare-patch: Call message-buffers to see if there are
+      any unsent messages instead of doing our own custom buffer search.
     - Autoload mailscripts-git-format-patch-append.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 14 Jun 2026 20:40:13 +0100
