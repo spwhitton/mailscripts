@@ -1,3 +1,12 @@
+mailscripts (31-1) UNRELEASED; urgency=medium
+
+  * email-print-mime-structure: Decryption/unwrapping uses BOX_DRAWINGS.
+    This is compatible with more fonts.
+  * mailscripts.el:
+    - Autoload mailscripts-git-format-patch-append.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 14 Jun 2026 20:40:13 +0100
+
 mailscripts (30-2) unstable; urgency=medium
 
   * Fix Suggests for sendmail-reinject, python3-notmuch -> python3-notmuch2
