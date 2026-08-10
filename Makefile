@@ -5,6 +5,7 @@ MANPAGES=mdmv.1 mbox2maildir.1 \
 	email-extract-openpgp-certs.1 \
 	email-print-mime-structure.1 \
 	notmuch-import-patch.1 \
+	sendmail-reinject.1 \
 	gmi2email.1
 COMPLETIONS=completions/bash/email-print-mime-structure completions/bash/imap-dl
 
