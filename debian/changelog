@@ -3,6 +3,8 @@ mailscripts (32-1) UNRELEASED; urgency=medium
   * mailscripts.el:
     - Mark mailscripts-prepare-patch as interactive-only.
     - when-let -> when-let*.
+  * Build & install sendmail-reinject(1).
+    Thanks to Eetu Eloranta for the report and a patch.
 
  -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 25 Aug 2026 19:10:20 +0100
 
