@@ -279,6 +279,7 @@ git-format-patch(1)."
 This is a convenience wrapper command for interactive use only.
 Its behaviour is subject to change as we add support for more MUAs, ways to
 generate patches, etc.."
+  (declare (interactive-only t))
   (interactive)
   (call-interactively
    (if (eq (vc-deduce-backend) 'Git)
