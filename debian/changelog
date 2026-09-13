@@ -1,3 +1,10 @@
+mailscripts (32-1) UNRELEASED; urgency=medium
+
+  * mailscripts.el:
+    - when-let -> when-let*.
+
+ -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 25 Aug 2026 19:10:20 +0100
+
 mailscripts (31-1) unstable; urgency=medium
 
   * email-print-mime-structure: Decryption/unwrapping uses BOX_DRAWINGS.

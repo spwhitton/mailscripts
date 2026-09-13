@@ -353,7 +353,7 @@ For a command for nil `vc-prepare-patches-separately', see
 See also the interactive wrapper command `mailscripts-prepare-patch'."
   (interactive "sgit format-patch ")
   (let ((args (cons "--thread" (split-string-and-unquote args))))
-    (when-let ((addressee (mailscripts--gfp-addressee)))
+    (when-let* ((addressee (mailscripts--gfp-addressee)))
       (push (format "--to=%s" addressee) args))
     (cl-case mail-user-agent
       (gnus-user-agent (mailscripts--gfp-drafts-gnus args))
@@ -385,7 +385,7 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
 	       (setq message-id (gnus-summary-header "message-id"))
 	       (gnus-uu-mark-buffer)
 	       (gnus-summary-copy-article nil "nndraft:drafts"))
-      (when-let ((buffer (get-buffer summary)))
+      (when-let* ((buffer (get-buffer summary)))
 	(with-current-buffer buffer
 	  (gnus-summary-exit-no-update t)))
       (delete-file temp))
