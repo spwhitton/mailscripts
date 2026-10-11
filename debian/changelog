@@ -4,6 +4,7 @@ mailscripts (32-1) UNRELEASED; urgency=medium
     - New command mailscripts-forward-message-parts.
     - Mark mailscripts-prepare-patch as interactive-only.
     - when-let -> when-let*.
+    - Add a missing declare-function.
   * Build & install sendmail-reinject(1).
     Thanks to Eetu Eloranta for the report and a patch.
 

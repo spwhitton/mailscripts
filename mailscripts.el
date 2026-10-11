@@ -393,6 +393,8 @@ See also the interactive wrapper command `mailscripts-prepare-patch'."
     (gnus-group-read-group t t "nndraft:drafts")
     (gnus-summary-goto-article message-id)))
 
+(declare-function notmuch-search "notmuch")
+
 (defun mailscripts--gfp-drafts-notmuch (args)
   (require 'notmuch)
   (let ((temp (make-temp-file "patches" t))
@@ -470,6 +472,8 @@ git-am(1) to apply the patch; see \"DISCUSSION\" in git-format-patch(1)."
 	    (goto-char (point-max))
 	    (delete-blank-lines)
 	    (append-to-buffer unsent-buffer 1 (point-max))))))))
+
+(declare-function notmuch-show-current-part-handle "notmuch-show")
 
 ;;;###autoload
 (defun mailscripts-forward-message-parts (&optional arg)
