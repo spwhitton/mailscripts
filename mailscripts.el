@@ -454,9 +454,9 @@ git-am(1) to apply the patch; see \"DISCUSSION\" in git-format-patch(1)."
 			 (and unsent-from
 			      (mail-header-parse-address-lax unsent-from)))
 			(patch-from (message-fetch-field "from"))
-			(patch (mail-header-parse-address-lax patch-from)))
-	      (when (equal unsent patch)
-		(message-remove-header "^From:\\|^Date:" t)))
+			(patch (mail-header-parse-address-lax patch-from))
+                        (_ (equal unsent patch)))
+	      (message-remove-header "^From:\\|^Date:" t))
 	    (widen)
 	    (goto-char (point-max))
 	    (delete-blank-lines)
