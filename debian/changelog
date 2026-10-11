@@ -1,4 +1,4 @@
-mailscripts (32-1) UNRELEASED; urgency=medium
+mailscripts (32-1) unstable; urgency=medium
 
   * mailscripts.el:
     - New command mailscripts-forward-message-parts.
@@ -8,7 +8,7 @@ mailscripts (32-1) UNRELEASED; urgency=medium
   * Build & install sendmail-reinject(1).
     Thanks to Eetu Eloranta for the report and a patch.
 
- -- Sean Whitton <spwhitton@spwhitton.name>  Tue, 25 Aug 2026 19:10:20 +0100
+ -- Sean Whitton <spwhitton@spwhitton.name>  Sun, 11 Oct 2026 20:22:18 +0100
 
 mailscripts (31-1) unstable; urgency=medium
 
